@@ -21,6 +21,22 @@ G,r,s,t
   );
 });
 
+test("validateModelDocument rejects duplicate parameter names case-insensitively by default", () => {
+  const source = `OS: Win7, Win10
+os: Ubuntu, Fedora
+`;
+
+  const parsed = parseModelText(source);
+  const validation = validateModelDocument(parsed.model);
+
+  assert.equal(
+    validation.diagnostics.some(
+      (diagnostic) => diagnostic.code === "validation.model.duplicate_parameter_name",
+    ),
+    true,
+  );
+});
+
 test("validateModelDocument rejects parameters with only negative values", () => {
   const source = `A: ~1, ~2
 B: 1, 2

@@ -26,6 +26,11 @@ tasks:
     cmds:
       - npm run test
 
+  web:dev:
+    desc: Start the web app development server
+    cmds:
+      - npm --prefix packages/web run dev
+
   check:
     desc: Run lint, typecheck, and tests
     cmds:

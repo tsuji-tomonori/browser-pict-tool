@@ -62,3 +62,51 @@ test("exportMarkdown escapes pipe characters in cell values", () => {
     ["| Name | Notes |", "| --- | --- |", "| A\\|B | safe \\| value |"].join("\n"),
   );
 });
+
+test("exportCsv handles empty table with headers only", () => {
+  const suite = { header: ["A", "B"], rows: [] as string[][] };
+
+  assert.equal(exportCsv(suite), "A,B");
+});
+
+test("exportCsv handles cells containing newlines", () => {
+  const suite = {
+    header: ["A", "B"],
+    rows: [["line1\nline2", "ok"]],
+  };
+
+  assert.equal(exportCsv(suite), ['A,B', '"line1\nline2",ok'].join("\n"));
+});
+
+test("exportTsv handles empty table with headers only", () => {
+  const suite = { header: ["A", "B"], rows: [] as string[][] };
+
+  assert.equal(exportTsv(suite), "A\tB");
+});
+
+test("exportMarkdown handles empty table with headers only", () => {
+  const suite = { header: ["A", "B"], rows: [] as string[][] };
+
+  assert.equal(exportMarkdown(suite), ["| A | B |", "| --- | --- |"].join("\n"));
+});
+
+test("exportMarkdown converts newlines to br tags", () => {
+  const suite = {
+    header: ["A"],
+    rows: [["line1\nline2"]],
+  };
+
+  assert.equal(
+    exportMarkdown(suite),
+    ["| A |", "| --- |", "| line1<br>line2 |"].join("\n"),
+  );
+});
+
+test("exportCsv handles single column", () => {
+  const suite = {
+    header: ["Only"],
+    rows: [["val1"], ["val2"]],
+  };
+
+  assert.equal(exportCsv(suite), ["Only", "val1", "val2"].join("\n"));
+});

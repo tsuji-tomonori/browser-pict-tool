@@ -34,6 +34,8 @@ interface AppState {
   activeJobId: string | null;
 }
 
+const MAX_RENDERED_RESULT_ROWS = 2000;
+
 function requiredElement<T extends Element>(selector: string): T {
   const element = document.querySelector<T>(selector);
   if (!element) {
@@ -281,7 +283,7 @@ function applyColumnWidths(): void {
   });
 }
 
-function updateResultsSummary(visibleCount: number): void {
+function updateResultsSummary(visibleCount: number, renderedCount: number): void {
   if (!state.suite) {
     elements.resultsSummary.innerHTML = "";
     elements.resultsCaption.textContent = "生成結果を表形式で確認できます。";
@@ -293,6 +295,7 @@ function updateResultsSummary(visibleCount: number): void {
   )} 列`;
   elements.resultsSummary.innerHTML = `
     <span class="pill">表示行 ${numberFormat(visibleCount)}</span>
+    <span class="pill">描画行 ${numberFormat(renderedCount)}</span>
     <span class="pill">総行数 ${numberFormat(state.suite.rows.length)}</span>
     <span class="pill">並び順 ${
       state.sort.columnIndex === null
@@ -315,12 +318,13 @@ function renderResults(): void {
         <p>生成を実行すると、ここに行番号付きの結果テーブルが表示されます。</p>
       </div>
     `;
-    updateResultsSummary(0);
+    updateResultsSummary(0, 0);
     return;
   }
 
   const rows = getVisibleRows();
-  updateResultsSummary(rows.length);
+  const renderedRows = rows.slice(0, MAX_RENDERED_RESULT_ROWS);
+  updateResultsSummary(rows.length, renderedRows.length);
 
   if (state.columnWidths.length === 0) {
     state.columnWidths = state.suite.header.map((header) =>
@@ -347,7 +351,7 @@ function renderResults(): void {
     })
     .join("");
 
-  const bodyMarkup = rows
+  const bodyMarkup = renderedRows
     .map(
       ({ row, originalIndex }) => `
         <tr>
@@ -371,6 +375,15 @@ function renderResults(): void {
   `;
 
   elements.resultsTableShell.innerHTML = `
+    ${
+      rows.length > renderedRows.length
+        ? `<div class="empty-state compact"><p>表示対象 ${numberFormat(
+            rows.length,
+          )} 行のうち先頭 ${numberFormat(
+            renderedRows.length,
+          )} 行のみ描画しています。絞り込みかエクスポートを使って確認してください。</p></div>`
+        : ""
+    }
     <div class="table-scroll">
       <table>
         <colgroup>${colMarkup}</colgroup>
