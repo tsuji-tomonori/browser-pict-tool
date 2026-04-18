@@ -172,6 +172,8 @@ export type GenerateStrength = number | "max";
 
 export type GenerateRequest = {
   strength?: GenerateStrength;
+  seedRows?: string[][];
+  randomSeed?: number;
 };
 
 export type CanonicalScalar = string | number;

@@ -1,15 +1,42 @@
 import { hasErrorDiagnostics } from "../diagnostics/index.ts";
 import type { Diagnostic, SourceSpan } from "../diagnostics/types.ts";
-import { enumerateCandidateRows, selectRowsForCoverage } from "../coverage/analyze-coverage.ts";
+import {
+  enumerateCandidateRows,
+  selectRowsForCoverage,
+  type CoverageRowRecord,
+} from "../coverage/analyze-coverage.ts";
 import type { GenerateRequest, GenerateResult, ValidationResult } from "../model/types.ts";
 import { SourceFile } from "../parser/source-file.ts";
 import { normalizeValidatedModel } from "./normalize-model.ts";
+
+function mulberry32(seed: number): () => number {
+  let s = seed | 0;
+  return () => {
+    s = (s + 0x6d2b79f5) | 0;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function shuffleArray<T>(array: T[], rng: () => number): T[] {
+  const result = [...array];
+  for (let i = result.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(rng() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
 
 function wholeSourceSpan(source: string): SourceSpan {
   return {
     start: 0,
     end: Math.max(source.length, 1),
   };
+}
+
+function matchesRowValues(values: string[], seedRow: ReadonlyArray<string>): boolean {
+  return values.length === seedRow.length && values.every((value, index) => value === seedRow[index]);
 }
 
 function resolveStrength(
@@ -146,7 +173,7 @@ export function generateTestSuite(
   }
 
   const canonicalModel = normalizeValidatedModel(validation, strength);
-  const candidateRows = enumerateCandidateRows(canonicalModel);
+  let candidateRows = enumerateCandidateRows(canonicalModel);
 
   if (candidateRows.length === 0) {
     return {
@@ -163,7 +190,35 @@ export function generateTestSuite(
     };
   }
 
-  const selection = selectRowsForCoverage(canonicalModel, candidateRows);
+  if (request.randomSeed !== undefined) {
+    candidateRows = shuffleArray(candidateRows, mulberry32(request.randomSeed));
+  }
+
+  const preSelectedRows: CoverageRowRecord[] = [];
+  for (const seedRow of request.seedRows ?? []) {
+    const matchedRow = candidateRows.find((candidateRow) => matchesRowValues(candidateRow.values, seedRow));
+    if (!matchedRow) {
+      diagnostics.push(
+        sourceFile.createDiagnostic(
+          "generator.seed.unmatched_row",
+          "warning",
+          `seed row (${seedRow.join(", ")}) は候補行に一致しないため無視しました`,
+          wholeSourceSpan(validation.source),
+        ),
+      );
+      continue;
+    }
+
+    if (!preSelectedRows.includes(matchedRow)) {
+      preSelectedRows.push(matchedRow);
+    }
+  }
+
+  const selection = selectRowsForCoverage(
+    canonicalModel,
+    candidateRows,
+    preSelectedRows.length > 0 ? preSelectedRows : undefined,
+  );
   const warnings = [...diagnostics];
 
   if (selection.coverage.uncoveredTupleCount > 0) {
