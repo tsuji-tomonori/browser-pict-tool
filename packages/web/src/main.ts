@@ -128,6 +128,14 @@ function numberFormat(value: number): string {
   return value.toLocaleString("ja-JP");
 }
 
+function integerStringFormat(value: string): string {
+  try {
+    return BigInt(value).toLocaleString("ja-JP");
+  } catch {
+    return value;
+  }
+}
+
 function createJobId(): string {
   return `job-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
@@ -251,6 +259,9 @@ function resetResults(): void {
 function renderStats(): void {
   const stats = state.suite?.stats;
   const items: Array<[string, string]> = [
+    ["総当たり件数", stats ? integerStringFormat(stats.bruteForceCaseCount) : "-"],
+    ["削減件数", stats ? integerStringFormat(stats.reducedCaseCount) : "-"],
+    ["削減率", stats ? stats.reductionRate : "-"],
     ["行数", stats ? numberFormat(stats.generatedRowCount) : "0"],
     ["候補行数", stats ? numberFormat(stats.candidateRowCount) : "0"],
     ["パラメータ", stats ? numberFormat(stats.parameterCount) : "0"],
@@ -364,6 +375,7 @@ function updateResultsSummary(visibleCount: number, renderedCount: number): void
     <span class="pill">表示行 ${numberFormat(visibleCount)}</span>
     <span class="pill">描画行 ${numberFormat(renderedCount)}</span>
     <span class="pill">総行数 ${numberFormat(state.suite.rows.length)}</span>
+    <span class="pill">総当たり比 ${escapeHtml(state.suite.stats.reductionRate)} 削減</span>
     <span class="pill">並び順 ${
       state.sort.columnIndex === null
         ? "生成順"

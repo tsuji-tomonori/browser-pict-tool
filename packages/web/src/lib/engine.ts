@@ -46,22 +46,27 @@ export interface UiOptions {
 export interface GeneratedSuite {
   header: string[];
   rows: string[][];
-  stats: {
-    strength: number;
-    parameterCount: number;
-    constraintCount: number;
-    generatedRowCount: number;
-    generationTimeMs: number;
-    uncoveredTupleCount: number;
-    candidateRowCount: number;
-    requiredTupleCount: number;
-  };
+  stats: GeneratedSuiteStats;
   warnings: Diagnostic[];
 }
 
 export interface GenerateResult {
   suite: GeneratedSuite | null;
   diagnostics: Diagnostic[];
+}
+
+export interface GeneratedSuiteStats {
+  strength: number;
+  parameterCount: number;
+  constraintCount: number;
+  generatedRowCount: number;
+  generationTimeMs: number;
+  uncoveredTupleCount: number;
+  candidateRowCount: number;
+  requiredTupleCount: number;
+  bruteForceCaseCount: string;
+  reducedCaseCount: string;
+  reductionRate: string;
 }
 
 export type EngineStreamRequest = {
@@ -435,6 +440,68 @@ function estimateRequiredTupleUpperBound(
   return total;
 }
 
+function calculateCartesianProduct(valueCounts: readonly bigint[]): bigint {
+  if (valueCounts.length === 0) {
+    return 0n;
+  }
+
+  return valueCounts.reduce((product, count) => product * count, 1n);
+}
+
+function formatPercentage(
+  numerator: bigint,
+  denominator: bigint,
+  fractionDigits = 14,
+): string {
+  if (denominator <= 0n) {
+    return "-";
+  }
+
+  const scale = 10n ** BigInt(fractionDigits);
+  const scaled = (numerator * 100n * scale + denominator / 2n) / denominator;
+  const integerPart = scaled / scale;
+  const fractionalPart = scaled % scale;
+  const fractionalText = fractionalPart
+    .toString()
+    .padStart(fractionDigits, "0")
+    .replace(/0+$/, "");
+
+  return fractionalText.length > 0
+    ? `${integerPart.toString()}.${fractionalText}%`
+    : `${integerPart.toString()}%`;
+}
+
+function buildCartesianMetrics(
+  validation: ValidationResult,
+  generatedRowCount: number,
+): Pick<GeneratedSuiteStats, "bruteForceCaseCount" | "reducedCaseCount" | "reductionRate"> {
+  const bruteForceCaseCount = calculateCartesianProduct(
+    validation.parameters.map((parameter) => BigInt(parameter.values.length)),
+  );
+  const generatedRows = BigInt(Math.max(0, Math.trunc(generatedRowCount)));
+  const reducedCaseCount =
+    bruteForceCaseCount > generatedRows ? bruteForceCaseCount - generatedRows : 0n;
+
+  return {
+    bruteForceCaseCount: bruteForceCaseCount.toString(),
+    reducedCaseCount: reducedCaseCount.toString(),
+    reductionRate: formatPercentage(reducedCaseCount, bruteForceCaseCount),
+  };
+}
+
+function buildSuiteStats(
+  validation: ValidationResult,
+  stats: Omit<
+    GeneratedSuiteStats,
+    "bruteForceCaseCount" | "reducedCaseCount" | "reductionRate"
+  >,
+): GeneratedSuiteStats {
+  return {
+    ...stats,
+    ...buildCartesianMetrics(validation, stats.generatedRowCount),
+  };
+}
+
 function resolveStrength(
   validation: ValidationResult,
   options: UiOptions,
@@ -650,7 +717,7 @@ export function generateSuite(
       ? {
           header: generated.suite.header,
           rows: generated.suite.rows,
-          stats: generated.suite.stats,
+          stats: buildSuiteStats(validation, generated.suite.stats),
           warnings: [...parseWarnings, ...mapDiagnostics(generated.suite.warnings)],
         }
       : null,
@@ -773,7 +840,7 @@ export async function generateSuiteToSink(request: EngineStreamRequest): Promise
     reportProgress(100, "生成完了");
 
     return {
-      stats: {
+      stats: buildSuiteStats(validation, {
         strength: canonicalModel.options.strength,
         parameterCount: canonicalModel.parameters.length,
         constraintCount: canonicalModel.constraints.length,
@@ -782,7 +849,7 @@ export async function generateSuiteToSink(request: EngineStreamRequest): Promise
         uncoveredTupleCount: result.stats.coverage.uncoveredTupleCount,
         candidateRowCount: result.stats.generatedRowCount,
         requiredTupleCount: result.stats.coverage.requiredTupleCount,
-      },
+      }),
       header: canonicalModel.parameters.map((parameter) => parameter.displayName),
       diagnostics,
     };

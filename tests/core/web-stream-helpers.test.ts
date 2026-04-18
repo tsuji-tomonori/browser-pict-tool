@@ -5,6 +5,7 @@ import {
   PreviewNotifySink,
   createChunkingSink,
   createCsvStreamEncoder,
+  generateSuite,
 } from "../../packages/web/src/lib/engine.ts";
 
 function flushMicrotask(): Promise<void> {
@@ -82,4 +83,18 @@ test("PreviewNotifySink invokes its callback once when the preview limit is reac
   sink.close();
 
   assert.equal(notifications.length, 1);
+});
+
+test("generateSuite reports brute-force reduction metrics for the UI", () => {
+  const result = generateSuite(`A: 0, 1
+B: 0, 1
+C: 0, 1
+`);
+
+  assert.ok(result.suite);
+  assert.equal(result.suite.stats.bruteForceCaseCount, "8");
+
+  const reducedCaseCount = 8n - BigInt(result.suite.stats.generatedRowCount);
+  assert.equal(result.suite.stats.reducedCaseCount, reducedCaseCount.toString());
+  assert.equal(result.suite.stats.reductionRate, "50%");
 });
