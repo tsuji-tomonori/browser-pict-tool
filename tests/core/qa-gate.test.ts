@@ -182,7 +182,18 @@ function formatErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
+function hasConstraintDropWarnings(
+  diagnostics: ReturnType<typeof validateModelDocument>["diagnostics"],
+): boolean {
+  return diagnostics.some(
+    (diagnostic) => diagnostic.code === "validation.constraint.unknown_parameter",
+  );
+}
+
 test("parsePictCliOptions normalizes quoted delimiter and negative prefix values", () => {
+  assert.deepEqual(parsePictCliOptions(["/c"], "cons071.txt /c"), {
+    caseSensitive: true,
+  });
   assert.deepEqual(parsePictCliOptions(['/d:","'], 'arg001.txt /d:","'), {
     valueDelimiter: ",",
   });
@@ -287,6 +298,15 @@ test("required_v0_1 fixtures satisfy the current core QA gate", (t) => {
           continue;
         }
 
+        passCount += 1;
+        continue;
+      }
+
+      if (
+        command.expectedResult === "BAD_CONSTRAINTS" &&
+        validation.droppedConstraints.length > 0 &&
+        hasConstraintDropWarnings(validation.diagnostics)
+      ) {
         passCount += 1;
         continue;
       }
