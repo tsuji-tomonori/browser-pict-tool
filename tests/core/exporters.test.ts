@@ -1,0 +1,64 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+
+import { exportCsv, exportMarkdown, exportTsv } from "../../packages/core/index.ts";
+
+test("exportCsv includes the header row and joins rows with commas", () => {
+  const suite = {
+    header: ["Browser", "OS"],
+    rows: [
+      ["Chrome", "Windows"],
+      ["Safari", "macOS"],
+    ],
+  };
+
+  assert.equal(exportCsv(suite), ["Browser,OS", "Chrome,Windows", "Safari,macOS"].join("\n"));
+});
+
+test("exportCsv escapes cells containing commas and double quotes", () => {
+  const suite = {
+    header: ["Name", "Notes"],
+    rows: [['Widget, Inc.', 'He said "hello"']],
+  };
+
+  assert.equal(
+    exportCsv(suite),
+    ['Name,Notes', '"Widget, Inc.","He said ""hello"""'].join("\n"),
+  );
+});
+
+test("exportTsv includes the header row and joins rows with tabs", () => {
+  const suite = {
+    header: ["Browser", "OS"],
+    rows: [
+      ["Chrome", "Windows"],
+      ["Safari", "macOS"],
+    ],
+  };
+
+  assert.equal(exportTsv(suite), ["Browser\tOS", "Chrome\tWindows", "Safari\tmacOS"].join("\n"));
+});
+
+test("exportMarkdown formats a GitHub-flavored markdown table", () => {
+  const suite = {
+    header: ["Browser", "OS"],
+    rows: [["Chrome", "Windows"]],
+  };
+
+  assert.equal(
+    exportMarkdown(suite),
+    ["| Browser | OS |", "| --- | --- |", "| Chrome | Windows |"].join("\n"),
+  );
+});
+
+test("exportMarkdown escapes pipe characters in cell values", () => {
+  const suite = {
+    header: ["Name", "Notes"],
+    rows: [["A|B", "safe | value"]],
+  };
+
+  assert.equal(
+    exportMarkdown(suite),
+    ["| Name | Notes |", "| --- | --- |", "| A\\|B | safe \\| value |"].join("\n"),
+  );
+});

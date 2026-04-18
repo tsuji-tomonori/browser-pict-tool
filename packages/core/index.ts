@@ -1,6 +1,7 @@
 export { validateModelDocument } from "./constraints/index.ts";
 export { analyzeCoverage } from "./coverage/index.ts";
 export { hasErrorDiagnostics } from "./diagnostics/index.ts";
+export { exportCsv, exportMarkdown, exportTsv } from "./exporters/index.ts";
 export { generateTestSuite, normalizeValidatedModel } from "./generator/index.ts";
 export { normalizeParseOptions, parseModelText } from "./parser/index.ts";
 
