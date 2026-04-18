@@ -6,6 +6,8 @@
     ".": "./index.ts",
     "./parser": "./parser/index.ts",
     "./constraints": "./constraints/index.ts",
+    "./generator": "./generator/index.ts",
+    "./coverage": "./coverage/index.ts",
     "./model": "./model/index.ts",
     "./diagnostics": "./diagnostics/index.ts"
   }

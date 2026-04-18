@@ -371,6 +371,9 @@ export function validateModelDocument(model: ModelDocument): ValidationResult {
   }
 
   return {
+    source: model.source,
+    options: model.options,
+    submodels: model.submodels,
     parameters,
     effectiveConstraints,
     droppedConstraints,

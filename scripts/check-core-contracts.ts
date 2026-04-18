@@ -4,6 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import {
+  generateTestSuite,
   hasErrorDiagnostics,
   normalizeParseOptions,
   parseModelText,
@@ -24,6 +25,8 @@ const expectedExports = {
   ".": "./index.ts",
   "./parser": "./parser/index.ts",
   "./constraints": "./constraints/index.ts",
+  "./generator": "./generator/index.ts",
+  "./coverage": "./coverage/index.ts",
   "./model": "./model/index.ts",
   "./diagnostics": "./diagnostics/index.ts",
 };
@@ -52,3 +55,7 @@ const validation = validateModelDocument(parsed.model);
 assert.equal(validation.parameters.length, 2);
 assert.equal(validation.effectiveConstraints.length, 1);
 assert.equal(hasErrorDiagnostics([...parsed.diagnostics, ...validation.diagnostics]), false);
+
+const generated = generateTestSuite(validation, { strength: 2 });
+assert.notEqual(generated.suite, null);
+assert.equal(generated.suite?.coverage.uncoveredTupleCount, 0);

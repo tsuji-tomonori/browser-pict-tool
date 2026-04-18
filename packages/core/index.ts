@@ -1,5 +1,7 @@
 export { validateModelDocument } from "./constraints/index.ts";
+export { analyzeCoverage } from "./coverage/index.ts";
 export { hasErrorDiagnostics } from "./diagnostics/index.ts";
+export { generateTestSuite, normalizeValidatedModel } from "./generator/index.ts";
 export { normalizeParseOptions, parseModelText } from "./parser/index.ts";
 
 export type {
@@ -9,12 +11,19 @@ export type {
   SourceSpan,
 } from "./diagnostics/index.ts";
 export type {
+  CanonicalModel,
+  CanonicalParameter,
+  CanonicalScalar,
+  CanonicalValue,
   ComparisonOperator,
   ComparisonPredicateNode,
   ComparisonRightHandSide,
   ConstraintDefinition,
+  CoverageSummary,
   FunctionPredicateNode,
+  GenerateRequest,
   GenerateResult,
+  GenerateStrength,
   GeneratedSuite,
   GenerationStats,
   LiteralNode,

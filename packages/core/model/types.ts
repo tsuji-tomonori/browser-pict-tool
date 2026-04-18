@@ -159,10 +159,71 @@ export type ValidatedParameterDefinition = ParameterDefinition & {
 };
 
 export type ValidationResult = {
+  source: string;
+  options: NormalizedParseOptions;
+  submodels: SubmodelDefinition[];
   parameters: ValidatedParameterDefinition[];
   effectiveConstraints: ConstraintDefinition[];
   droppedConstraints: ConstraintDefinition[];
   diagnostics: Diagnostic[];
+};
+
+export type GenerateStrength = number | "max";
+
+export type GenerateRequest = {
+  strength?: GenerateStrength;
+};
+
+export type CanonicalScalar = string | number;
+
+export type CanonicalValue = {
+  id: string;
+  span: SourceSpan;
+  parameterId: string;
+  parameterName: string;
+  valueIndex: number;
+  rawText: string;
+  displayText: string;
+  names: string[];
+  primaryName: string;
+  aliases: string[];
+  normalized: CanonicalScalar;
+  isNegative: boolean;
+  weight: number;
+  explicitWeight: boolean;
+  source: "literal" | "reference";
+  referenceTarget?: string;
+};
+
+export type CanonicalParameter = {
+  id: string;
+  span: SourceSpan;
+  nameSpan: SourceSpan;
+  name: string;
+  displayName: string;
+  dataType: ParameterDataType;
+  values: CanonicalValue[];
+  positiveValueIndices: number[];
+  negativeValueIndices: number[];
+};
+
+export type CanonicalModel = {
+  source: string;
+  options: {
+    strength: number;
+    caseSensitive: boolean;
+    negativePrefix: string;
+  };
+  parameters: CanonicalParameter[];
+  constraints: ConstraintDefinition[];
+  submodels: SubmodelDefinition[];
+};
+
+export type CoverageSummary = {
+  strength: number;
+  requiredTupleCount: number;
+  coveredTupleCount: number;
+  uncoveredTupleCount: number;
 };
 
 export type GenerationStats = {
@@ -179,6 +240,7 @@ export type GenerationStats = {
 export type GeneratedSuite = {
   header: string[];
   rows: string[][];
+  coverage: CoverageSummary;
   stats: GenerationStats;
   warnings: Diagnostic[];
 };
