@@ -154,7 +154,7 @@ function parsePictCliOptions(optionsRaw: string[], commandRaw?: string): {
       continue;
     }
 
-    const match = raw.match(/^[\/-]([a-zA-Z]):(.*)$/);
+    const match = raw.match(/^[/\u002d]([a-zA-Z]):(.*)$/);
     if (!match) {
       continue;
     }
