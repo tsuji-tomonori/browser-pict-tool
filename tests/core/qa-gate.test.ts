@@ -26,6 +26,7 @@ type UpstreamIndex = {
 type UpstreamCommand = {
   id: string;
   category: string;
+  raw: string;
   optionsRaw?: string[];
   expectedResult: string;
 };
@@ -73,7 +74,61 @@ function readModelText(fixtureDirectory: string): string | null {
   return null;
 }
 
-function parsePictCliOptions(optionsRaw: string[]): {
+function tokenizeCommand(command: string): string[] {
+  const tokens: string[] = [];
+  let current = "";
+  let inQuotes = false;
+
+  for (const char of command) {
+    if (char === "\"") {
+      inQuotes = !inQuotes;
+      current += char;
+      continue;
+    }
+
+    if (/\s/u.test(char) && !inQuotes) {
+      if (current) {
+        tokens.push(current);
+        current = "";
+      }
+      continue;
+    }
+
+    current += char;
+  }
+
+  if (current) {
+    tokens.push(current);
+  }
+
+  return tokens;
+}
+
+function stripSurroundingDoubleQuotes(value: string): string {
+  if (value.length >= 2 && value.startsWith("\"") && value.endsWith("\"")) {
+    return value.slice(1, -1);
+  }
+
+  return value;
+}
+
+function normalizeCliOptionValue(value: string, flag: "d" | "n"): string {
+  const normalizedValue = stripSurroundingDoubleQuotes(value);
+
+  if (flag === "d") {
+    const lower = normalizedValue.toLowerCase();
+    if (lower === "tab") {
+      return "\t";
+    }
+    if (lower === "space") {
+      return " ";
+    }
+  }
+
+  return normalizedValue;
+}
+
+function parsePictCliOptions(optionsRaw: string[], commandRaw?: string): {
   strength?: number;
   caseSensitive?: boolean;
   negativePrefix?: string;
@@ -86,14 +141,17 @@ function parsePictCliOptions(optionsRaw: string[]): {
     valueDelimiter?: string;
   } = {};
 
-  for (const raw of optionsRaw) {
+  const optionTokens =
+    commandRaw === undefined ? optionsRaw : tokenizeCommand(commandRaw).slice(1);
+
+  for (const raw of optionTokens) {
     const lower = raw.toLowerCase();
     if (lower === "/c" || lower === "-c") {
       result.caseSensitive = true;
       continue;
     }
 
-    const match = raw.match(/^[\/-]([a-zA-Z]):(.+)$/);
+    const match = raw.match(/^[\/-]([a-zA-Z]):(.*)$/);
     if (!match) {
       continue;
     }
@@ -107,15 +165,37 @@ function parsePictCliOptions(optionsRaw: string[]): {
       }
     }
     if (flag === "d") {
-      result.valueDelimiter = val.toLowerCase() === "tab" ? "\t" : val;
+      result.valueDelimiter = normalizeCliOptionValue(val, "d");
     }
     if (flag === "n") {
-      result.negativePrefix = val;
+      result.negativePrefix = normalizeCliOptionValue(val, "n");
     }
   }
 
   return result;
 }
+
+function formatErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+test("parsePictCliOptions normalizes quoted delimiter and negative prefix values", () => {
+  assert.deepEqual(parsePictCliOptions(['/d:","'], 'arg001.txt /d:","'), {
+    valueDelimiter: ",",
+  });
+  assert.deepEqual(parsePictCliOptions(["/d:space"], "arg002.txt /d:space"), {
+    valueDelimiter: " ",
+  });
+  assert.deepEqual(parsePictCliOptions(['/d:"', '"'], 'arg002.txt /d:" "'), {
+    valueDelimiter: " ",
+  });
+  assert.deepEqual(parsePictCliOptions(['/n:"~"'], 'arg005.txt /n:"~"'), {
+    negativePrefix: "~",
+  });
+  assert.deepEqual(parsePictCliOptions(['/n:"@"'], 'arg006.txt /n:"@"'), {
+    negativePrefix: "@",
+  });
+});
 
 test("required_v0_1 fixtures satisfy the current core QA gate", (t) => {
   const summary = readJsonFile<MaterializedFixtureSummary>(
@@ -168,12 +248,20 @@ test("required_v0_1 fixtures satisfy the current core QA gate", (t) => {
         continue;
       }
 
-      const cliOpts = parsePictCliOptions(command.optionsRaw ?? []);
-      const parsed = parseModelText(modelText, {
-        caseSensitive: cliOpts.caseSensitive,
-        negativePrefix: cliOpts.negativePrefix,
-        valueDelimiter: cliOpts.valueDelimiter,
-      });
+      const cliOpts = parsePictCliOptions(command.optionsRaw ?? [], command.raw);
+      let parsed: ReturnType<typeof parseModelText>;
+      try {
+        parsed = parseModelText(modelText, {
+          caseSensitive: cliOpts.caseSensitive,
+          negativePrefix: cliOpts.negativePrefix,
+          valueDelimiter: cliOpts.valueDelimiter,
+        });
+      } catch (error) {
+        failCount += 1;
+        failures.push(`${fixture.id}: ${formatErrorMessage(error)}`);
+        continue;
+      }
+
       const validation = validateModelDocument(parsed.model);
       const diagnostics = [...parsed.diagnostics, ...validation.diagnostics];
       const hasErrors = hasErrorDiagnostics(diagnostics);
@@ -206,8 +294,7 @@ test("required_v0_1 fixtures satisfy the current core QA gate", (t) => {
       passCount += 1;
     } catch (error) {
       failCount += 1;
-      const message = error instanceof Error ? error.message : String(error);
-      failures.push(`${fixture.id}: ${message}`);
+      failures.push(`${fixture.id}: ${formatErrorMessage(error)}`);
     }
   }
 
