@@ -129,7 +129,10 @@ IF [P1] = -1 THEN [P2] = "NA" AND [P3] = "NA" ELSE [P2] <> "NA" AND [P3] <> "NA"
 
   assert.notEqual(generated.suite, null);
   assert.equal(generated.suite?.coverage.uncoveredTupleCount, 0);
-  assert.equal(generated.suite?.rows.some((row) => row[0] === "-1"), true);
+  assert.equal(
+    generated.suite?.rows.some((row) => row[0] === "-1"),
+    true,
+  );
 
   for (const row of generated.suite?.rows ?? []) {
     if (row[0] === "-1") {
@@ -293,7 +296,7 @@ Operating System: Windows, macOS
   assert.deepEqual(generated.suite?.header, ["Browser", "Operating System"]);
 });
 
-test("generateTestSuite rejects models whose candidate row upper bound exceeds the safety budget", () => {
+test("generateTestSuite streams through very large candidate spaces without hitting the old enumeration guard", () => {
   const source = Array.from({ length: 9 }, (_, index) => {
     const values = Array.from({ length: 6 }, (_unused, valueIndex) => `v${valueIndex + 1}`).join(
       ", ",
@@ -305,13 +308,15 @@ test("generateTestSuite rejects models whose candidate row upper bound exceeds t
   const validation = validateModelDocument(parsed.model);
   const generated = generateTestSuite(validation, { strength: 2 });
 
-  assert.equal(generated.suite, null);
+  assert.notEqual(generated.suite, null);
   assert.equal(
     generated.diagnostics.some(
       (diagnostic) => diagnostic.code === "generator.request.candidate_space_too_large",
     ),
-    true,
+    false,
+    "candidate_space_too_large must not fire post stream refactor",
   );
+  assert.equal(generated.suite?.coverage.uncoveredTupleCount, 0);
 });
 
 test("generateTestSuite rejects models whose tuple upper bound exceeds the safety budget", () => {

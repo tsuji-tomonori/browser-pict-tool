@@ -1,9 +1,19 @@
 import {
+  createConstraintSolver,
+  createCsvStreamEncoder,
+  createMarkdownStreamEncoder,
+  createTsvStreamEncoder,
+  generateSuiteStreaming,
   exportCsv,
   exportMarkdown,
   exportTsv,
+  CollectingSink,
+  CompositeSink,
+  FileSink,
   generateTestSuite,
+  normalizeValidatedModel,
   parseModelText,
+  PreviewSink,
   validateModelDocument,
 } from "../../../core/index.ts";
 import type {
@@ -11,6 +21,9 @@ import type {
   Diagnostic as CoreDiagnostic,
   ModelDocument,
   ParameterDefinition,
+  RowSink,
+  StreamEncoder,
+  ValidationResult,
 } from "../../../core/index.ts";
 
 export type DiagnosticSeverity = "info" | "warning" | "error";
@@ -51,6 +64,19 @@ export interface GenerateResult {
   diagnostics: Diagnostic[];
 }
 
+export type EngineStreamRequest = {
+  modelText: string;
+  options: Partial<UiOptions>;
+  sink: RowSink;
+  cancellation?: { cancelled?: boolean };
+  onProgress?: (progress: number, stage: string) => void;
+};
+
+export interface AckControlledChunkSink extends RowSink {
+  acknowledge(chunkId: number): boolean;
+  cancelPending(error?: unknown): void;
+}
+
 interface ParameterValue {
   id: string;
   raw: string;
@@ -84,11 +110,192 @@ interface ParseResult {
   hasErrors: boolean;
 }
 
+const MAX_REQUIRED_TUPLE_UPPER_BOUND = 2_000_000n;
+
 export class CancelledError extends Error {
   constructor(message = "Generation cancelled") {
     super(message);
     this.name = "CancelledError";
   }
+}
+
+type ChunkEmitter = (chunkId: number, chunk: string) => Promise<void> | void;
+
+type ChunkingSinkOptions = {
+  encoder: StreamEncoder;
+  chunkRowLimit?: number;
+  onChunk: ChunkEmitter;
+};
+
+export class PreviewNotifySink implements RowSink {
+  readonly limit: number;
+  readonly onPreview: (rows: readonly string[][], truncated: boolean) => void;
+
+  #rows: string[][] = [];
+  #truncated = false;
+  #notified = false;
+
+  constructor(limit: number, onPreview: (rows: readonly string[][], truncated: boolean) => void) {
+    this.limit = Math.max(0, limit);
+    this.onPreview = onPreview;
+  }
+
+  writeHeader(_header: readonly string[]): void {
+    if (this.limit === 0) {
+      this.#notify();
+    }
+  }
+
+  writeRow(row: readonly string[]): void {
+    if (this.#rows.length < this.limit) {
+      this.#rows.push([...row]);
+    } else {
+      this.#truncated = true;
+    }
+
+    if (this.#rows.length === this.limit) {
+      this.#notify();
+    }
+  }
+
+  close(): void {
+    this.#notify();
+  }
+
+  #notify(): void {
+    if (this.#notified) {
+      return;
+    }
+
+    this.#notified = true;
+    this.onPreview(
+      this.#rows.map((row) => [...row]),
+      this.#truncated,
+    );
+  }
+}
+
+class ChunkingSink implements AckControlledChunkSink {
+  readonly encoder: StreamEncoder;
+  readonly chunkRowLimit: number;
+  readonly onChunk: ChunkEmitter;
+
+  #buffer = "";
+  #bufferedRowCount = 0;
+  #nextChunkId = 1;
+  #pendingAck: {
+    chunkId: number;
+    resolve: () => void;
+    reject: (error: unknown) => void;
+  } | null = null;
+  #closed = false;
+  #terminalError: unknown = null;
+  #operationChain = Promise.resolve();
+
+  constructor(options: ChunkingSinkOptions) {
+    this.encoder = options.encoder;
+    this.chunkRowLimit = Math.max(1, Math.trunc(options.chunkRowLimit ?? 512));
+    this.onChunk = options.onChunk;
+  }
+
+  writeHeader(header: readonly string[]): Promise<void> {
+    return this.#enqueue(async () => {
+      this.#buffer += this.encoder.encodeHeader(header);
+    });
+  }
+
+  writeRow(row: readonly string[]): Promise<void> {
+    return this.#enqueue(async () => {
+      this.#buffer += this.encoder.encodeRow(row);
+      this.#bufferedRowCount += 1;
+      if (this.#bufferedRowCount >= this.chunkRowLimit) {
+        await this.#flush();
+      }
+    });
+  }
+
+  close(): Promise<void> {
+    return this.#enqueue(async () => {
+      if (this.#closed) {
+        return;
+      }
+
+      this.#closed = true;
+      this.#buffer += this.encoder.encodeFooter();
+      await this.#flush(true);
+    });
+  }
+
+  acknowledge(chunkId: number): boolean {
+    if (!this.#pendingAck || this.#pendingAck.chunkId !== chunkId) {
+      return false;
+    }
+
+    const pendingAck = this.#pendingAck;
+    this.#pendingAck = null;
+    pendingAck.resolve();
+    return true;
+  }
+
+  cancelPending(error: unknown = new CancelledError()): void {
+    this.#terminalError = error;
+
+    if (!this.#pendingAck) {
+      return;
+    }
+
+    const pendingAck = this.#pendingAck;
+    this.#pendingAck = null;
+    pendingAck.reject(error);
+  }
+
+  #enqueue(operation: () => Promise<void>): Promise<void> {
+    const run = async (): Promise<void> => {
+      if (this.#terminalError) {
+        throw this.#terminalError;
+      }
+
+      await operation();
+    };
+    const next = this.#operationChain.then(run, run);
+
+    this.#operationChain = next.then(
+      () => undefined,
+      () => undefined,
+    );
+
+    return next;
+  }
+
+  async #flush(force = false): Promise<void> {
+    if (this.#terminalError) {
+      throw this.#terminalError;
+    }
+
+    if (!force && this.#bufferedRowCount < this.chunkRowLimit) {
+      return;
+    }
+
+    if (this.#buffer.length === 0) {
+      return;
+    }
+
+    const chunkId = this.#nextChunkId;
+    this.#nextChunkId += 1;
+
+    const chunk = this.#buffer;
+    this.#buffer = "";
+    this.#bufferedRowCount = 0;
+
+    await this.onChunk(chunkId, chunk);
+    await new Promise<void>((resolve, reject) => {
+      this.#pendingAck = { chunkId, resolve, reject };
+    });
+  }
+}
+
+export function createChunkingSink(options: ChunkingSinkOptions): AckControlledChunkSink {
+  return new ChunkingSink(options);
 }
 
 function normalizeModelText(modelText: string): string {
@@ -125,6 +332,18 @@ function hasErrorDiagnostics(diagnostics: readonly Diagnostic[]): boolean {
   return diagnostics.some((diagnostic) => diagnostic.severity === "error");
 }
 
+function createGlobalDiagnostic(
+  severity: DiagnosticSeverity,
+  code: string,
+  message: string,
+): Diagnostic {
+  return {
+    severity,
+    code,
+    message,
+  };
+}
+
 function toLineColumn(source: string, offset: number): { line: number; column: number } {
   const safeOffset = Math.max(0, Math.min(offset, source.length));
   let line = 1;
@@ -141,6 +360,172 @@ function toLineColumn(source: string, offset: number): { line: number; column: n
   }
 
   return { line, column };
+}
+
+function createOffsetDiagnostic(
+  source: string,
+  offset: number,
+  severity: DiagnosticSeverity,
+  code: string,
+  message: string,
+): Diagnostic {
+  const location = toLineColumn(source, offset);
+
+  return {
+    severity,
+    code,
+    message,
+    line: location.line,
+    column: location.column,
+  };
+}
+
+function addCapped(left: bigint, right: bigint, limit: bigint): bigint {
+  const next = left + right;
+  return next > limit ? limit + 1n : next;
+}
+
+function multiplyCapped(left: bigint, right: bigint, limit: bigint): bigint {
+  if (left === 0n || right === 0n) {
+    return 0n;
+  }
+
+  const next = left * right;
+  return next > limit ? limit + 1n : next;
+}
+
+function estimateRequiredTupleUpperBound(
+  valueCounts: bigint[],
+  choose: number,
+  limit: bigint,
+): bigint {
+  if (choose <= 0) {
+    return 0n;
+  }
+
+  if (choose === 1) {
+    return valueCounts.reduce((sum, count) => addCapped(sum, count, limit), 0n);
+  }
+
+  if (choose > valueCounts.length) {
+    return 0n;
+  }
+
+  let total = 0n;
+
+  const walk = (start: number, remaining: number, product: bigint): void => {
+    if (total > limit) {
+      return;
+    }
+
+    if (remaining === 0) {
+      total = addCapped(total, product, limit);
+      return;
+    }
+
+    for (let index = start; index <= valueCounts.length - remaining; index += 1) {
+      walk(index + 1, remaining - 1, multiplyCapped(product, valueCounts[index] ?? 0n, limit));
+      if (total > limit) {
+        return;
+      }
+    }
+  };
+
+  walk(0, choose, 1n);
+  return total;
+}
+
+function resolveStrength(
+  validation: ValidationResult,
+  options: UiOptions,
+): { strength: number | null; diagnostics: Diagnostic[] } {
+  const diagnostics: Diagnostic[] = [];
+  const strength = Number(options.strength ?? 2);
+
+  if (!Number.isInteger(strength) || strength < 1) {
+    diagnostics.push(
+      createGlobalDiagnostic(
+        "error",
+        "generator.request.invalid_strength",
+        "strength は 1 以上の整数か 'max' を指定してください",
+      ),
+    );
+    return {
+      strength: null,
+      diagnostics,
+    };
+  }
+
+  if (validation.parameters.length > 0 && strength > validation.parameters.length) {
+    diagnostics.push(
+      createGlobalDiagnostic(
+        "error",
+        "generator.request.strength_too_large",
+        `strength=${strength} は parameter 数 ${validation.parameters.length} を超えています`,
+      ),
+    );
+    return {
+      strength: null,
+      diagnostics,
+    };
+  }
+
+  return {
+    strength,
+    diagnostics,
+  };
+}
+
+function collectFeatureDiagnostics(validation: ValidationResult): {
+  warnings: Diagnostic[];
+  errors: Diagnostic[];
+} {
+  const warnings: Diagnostic[] = [];
+  const errors: Diagnostic[] = [];
+
+  for (const submodel of validation.submodels) {
+    warnings.push(
+      createOffsetDiagnostic(
+        validation.source,
+        submodel.span.start,
+        "warning",
+        "generator.feature.submodel_ignored",
+        "sub-model は初版ではまだ反映されません (無視して全体で生成します)",
+      ),
+    );
+  }
+
+  let weightWarningAdded = false;
+  for (const parameter of validation.parameters) {
+    for (const value of parameter.values) {
+      if (value.source === "reference") {
+        errors.push(
+          createOffsetDiagnostic(
+            validation.source,
+            value.span.start,
+            "error",
+            "generator.feature.reference_value_unsupported",
+            "reference value は generator core の初版ではまだ未対応です",
+          ),
+        );
+      }
+
+      if (!weightWarningAdded && value.explicitWeight) {
+        warnings.push(
+          createOffsetDiagnostic(
+            validation.source,
+            value.span.start,
+            "warning",
+            "generator.feature.weight_ignored",
+            "weight 指定は generator core の初版ではまだ反映されません",
+          ),
+        );
+        weightWarningAdded = true;
+      }
+    }
+  }
+
+  return { warnings, errors };
 }
 
 function mapParameter(parameter: ParameterDefinition, options: UiOptions): Parameter {
@@ -273,6 +658,145 @@ export function generateSuite(
   };
 }
 
+export async function generateSuiteToSink(request: EngineStreamRequest): Promise<{
+  stats: GeneratedSuite["stats"] | null;
+  header: readonly string[] | null;
+  diagnostics: Diagnostic[];
+}> {
+  const startedAt = Date.now();
+  const reportProgress = request.onProgress ?? (() => undefined);
+  const cancellation = request.cancellation ?? {};
+
+  reportProgress(4, "モデルを解析");
+
+  const { options, parseDiagnostics, validation, validationDiagnostics } = parseAndValidate(
+    request.modelText,
+    request.options,
+  );
+  const initialDiagnostics = [...parseDiagnostics, ...validationDiagnostics];
+
+  reportProgress(24, "モデルを検証");
+
+  if (hasErrorDiagnostics(initialDiagnostics)) {
+    return {
+      stats: null,
+      header: null,
+      diagnostics: initialDiagnostics,
+    };
+  }
+
+  const diagnostics = [...initialDiagnostics];
+  const { strength, diagnostics: strengthDiagnostics } = resolveStrength(validation, options);
+  if (strength === null) {
+    return {
+      stats: null,
+      header: null,
+      diagnostics: [...diagnostics, ...strengthDiagnostics],
+    };
+  }
+
+  const featureDiagnostics = collectFeatureDiagnostics(validation);
+  diagnostics.push(...featureDiagnostics.warnings);
+  if (featureDiagnostics.errors.length > 0) {
+    return {
+      stats: null,
+      header: null,
+      diagnostics: [...diagnostics, ...featureDiagnostics.errors],
+    };
+  }
+
+  if (cancellation.cancelled) {
+    throw new CancelledError();
+  }
+
+  const canonicalModel = normalizeValidatedModel(validation, strength);
+  const requiredTupleUpperBound = estimateRequiredTupleUpperBound(
+    canonicalModel.parameters.map((parameter) => BigInt(parameter.values.length)),
+    canonicalModel.options.strength,
+    MAX_REQUIRED_TUPLE_UPPER_BOUND,
+  );
+  if (requiredTupleUpperBound > MAX_REQUIRED_TUPLE_UPPER_BOUND) {
+    return {
+      stats: null,
+      header: null,
+      diagnostics: [
+        ...diagnostics,
+        createGlobalDiagnostic(
+          "error",
+          "generator.request.coverage_space_too_large",
+          `必要組の上限見積り ${requiredTupleUpperBound.toString()} が安全上限 ${MAX_REQUIRED_TUPLE_UPPER_BOUND.toString()} を超えるため生成を中断しました。parameter を分割するか strength を下げてください`,
+        ),
+      ],
+    };
+  }
+
+  if (!createConstraintSolver(canonicalModel).canComplete(new Map<number, number>())) {
+    return {
+      stats: null,
+      header: null,
+      diagnostics: [
+        ...diagnostics,
+        createGlobalDiagnostic(
+          "error",
+          "generator.model.unsatisfiable",
+          "制約を満たす組み合わせが存在しません",
+        ),
+      ],
+    };
+  }
+
+  reportProgress(48, "テストケースを生成");
+
+  try {
+    const result = await generateSuiteStreaming(canonicalModel, request.sink, {
+      hooks: {
+        onProgress(covered, required) {
+          const ratio = required <= 0 ? 1 : covered / required;
+          reportProgress(Math.min(96, 48 + Math.round(ratio * 48)), "テストケースを生成");
+        },
+        shouldCancel() {
+          return Boolean(cancellation.cancelled);
+        },
+      },
+    });
+
+    if (result.stats.coverage.uncoveredTupleCount > 0) {
+      diagnostics.push(
+        createGlobalDiagnostic(
+          "warning",
+          "generator.coverage.partial",
+          "一部の tuple を覆いきれませんでした",
+        ),
+      );
+    }
+
+    reportProgress(100, "生成完了");
+
+    return {
+      stats: {
+        strength: canonicalModel.options.strength,
+        parameterCount: canonicalModel.parameters.length,
+        constraintCount: canonicalModel.constraints.length,
+        generatedRowCount: result.stats.generatedRowCount,
+        generationTimeMs: Date.now() - startedAt,
+        uncoveredTupleCount: result.stats.coverage.uncoveredTupleCount,
+        candidateRowCount: result.stats.generatedRowCount,
+        requiredTupleCount: result.stats.coverage.requiredTupleCount,
+      },
+      header: canonicalModel.parameters.map((parameter) => parameter.displayName),
+      diagnostics,
+    };
+  } catch (error) {
+    if (error instanceof CancelledError || error instanceof Error) {
+      if (error.name === "CancelledError") {
+        throw new CancelledError();
+      }
+    }
+
+    throw error;
+  }
+}
+
 export function formatSuite(suite: GeneratedSuite, format: "csv" | "tsv" | "md"): string {
   if (format === "csv") {
     return exportCsv(suite);
@@ -284,3 +808,16 @@ export function formatSuite(suite: GeneratedSuite, format: "csv" | "tsv" | "md")
 
   return exportMarkdown(suite);
 }
+
+export {
+  CollectingSink,
+  CompositeSink,
+  FileSink,
+  PreviewSink,
+  createCsvStreamEncoder,
+  createMarkdownStreamEncoder,
+  createTsvStreamEncoder,
+  generateSuiteStreaming,
+};
+
+export type { RowSink, StreamEncoder };

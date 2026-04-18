@@ -3,7 +3,10 @@ import {
   createConstraintEvaluationContext,
   type ConstraintAssignment,
 } from "../generator/constraint-evaluator.ts";
+import { createConstraintSolver } from "../generator/constraint-solver.ts";
 import type { CanonicalModel, CanonicalValue, CoverageSummary } from "../model/types.ts";
+import { chooseIndices } from "./choose-indices.ts";
+import { createValidTupleTracker } from "./valid-tuple-tracker.ts";
 
 export type CoverageRowRecord = {
   values: string[];
@@ -12,27 +15,6 @@ export type CoverageRowRecord = {
   coverKeys: string[];
   selected?: boolean;
 };
-
-function chooseIndices(size: number, choose: number): number[][] {
-  const results: number[][] = [];
-  const current: number[] = [];
-
-  const walk = (start: number): void => {
-    if (current.length === choose) {
-      results.push([...current]);
-      return;
-    }
-
-    for (let index = start; index < size; index += 1) {
-      current.push(index);
-      walk(index + 1);
-      current.pop();
-    }
-  };
-
-  walk(0);
-  return results;
-}
 
 function toCoverageRow(values: CanonicalValue[]): CoverageRowRecord {
   return {
@@ -43,10 +25,7 @@ function toCoverageRow(values: CanonicalValue[]): CoverageRowRecord {
   };
 }
 
-function buildTupleUniverse(
-  rows: CoverageRowRecord[],
-  parameterSets: number[][],
-): Set<string> {
+function buildTupleUniverse(rows: CoverageRowRecord[], parameterSets: number[][]): Set<string> {
   const tupleUniverse = new Set<string>();
 
   for (const row of rows) {
@@ -171,18 +150,19 @@ export function selectRowsForCoverage(
   };
 }
 
-function coerceRows(model: CanonicalModel, rows: ReadonlyArray<ReadonlyArray<string>>): CoverageRowRecord[] {
-  const context = createConstraintEvaluationContext(model);
-  const coerced: CoverageRowRecord[] = [];
+function coerceRowsToValueIndices(
+  model: CanonicalModel,
+  rows: ReadonlyArray<ReadonlyArray<string>>,
+): number[][] {
+  const solver = createConstraintSolver(model);
+  const coerced: number[][] = [];
 
   for (const row of rows) {
     if (row.length !== model.parameters.length) {
       continue;
     }
 
-    const assignment: ConstraintAssignment = new Map();
-    const canonicalValues: CanonicalValue[] = [];
-    let negativeCount = 0;
+    const valueIndices: number[] = [];
     let resolvable = true;
 
     for (let index = 0; index < row.length; index += 1) {
@@ -193,20 +173,21 @@ function coerceRows(model: CanonicalModel, rows: ReadonlyArray<ReadonlyArray<str
         break;
       }
 
-      canonicalValues.push(value);
-      assignment.set(parameter.id, value);
-      negativeCount += value.isNegative ? 1 : 0;
+      valueIndices.push(value.valueIndex);
     }
 
-    if (
-      !resolvable ||
-      negativeCount > 1 ||
-      !assignmentAllowsConstraints(model.constraints, assignment, context)
-    ) {
+    if (!resolvable) {
       continue;
     }
 
-    coerced.push(toCoverageRow(canonicalValues));
+    const assignment = new Map<number, number>(
+      valueIndices.map((valueIndex, parameterIndex) => [parameterIndex, valueIndex]),
+    );
+    if (!solver.canComplete(assignment)) {
+      continue;
+    }
+
+    coerced.push(valueIndices);
   }
 
   return coerced;
@@ -216,30 +197,18 @@ export function analyzeCoverage(
   model: CanonicalModel,
   rows: ReadonlyArray<ReadonlyArray<string>>,
 ): CoverageSummary {
-  const candidateRows = enumerateCandidateRows(model);
-  const parameterSets = chooseIndices(model.parameters.length, model.options.strength);
-  const tupleUniverse = buildTupleUniverse(candidateRows, parameterSets);
-  const selectedRows = coerceRows(model, rows);
-  const coveredTupleKeys = new Set<string>();
+  const solver = createConstraintSolver(model);
+  const tracker = createValidTupleTracker(model, solver.canComplete);
+  const selectedRows = coerceRowsToValueIndices(model, rows);
 
-  for (const row of selectedRows) {
-    row.coverKeys = parameterSets.map((parameterSet) =>
-      parameterSet
-        .map((parameterIndex) => `${parameterIndex}:${row.valueIndices[parameterIndex]}`)
-        .join("|"),
-    );
-
-    for (const key of row.coverKeys) {
-      if (tupleUniverse.has(key)) {
-        coveredTupleKeys.add(key);
-      }
-    }
+  for (const valueIndices of selectedRows) {
+    tracker.markRowCovered(valueIndices);
   }
 
   return {
     strength: model.options.strength,
-    requiredTupleCount: tupleUniverse.size,
-    coveredTupleCount: coveredTupleKeys.size,
-    uncoveredTupleCount: tupleUniverse.size - coveredTupleKeys.size,
+    requiredTupleCount: tracker.requiredTupleCount,
+    coveredTupleCount: tracker.coveredTupleCount(),
+    uncoveredTupleCount: tracker.uncoveredTupleCount(),
   };
 }

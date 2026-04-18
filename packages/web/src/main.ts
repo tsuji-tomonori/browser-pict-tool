@@ -9,6 +9,11 @@ type AppStatus = "idle" | "running" | "success" | "error" | "cancelled";
 type SortDirection = "asc" | "desc";
 type ExportFormat = "csv" | "tsv" | "md";
 
+interface GenerationSnapshot {
+  modelText: string;
+  options: UiOptions;
+}
+
 interface SortState {
   columnIndex: number | null;
   direction: SortDirection;
@@ -32,9 +37,16 @@ interface AppState {
   sort: SortState;
   columnWidths: number[];
   activeJobId: string | null;
+  activeJobMode: "preview" | "stream" | null;
 }
 
 const MAX_RENDERED_RESULT_ROWS = 2000;
+const STREAMING_DOWNLOAD_ROW_THRESHOLD = 1000;
+
+let pendingPreviewRequest: GenerationSnapshot | null = null;
+let lastGeneratedRequest: GenerationSnapshot | null = null;
+let activeStreamWritable: FileSystemWritableFileStream | null = null;
+let activeStreamFormat: ExportFormat | null = null;
 
 function requiredElement<T extends Element>(selector: string): T {
   const element = document.querySelector<T>(selector);
@@ -95,6 +107,7 @@ const state: AppState = {
   },
   columnWidths: [],
   activeJobId: null,
+  activeJobMode: null,
 };
 
 let resizeState: ResizeState | null = null;
@@ -110,6 +123,48 @@ function escapeHtml(text: string): string {
 
 function numberFormat(value: number): string {
   return value.toLocaleString("ja-JP");
+}
+
+function createJobId(): string {
+  return `job-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function downloadMimeType(format: ExportFormat): string {
+  if (format === "csv") {
+    return "text/csv;charset=utf-8";
+  }
+
+  if (format === "tsv") {
+    return "text/tab-separated-values;charset=utf-8";
+  }
+
+  return "text/markdown;charset=utf-8";
+}
+
+function downloadFileName(format: ExportFormat): string {
+  return `browser-pict-suite.${format}`;
+}
+
+function triggerBlobDownload(content: string, format: ExportFormat): void {
+  const blob =
+    format === "csv"
+      ? new Blob([new Uint8Array([0xef, 0xbb, 0xbf]), content], {
+          type: downloadMimeType(format),
+        })
+      : new Blob([content], {
+          type: downloadMimeType(format),
+        });
+
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = downloadFileName(format);
+  anchor.click();
+  window.setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
+function canStreamToFile(): boolean {
+  return typeof window.showSaveFilePicker === "function";
 }
 
 function currentOptions(): UiOptions {
@@ -176,6 +231,7 @@ function resetResults(): void {
   state.sort = { columnIndex: null, direction: "asc" };
   state.columnWidths = [];
   state.filter = "";
+  lastGeneratedRequest = null;
   elements.filterInput.value = "";
   renderResults();
   renderStats();
@@ -307,10 +363,10 @@ function updateResultsSummary(visibleCount: number, renderedCount: number): void
 }
 
 function renderResults(): void {
-  const hasSuite = Boolean(state.suite);
-  elements.exportCsvButton.disabled = !hasSuite;
-  elements.exportTsvButton.disabled = !hasSuite;
-  elements.exportMdButton.disabled = !hasSuite;
+  const canExport = Boolean(state.suite) && state.activeJobId === null;
+  elements.exportCsvButton.disabled = !canExport;
+  elements.exportTsvButton.disabled = !canExport;
+  elements.exportMdButton.disabled = !canExport;
 
   if (!state.suite) {
     elements.resultsTableShell.innerHTML = `
@@ -415,23 +471,31 @@ function renderAll(): void {
 
 function beginGeneration(): void {
   const modelText = elements.modelInput.value;
+  const options = currentOptions();
   state.modelText = modelText;
   state.diagnostics = [];
   resetResults();
   renderDiagnostics();
 
-  const jobId = `job-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  const jobId = createJobId();
+  pendingPreviewRequest = {
+    modelText,
+    options,
+  };
   state.activeJobId = jobId;
+  state.activeJobMode = "preview";
   setStatus("running", "生成を開始", "Worker 上でモデルを解析しています。");
   setProgress(0);
   elements.generateButton.disabled = true;
   elements.cancelButton.disabled = false;
+  renderResults();
 
   const request: WorkerRequest = {
     type: "GENERATE",
     jobId,
     modelText,
-    options: currentOptions(),
+    options,
+    mode: "preview",
   };
   worker.postMessage(request);
 }
@@ -450,43 +514,133 @@ function cancelGeneration(): void {
 
 function finalizeRun(): void {
   state.activeJobId = null;
+  state.activeJobMode = null;
   elements.generateButton.disabled = false;
   elements.cancelButton.disabled = true;
+  renderResults();
 }
 
-function downloadSuite(format: ExportFormat): void {
+async function closeActiveStreamWritable(): Promise<void> {
+  const writable = activeStreamWritable;
+  activeStreamWritable = null;
+  activeStreamFormat = null;
+  if (!writable) {
+    return;
+  }
+
+  try {
+    await writable.close();
+  } catch {
+    return;
+  }
+}
+
+async function abortActiveStreamWritable(): Promise<void> {
+  const writable = activeStreamWritable;
+  activeStreamWritable = null;
+  activeStreamFormat = null;
+  if (!writable) {
+    return;
+  }
+
+  try {
+    await writable.abort();
+  } catch {
+    try {
+      await writable.close();
+    } catch {
+      return;
+    }
+  }
+}
+
+function streamRequestSnapshot(): GenerationSnapshot | null {
+  return lastGeneratedRequest;
+}
+
+async function startStreamingDownload(format: ExportFormat): Promise<void> {
+  const snapshot = streamRequestSnapshot();
   if (!state.suite) {
     return;
   }
 
-  if (format === "md" && state.suite.rows.length > 1000) {
-    const confirmed = window.confirm(
-      "Markdown テーブルは大きくなります。続けてダウンロードしますか。",
-    );
-    if (!confirmed) {
+  if (!snapshot) {
+    triggerBlobDownload(formatSuite(state.suite, format), format);
+    return;
+  }
+
+  if (!canStreamToFile()) {
+    showToast("大きな結果はメモリを多く使います。");
+    triggerBlobDownload(formatSuite(state.suite, format), format);
+    return;
+  }
+
+  try {
+    const fileHandle = await window.showSaveFilePicker({
+      suggestedName: downloadFileName(format),
+      types: [
+        {
+          description: format.toUpperCase(),
+          accept: {
+            [downloadMimeType(format)]: [`.${format}`],
+          },
+        },
+      ],
+    });
+    const writable = await fileHandle.createWritable();
+    const jobId = createJobId();
+
+    activeStreamWritable = writable;
+    activeStreamFormat = format;
+    state.activeJobId = jobId;
+    state.activeJobMode = "stream";
+    setStatus("running", "保存を開始", "Worker から受け取った chunk をファイルへ書き出しています。");
+    setProgress(0);
+    elements.generateButton.disabled = true;
+    elements.cancelButton.disabled = false;
+    renderResults();
+
+    const request: WorkerRequest = {
+      type: "GENERATE",
+      jobId,
+      modelText: snapshot.modelText,
+      options: snapshot.options,
+      mode: "stream",
+      format,
+      previewLimit: 200,
+      chunkRowLimit: 512,
+    };
+    worker.postMessage(request);
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      showToast("保存をキャンセルしました。");
       return;
     }
+
+    state.diagnostics = [
+      {
+        severity: "error",
+        code: "FILE_PICKER_FAILURE",
+        message: error instanceof Error ? error.message : "保存先を開けませんでした。",
+      },
+    ];
+    setStatus("error", "保存失敗", "保存先の準備に失敗しました。");
+    renderDiagnostics();
+  }
+}
+
+async function downloadSuite(format: ExportFormat): Promise<void> {
+  if (!state.suite) {
+    return;
+  }
+
+  if (state.suite.rows.length > STREAMING_DOWNLOAD_ROW_THRESHOLD) {
+    await startStreamingDownload(format);
+    return;
   }
 
   const content = formatSuite(state.suite, format);
-  const blob =
-    format === "csv"
-      ? new Blob([new Uint8Array([0xef, 0xbb, 0xbf]), content], {
-          type: "text/csv;charset=utf-8",
-        })
-      : new Blob([content], {
-          type:
-            format === "tsv"
-              ? "text/tab-separated-values;charset=utf-8"
-              : "text/markdown;charset=utf-8",
-        });
-
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = `browser-pict-suite.${format}`;
-  anchor.click();
-  window.setTimeout(() => URL.revokeObjectURL(url), 0);
+  triggerBlobDownload(content, format);
 }
 
 async function copyToClipboard(text: string): Promise<void> {
@@ -507,7 +661,7 @@ async function copyToClipboard(text: string): Promise<void> {
   }
 }
 
-function onWorkerMessage(event: MessageEvent<WorkerResponse>): void {
+async function onWorkerMessage(event: MessageEvent<WorkerResponse>): Promise<void> {
   const message = event.data;
   if (message.jobId !== state.activeJobId) {
     return;
@@ -519,10 +673,16 @@ function onWorkerMessage(event: MessageEvent<WorkerResponse>): void {
     return;
   }
 
+  if (message.type === "STREAM_START" || message.type === "STREAM_PREVIEW_ROWS") {
+    return;
+  }
+
   if (message.type === "GENERATE_OK") {
     finalizeRun();
     state.suite = message.suite;
     state.diagnostics = message.diagnostics;
+    lastGeneratedRequest = message.suite ? pendingPreviewRequest : null;
+    pendingPreviewRequest = null;
     if (message.suite) {
       state.columnWidths = message.suite.header.map((header) =>
         Math.max(120, Math.min(280, header.length * 22 + 80)),
@@ -543,22 +703,90 @@ function onWorkerMessage(event: MessageEvent<WorkerResponse>): void {
     return;
   }
 
-  if (message.type === "CANCELLED") {
-    finalizeRun();
-    setStatus("cancelled", "処理を中断", "途中でキャンセルしました。");
-    setProgress(0);
-    showToast("生成をキャンセルしました。");
+  if (message.type === "STREAM_CHUNK") {
+    if (!activeStreamWritable) {
+      return;
+    }
+
+    try {
+      await activeStreamWritable.write(message.chunk);
+      const ackRequest: WorkerRequest = {
+        type: "STREAM_ACK",
+        jobId: message.jobId,
+        chunkId: message.chunkId,
+      };
+      worker.postMessage(ackRequest);
+    } catch (error) {
+      const cancelRequest: WorkerRequest = {
+        type: "CANCEL",
+        jobId: message.jobId,
+      };
+      worker.postMessage(cancelRequest);
+      await abortActiveStreamWritable();
+      finalizeRun();
+      state.diagnostics = [
+        ...state.diagnostics,
+        {
+          severity: "error",
+          code: "FILE_WRITE_FAILURE",
+          message: error instanceof Error ? error.message : "ファイルへ書き込めませんでした。",
+        },
+      ];
+      setStatus("error", "保存失敗", "ファイルへ書き込めませんでした。");
+      renderDiagnostics();
+    }
     return;
   }
 
+  if (message.type === "STREAM_COMPLETE") {
+    const completedFormat = activeStreamFormat;
+    await closeActiveStreamWritable();
+    finalizeRun();
+    setProgress(100);
+    setStatus(
+      message.diagnostics.some((entry) => entry.severity === "error") ? "error" : "success",
+      "保存完了",
+      `${numberFormat(message.stats.generatedRowCount)} 行を書き出しました。`,
+    );
+    showToast(`${downloadFileName(completedFormat ?? "csv")} を保存しました。`);
+    return;
+  }
+
+  if (message.type === "CANCELLED") {
+    const wasStream = state.activeJobMode === "stream";
+    if (!wasStream) {
+      pendingPreviewRequest = null;
+    }
+    if (wasStream) {
+      await abortActiveStreamWritable();
+    }
+    finalizeRun();
+    setStatus("cancelled", "処理を中断", "途中でキャンセルしました。");
+    setProgress(0);
+    showToast(wasStream ? "保存をキャンセルしました。" : "生成をキャンセルしました。");
+    return;
+  }
+
+  const wasStream = state.activeJobMode === "stream";
+  if (wasStream) {
+    await abortActiveStreamWritable();
+  } else {
+    pendingPreviewRequest = null;
+  }
   finalizeRun();
   state.diagnostics = message.diagnostics;
-  setStatus("error", "Worker エラー", "実行を継続できませんでした。");
+  setStatus(
+    "error",
+    wasStream ? "保存失敗" : "Worker エラー",
+    wasStream ? "保存を継続できませんでした。" : "実行を継続できませんでした。",
+  );
   renderDiagnostics();
 }
 
 function wireEvents(): void {
-  worker.addEventListener("message", onWorkerMessage);
+  worker.addEventListener("message", (event) => {
+    void onWorkerMessage(event);
+  });
 
   elements.helpButtons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -630,9 +858,15 @@ function wireEvents(): void {
     renderResults();
   });
 
-  elements.exportCsvButton.addEventListener("click", () => downloadSuite("csv"));
-  elements.exportTsvButton.addEventListener("click", () => downloadSuite("tsv"));
-  elements.exportMdButton.addEventListener("click", () => downloadSuite("md"));
+  elements.exportCsvButton.addEventListener("click", () => {
+    void downloadSuite("csv");
+  });
+  elements.exportTsvButton.addEventListener("click", () => {
+    void downloadSuite("tsv");
+  });
+  elements.exportMdButton.addEventListener("click", () => {
+    void downloadSuite("md");
+  });
 
   document.addEventListener("keydown", (event) => {
     if ((event.ctrlKey || event.metaKey) && event.key === "Enter" && !state.activeJobId) {

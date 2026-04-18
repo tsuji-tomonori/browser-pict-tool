@@ -1,16 +1,16 @@
+import { createMarkdownStreamEncoder } from "./stream-encoder.ts";
+
 type ExportableSuite = {
   header: string[];
   rows: string[][];
 };
 
-function escapeMarkdownCell(cell: string): string {
-  return cell.replace(/\|/g, "\\|").replace(/\n/g, "<br>");
-}
-
 export function exportMarkdown(suite: ExportableSuite): string {
-  const headerRow = `| ${suite.header.map(escapeMarkdownCell).join(" | ")} |`;
-  const dividerRow = `| ${suite.header.map(() => "---").join(" | ")} |`;
-  const dataRows = suite.rows.map((row) => `| ${row.map(escapeMarkdownCell).join(" | ")} |`);
+  const encoder = createMarkdownStreamEncoder();
+  const output =
+    encoder.encodeHeader(suite.header) +
+    suite.rows.map((row) => encoder.encodeRow(row)).join("") +
+    encoder.encodeFooter();
 
-  return [headerRow, dividerRow, ...dataRows].join("\n");
+  return output.endsWith("\n") ? output.slice(0, -1) : output;
 }

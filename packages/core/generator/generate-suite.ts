@@ -1,10 +1,6 @@
 import { hasErrorDiagnostics } from "../diagnostics/index.ts";
 import type { Diagnostic, SourceSpan } from "../diagnostics/types.ts";
-import {
-  enumerateCandidateRows,
-  selectRowsForCoverage,
-  type CoverageRowRecord,
-} from "../coverage/analyze-coverage.ts";
+import { CollectingSink, collectedRows } from "../exporters/index.ts";
 import type {
   CanonicalModel,
   GenerateRequest,
@@ -12,9 +8,10 @@ import type {
   ValidationResult,
 } from "../model/types.ts";
 import { SourceFile } from "../parser/source-file.ts";
+import { createConstraintSolver } from "./constraint-solver.ts";
 import { normalizeValidatedModel } from "./normalize-model.ts";
+import { createStreamingGenerationPlanner } from "./streaming-generator.ts";
 
-const MAX_CANDIDATE_ROW_UPPER_BOUND = 200_000n;
 const MAX_REQUIRED_TUPLE_UPPER_BOUND = 2_000_000n;
 
 function mulberry32(seed: number): () => number {
@@ -27,11 +24,11 @@ function mulberry32(seed: number): () => number {
   };
 }
 
-function shuffleArray<T>(array: T[], rng: () => number): T[] {
+function shuffleArray<T>(array: readonly T[], rng: () => number): T[] {
   const result = [...array];
-  for (let i = result.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(rng() * (i + 1));
-    [result[i], result[j]] = [result[j], result[i]];
+  for (let index = result.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(rng() * (index + 1));
+    [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
   }
   return result;
 }
@@ -59,51 +56,6 @@ function multiplyCapped(left: bigint, right: bigint, limit: bigint): bigint {
 
 function formatBigInt(value: bigint): string {
   return value.toString();
-}
-
-function estimateCandidateRowUpperBound(model: CanonicalModel, limit: bigint): bigint {
-  const positiveCounts = model.parameters.map((parameter) =>
-    BigInt(parameter.positiveValueIndices.length),
-  );
-  const prefixProducts: bigint[] = [1n];
-  const suffixProducts = new Array<bigint>(model.parameters.length + 1).fill(1n);
-
-  for (const count of positiveCounts) {
-    prefixProducts.push(
-      multiplyCapped(prefixProducts[prefixProducts.length - 1] ?? 1n, count, limit),
-    );
-  }
-
-  for (let index = model.parameters.length - 1; index >= 0; index -= 1) {
-    suffixProducts[index] = multiplyCapped(
-      suffixProducts[index + 1] ?? 1n,
-      positiveCounts[index] ?? 0n,
-      limit,
-    );
-  }
-
-  let total = prefixProducts[model.parameters.length] ?? 0n;
-
-  for (let index = 0; index < model.parameters.length; index += 1) {
-    const negativeCount = BigInt(model.parameters[index]?.negativeValueIndices.length ?? 0);
-    if (negativeCount === 0n) {
-      continue;
-    }
-
-    const positiveProductWithoutParameter = multiplyCapped(
-      prefixProducts[index] ?? 1n,
-      suffixProducts[index + 1] ?? 1n,
-      limit,
-    );
-    const rowsWithNegativeValue = multiplyCapped(
-      negativeCount,
-      positiveProductWithoutParameter,
-      limit,
-    );
-    total = addCapped(total, rowsWithNegativeValue, limit);
-  }
-
-  return total;
 }
 
 function estimateRequiredTupleUpperBound(
@@ -165,10 +117,29 @@ function getSearchSpaceDiagnostic(
   );
 }
 
-function matchesRowValues(values: string[], seedRow: ReadonlyArray<string>): boolean {
-  return (
-    values.length === seedRow.length && values.every((value, index) => value === seedRow[index])
-  );
+function resolveSeedRowValueIndices(
+  model: CanonicalModel,
+  seedRow: ReadonlyArray<string>,
+): number[] | null {
+  if (seedRow.length !== model.parameters.length) {
+    return null;
+  }
+
+  const valueIndices: number[] = [];
+
+  for (let parameterIndex = 0; parameterIndex < seedRow.length; parameterIndex += 1) {
+    const parameter = model.parameters[parameterIndex];
+    const valueIndex = parameter.values.findIndex(
+      (candidate) => candidate.displayText === seedRow[parameterIndex],
+    );
+    if (valueIndex < 0) {
+      return null;
+    }
+
+    valueIndices.push(valueIndex);
+  }
+
+  return valueIndices;
 }
 
 function resolveStrength(
@@ -305,27 +276,6 @@ export function generateTestSuite(
   }
 
   const canonicalModel = normalizeValidatedModel(validation, strength);
-  const candidateRowUpperBound = estimateCandidateRowUpperBound(
-    canonicalModel,
-    MAX_CANDIDATE_ROW_UPPER_BOUND,
-  );
-  if (candidateRowUpperBound > MAX_CANDIDATE_ROW_UPPER_BOUND) {
-    return {
-      suite: null,
-      diagnostics: [
-        ...diagnostics,
-        getSearchSpaceDiagnostic(
-          validation,
-          sourceFile,
-          "generator.request.candidate_space_too_large",
-          "候補行",
-          candidateRowUpperBound,
-          MAX_CANDIDATE_ROW_UPPER_BOUND,
-        ),
-      ],
-    };
-  }
-
   const requiredTupleUpperBound = estimateRequiredTupleUpperBound(
     canonicalModel.parameters.map((parameter) => BigInt(parameter.values.length)),
     canonicalModel.options.strength,
@@ -348,9 +298,9 @@ export function generateTestSuite(
     };
   }
 
-  let candidateRows = enumerateCandidateRows(canonicalModel);
+  const solver = createConstraintSolver(canonicalModel);
 
-  if (candidateRows.length === 0) {
+  if (!solver.canComplete(new Map<number, number>())) {
     return {
       suite: null,
       diagnostics: [
@@ -365,16 +315,10 @@ export function generateTestSuite(
     };
   }
 
-  if (request.randomSeed !== undefined) {
-    candidateRows = shuffleArray(candidateRows, mulberry32(request.randomSeed));
-  }
-
-  const preSelectedRows: CoverageRowRecord[] = [];
+  const matchedSeedRows: number[][] = [];
   for (const seedRow of request.seedRows ?? []) {
-    const matchedRow = candidateRows.find((candidateRow) =>
-      matchesRowValues(candidateRow.values, seedRow),
-    );
-    if (!matchedRow) {
+    const valueIndices = resolveSeedRowValueIndices(canonicalModel, seedRow);
+    if (!valueIndices) {
       diagnostics.push(
         sourceFile.createDiagnostic(
           "generator.seed.unmatched_row",
@@ -386,19 +330,56 @@ export function generateTestSuite(
       continue;
     }
 
-    if (!preSelectedRows.includes(matchedRow)) {
-      preSelectedRows.push(matchedRow);
-    }
+    matchedSeedRows.push(valueIndices);
   }
 
-  const selection = selectRowsForCoverage(
-    canonicalModel,
-    candidateRows,
-    preSelectedRows.length > 0 ? preSelectedRows : undefined,
-  );
+  const sink = new CollectingSink();
+  const planner = createStreamingGenerationPlanner(canonicalModel, {
+    randomSeed: request.randomSeed,
+    seedRows: matchedSeedRows,
+  });
+
+  sink.writeHeader(planner.header);
+
+  for (;;) {
+    const valueIndices = planner.nextRow();
+    if (!valueIndices) {
+      break;
+    }
+
+    sink.writeRow(planner.toDisplayRow(valueIndices));
+    planner.acceptRow(valueIndices);
+  }
+
+  sink.close();
+
+  const coverage = planner.coverage();
+  const rows = collectedRows(sink).map((row) => [...row]);
+  const normalizedRows =
+    request.randomSeed !== undefined && (request.seedRows?.length ?? 0) === 0
+      ? shuffleArray(rows, mulberry32(request.randomSeed))
+      : rows;
+
+  for (const warning of planner.seedWarnings) {
+    const seedRow = request.seedRows?.[warning.rowIndex] ?? [];
+    const message =
+      warning.reason === "constraint_violation"
+        ? `seed row (${seedRow.join(", ")}) は制約違反のため無視しました`
+        : `seed row (${seedRow.join(", ")}) は候補行に一致しないため無視しました`;
+
+    diagnostics.push(
+      sourceFile.createDiagnostic(
+        "generator.seed.unmatched_row",
+        "warning",
+        message,
+        wholeSourceSpan(validation.source),
+      ),
+    );
+  }
+
   const warnings = [...diagnostics];
 
-  if (selection.coverage.uncoveredTupleCount > 0) {
+  if (coverage.uncoveredTupleCount > 0) {
     warnings.push(
       sourceFile.createDiagnostic(
         "generator.coverage.partial",
@@ -412,17 +393,17 @@ export function generateTestSuite(
   return {
     suite: {
       header: canonicalModel.parameters.map((parameter) => parameter.displayName),
-      rows: selection.selectedRows.map((row) => row.values),
-      coverage: selection.coverage,
+      rows: normalizedRows,
+      coverage,
       stats: {
         strength: canonicalModel.options.strength,
         parameterCount: canonicalModel.parameters.length,
         constraintCount: canonicalModel.constraints.length,
-        generatedRowCount: selection.selectedRows.length,
+        generatedRowCount: normalizedRows.length,
         generationTimeMs: Date.now() - startedAt,
-        uncoveredTupleCount: selection.coverage.uncoveredTupleCount,
-        candidateRowCount: candidateRows.length,
-        requiredTupleCount: selection.coverage.requiredTupleCount,
+        uncoveredTupleCount: coverage.uncoveredTupleCount,
+        candidateRowCount: normalizedRows.length,
+        requiredTupleCount: coverage.requiredTupleCount,
       },
       warnings,
     },
