@@ -285,6 +285,29 @@ export function validateModelDocument(model: ModelDocument): ValidationResult {
     }
   }
 
+  const modelSpan = { start: 0, end: Math.max(model.source.length, 1) };
+  if (parameters.length === 0) {
+    diagnostics.push(
+      sourceFile.createDiagnostic(
+        "validation.model.no_parameters",
+        "error",
+        "パラメータが少なくとも 1 つ必要です",
+        modelSpan,
+      ),
+    );
+  }
+
+  if (parameters.length === 1) {
+    diagnostics.push(
+      sourceFile.createDiagnostic(
+        "validation.model.insufficient_parameters",
+        "error",
+        "ペアワイズ生成には 2 つ以上のパラメータが必要です",
+        modelSpan,
+      ),
+    );
+  }
+
   const registry = makeRegistry(parameters, model.options.caseSensitive);
   const effectiveConstraints: ConstraintDefinition[] = [];
   const droppedConstraints: ConstraintDefinition[] = [];

@@ -53,6 +53,7 @@ Region: US, ~EU
 
 test("generateTestSuite reports unsatisfiable models", () => {
   const source = `A: 1, 2
+B: 1, 2
 
 [A] = 1;
 [A] = 2;
@@ -60,7 +61,7 @@ test("generateTestSuite reports unsatisfiable models", () => {
 
   const parsed = parseModelText(source);
   const validation = validateModelDocument(parsed.model);
-  const generated = generateTestSuite(validation, { strength: 1 });
+  const generated = generateTestSuite(validation, { strength: 2 });
 
   assert.equal(generated.suite, null);
   assert.equal(
