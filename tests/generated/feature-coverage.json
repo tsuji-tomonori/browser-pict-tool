@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-18T02:36:27.140Z",
+  "generatedAt": "2026-04-18T03:29:47.313Z",
   "source": {
     "upstreamIndex": "tests/generated/upstream-index.json",
     "materializedFixtures": "tests/generated/materialized-fixtures-summary.json"

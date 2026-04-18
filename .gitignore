@@ -43,6 +43,8 @@ scripts/run.bat
 scripts/**/*.js
 scripts/**/*.js.map
 coverage/
+!packages/core/coverage/
+!packages/core/coverage/**
 internal/
 **/.DS_Store
 .settings
