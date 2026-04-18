@@ -1,6 +1,7 @@
 import "./styles.css";
 
 import { formatSuite } from "./lib/engine";
+import { exportToExcel } from "./lib/excel-export";
 import type { Diagnostic, GeneratedSuite, UiOptions } from "./lib/engine";
 import type { WorkerRequest, WorkerResponse } from "./lib/protocol";
 import { SAMPLE_MODEL } from "./lib/sample-model";
@@ -42,6 +43,7 @@ interface AppState {
 
 const MAX_RENDERED_RESULT_ROWS = 2000;
 const STREAMING_DOWNLOAD_ROW_THRESHOLD = 1000;
+const EXCEL_ROW_WARN_THRESHOLD = 50_000;
 
 let pendingPreviewRequest: GenerationSnapshot | null = null;
 let lastGeneratedRequest: GenerationSnapshot | null = null;
@@ -84,6 +86,7 @@ const elements = {
   exportCsvButton: requiredElement<HTMLButtonElement>("#export-csv-button"),
   exportTsvButton: requiredElement<HTMLButtonElement>("#export-tsv-button"),
   exportMdButton: requiredElement<HTMLButtonElement>("#export-md-button"),
+  exportExcelButton: requiredElement<HTMLButtonElement>("#export-excel-button"),
   resultsSummary: requiredElement<HTMLElement>("#results-summary"),
   resultsCaption: requiredElement<HTMLElement>("#results-caption"),
   resultsTableShell: requiredElement<HTMLElement>("#results-table-shell"),
@@ -141,8 +144,16 @@ function downloadMimeType(format: ExportFormat): string {
   return "text/markdown;charset=utf-8";
 }
 
+function suiteFileName(extension: string): string {
+  return `browser-pict-suite.${extension}`;
+}
+
 function downloadFileName(format: ExportFormat): string {
-  return `browser-pict-suite.${format}`;
+  return suiteFileName(format);
+}
+
+function downloadExcelFileName(): string {
+  return suiteFileName("xlsx");
 }
 
 function triggerBlobDownload(content: string, format: ExportFormat): void {
@@ -367,6 +378,7 @@ function renderResults(): void {
   elements.exportCsvButton.disabled = !canExport;
   elements.exportTsvButton.disabled = !canExport;
   elements.exportMdButton.disabled = !canExport;
+  elements.exportExcelButton.disabled = !canExport;
 
   if (!state.suite) {
     elements.resultsTableShell.innerHTML = `
@@ -643,6 +655,30 @@ async function downloadSuite(format: ExportFormat): Promise<void> {
   triggerBlobDownload(content, format);
 }
 
+async function downloadExcelSuite(): Promise<void> {
+  if (!state.suite) {
+    return;
+  }
+
+  const visibleRows = getVisibleRows();
+  if (visibleRows.length > EXCEL_ROW_WARN_THRESHOLD) {
+    showToast(
+      `Excel 出力は ${numberFormat(visibleRows.length)} 行のため時間とメモリを多く使います。処理は続行します。`,
+    );
+  }
+
+  try {
+    await exportToExcel(
+      ["#", ...state.suite.header],
+      visibleRows.map(({ row, originalIndex }) => [String(originalIndex + 1), ...row]),
+      { fileName: downloadExcelFileName() },
+    );
+  } catch (error) {
+    console.error(error);
+    showToast("Excel の書き出しに失敗しました。");
+  }
+}
+
 async function copyToClipboard(text: string): Promise<void> {
   try {
     await navigator.clipboard.writeText(text);
@@ -866,6 +902,9 @@ function wireEvents(): void {
   });
   elements.exportMdButton.addEventListener("click", () => {
     void downloadSuite("md");
+  });
+  elements.exportExcelButton.addEventListener("click", () => {
+    void downloadExcelSuite();
   });
 
   document.addEventListener("keydown", (event) => {
