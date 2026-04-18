@@ -74,6 +74,41 @@ IF [Size] > 1 THEN [Mode] = 1;
   );
 });
 
+test("validateModelDocument reports parameter-to-parameter type mismatches", () => {
+  const source = `Size: 1, 2, 3
+Mode: Basic, Advanced
+
+[Size] = [Mode];
+`;
+
+  const parsed = parseModelText(source);
+  const validation = validateModelDocument(parsed.model);
+
+  assert.equal(
+    validation.diagnostics.some(
+      (diagnostic) => diagnostic.code === "validation.constraint.parameter_type_mismatch",
+    ),
+    true,
+  );
+});
+
+test("validateModelDocument reports value-set type mismatches", () => {
+  const source = `Size: 1, 2, 3
+
+[Size] IN {"Small", "Medium"};
+`;
+
+  const parsed = parseModelText(source);
+  const validation = validateModelDocument(parsed.model);
+
+  assert.equal(
+    validation.diagnostics.some(
+      (diagnostic) => diagnostic.code === "validation.constraint.valueset_type_mismatch",
+    ),
+    true,
+  );
+});
+
 test("validateModelDocument rejects parameter self-comparison", () => {
   const source = `A: 1, 2, 3
 
