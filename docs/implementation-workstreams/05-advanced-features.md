@@ -17,8 +17,13 @@
 ## 3. 所有ファイル
 
 - `packages/core/**` の advanced feature 変更
-- `tests/core/**` の feature test
+- `tests/core/**` の advanced feature case
 - `docs/pict-model-grammar-user-guide.md`
+
+境界:
+
+- case 追加は `05` で持つ
+- harness / acceptance gate / fixture index / CI は `06` で持つ
 
 ## 4. タスク
 
@@ -39,6 +44,11 @@
 - Feature D: seeding + randomize
 
 1 人なら順番に、複数人ならこの単位で branch を分ける。
+
+test の扱い:
+
+- 各 feature の semantic / generation case はその feature PR に同梱してよい
+- gate 条件や test harness の変更は `06` に寄せる
 
 ### repo extension を追う場合
 
