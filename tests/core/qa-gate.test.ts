@@ -50,7 +50,7 @@ function readJsonFile<T>(relativePath: string): T {
 }
 
 function resolveFixtureDirectory(fixture: MaterializedFixture, command: UpstreamCommand): string {
-  const derivedPath = resolve(fixturesRoot, command.category, command.id.replace(":", "-"));
+  const derivedPath = resolve(fixturesRoot, command.category, fixture.id.replace(":", "-"));
   if (existsSync(derivedPath)) {
     return derivedPath;
   }

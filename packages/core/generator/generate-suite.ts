@@ -66,11 +66,11 @@ function collectFeatureDiagnostics(
   const errors: Diagnostic[] = [];
 
   for (const submodel of validation.submodels) {
-    errors.push(
+    warnings.push(
       sourceFile.createDiagnostic(
-        "generator.feature.submodel_unsupported",
-        "error",
-        "sub-model は generator core の初版ではまだ未対応です",
+        "generator.feature.submodel_ignored",
+        "warning",
+        "sub-model は初版ではまだ反映されません (無視して全体で生成します)",
         submodel.span,
       ),
     );
