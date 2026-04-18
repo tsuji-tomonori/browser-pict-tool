@@ -26,6 +26,7 @@ type UpstreamIndex = {
 type UpstreamCommand = {
   id: string;
   category: string;
+  optionsRaw?: string[];
   expectedResult: string;
 };
 
@@ -70,6 +71,50 @@ function readModelText(fixtureDirectory: string): string | null {
   }
 
   return null;
+}
+
+function parsePictCliOptions(optionsRaw: string[]): {
+  strength?: number;
+  caseSensitive?: boolean;
+  negativePrefix?: string;
+  valueDelimiter?: string;
+} {
+  const result: {
+    strength?: number;
+    caseSensitive?: boolean;
+    negativePrefix?: string;
+    valueDelimiter?: string;
+  } = {};
+
+  for (const raw of optionsRaw) {
+    const lower = raw.toLowerCase();
+    if (lower === "/c" || lower === "-c") {
+      result.caseSensitive = true;
+      continue;
+    }
+
+    const match = raw.match(/^[\/-]([a-zA-Z]):(.+)$/);
+    if (!match) {
+      continue;
+    }
+
+    const flag = match[1].toLowerCase();
+    const val = match[2];
+    if (flag === "o") {
+      const n = parseInt(val, 10);
+      if (n > 0) {
+        result.strength = n;
+      }
+    }
+    if (flag === "d") {
+      result.valueDelimiter = val.toLowerCase() === "tab" ? "\t" : val;
+    }
+    if (flag === "n") {
+      result.negativePrefix = val;
+    }
+  }
+
+  return result;
 }
 
 test("required_v0_1 fixtures satisfy the current core QA gate", (t) => {
@@ -123,13 +168,18 @@ test("required_v0_1 fixtures satisfy the current core QA gate", (t) => {
         continue;
       }
 
-      const parsed = parseModelText(modelText);
+      const cliOpts = parsePictCliOptions(command.optionsRaw ?? []);
+      const parsed = parseModelText(modelText, {
+        caseSensitive: cliOpts.caseSensitive,
+        negativePrefix: cliOpts.negativePrefix,
+        valueDelimiter: cliOpts.valueDelimiter,
+      });
       const validation = validateModelDocument(parsed.model);
       const diagnostics = [...parsed.diagnostics, ...validation.diagnostics];
       const hasErrors = hasErrorDiagnostics(diagnostics);
 
       if (command.expectedResult === "SUCCESS") {
-        const generated = generateTestSuite(validation);
+        const generated = generateTestSuite(validation, { strength: cliOpts.strength ?? 2 });
         if (hasErrors) {
           failCount += 1;
           failures.push(`${fixture.id}: expected SUCCESS but parse/validate produced errors`);

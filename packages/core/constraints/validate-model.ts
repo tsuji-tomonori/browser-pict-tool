@@ -297,17 +297,6 @@ export function validateModelDocument(model: ModelDocument): ValidationResult {
     );
   }
 
-  if (parameters.length === 1) {
-    diagnostics.push(
-      sourceFile.createDiagnostic(
-        "validation.model.insufficient_parameters",
-        "error",
-        "ペアワイズ生成には 2 つ以上のパラメータが必要です",
-        modelSpan,
-      ),
-    );
-  }
-
   const registry = makeRegistry(parameters, model.options.caseSensitive);
   const effectiveConstraints: ConstraintDefinition[] = [];
   const droppedConstraints: ConstraintDefinition[] = [];

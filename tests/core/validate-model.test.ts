@@ -47,21 +47,6 @@ test("validateModelDocument rejects models without parameters", () => {
   );
 });
 
-test("validateModelDocument rejects models with only one parameter", () => {
-  const source = `A: 1, 2
-`;
-
-  const parsed = parseModelText(source);
-  const validation = validateModelDocument(parsed.model);
-
-  assert.equal(
-    validation.diagnostics.some(
-      (diagnostic) => diagnostic.code === "validation.model.insufficient_parameters",
-    ),
-    true,
-  );
-});
-
 test("validateModelDocument drops constraints with unknown parameters as warnings", () => {
   const source = `A: 1, 2, 3
 B: 1, 2, 3
