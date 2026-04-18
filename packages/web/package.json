@@ -1,0 +1,15 @@
+{
+  "name": "@browser-pict-tool/web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "\"$npm_node_execpath\" ../../node_modules/vite/bin/vite.js",
+    "build": "\"$npm_node_execpath\" ../../node_modules/vite/bin/vite.js build",
+    "preview": "\"$npm_node_execpath\" ../../node_modules/vite/bin/vite.js preview",
+    "check": "\"$npm_node_execpath\" ../../node_modules/typescript/bin/tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "vite": "^7.0.0"
+  }
+}

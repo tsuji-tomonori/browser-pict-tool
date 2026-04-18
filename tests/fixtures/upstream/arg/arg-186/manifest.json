@@ -1,0 +1,31 @@
+{
+  "id": "arg:186",
+  "category": "arg",
+  "source": {
+    "modelPath": ".work/pict/test/arg/arg001.txt",
+    "testsPath": ".work/pict/test/arg/.tests",
+    "lineNumber": 272,
+    "command": "arg001.txt /S"
+  },
+  "input": {
+    "modelPath": "model.pict",
+    "optionsRaw": [
+      "/S"
+    ],
+    "rowSeedPaths": []
+  },
+  "expected": {
+    "upstreamResult": "SUCCESS",
+    "expectedExitCode": 0,
+    "assertionMode": "semantic",
+    "notes": [
+      "NO_SEEDING"
+    ]
+  },
+  "implementationStatus": "required_v0_1",
+  "tags": [
+    "area:cli",
+    "category:arg",
+    "option:statistics"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "term:007",
+  "category": "term",
+  "source": {
+    "modelPath": ".work/pict/test/term/term002.txt",
+    "testsPath": ".work/pict/test/term/.tests",
+    "lineNumber": 14,
+    "command": "term002.txt"
+  },
+  "input": {
+    "modelPath": "model.pict",
+    "optionsRaw": [],
+    "rowSeedPaths": []
+  },
+  "expected": {
+    "upstreamResult": "BAD_CONSTRAINTS",
+    "expectedExitCode": 5,
+    "assertionMode": "diagnostic",
+    "notes": []
+  },
+  "implementationStatus": "required_v0_1",
+  "tags": [
+    "area:predicate_terms",
+    "category:term"
+  ]
+}

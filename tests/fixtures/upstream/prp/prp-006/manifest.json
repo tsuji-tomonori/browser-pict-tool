@@ -1,0 +1,26 @@
+{
+  "id": "prp:006",
+  "category": "prp",
+  "source": {
+    "modelPath": ".work/pict/test/prp/prp006.txt",
+    "testsPath": ".work/pict/test/prp/.tests",
+    "lineNumber": 12,
+    "command": "prp006.txt"
+  },
+  "input": {
+    "modelPath": "model.pict",
+    "optionsRaw": [],
+    "rowSeedPaths": []
+  },
+  "expected": {
+    "upstreamResult": "SUCCESS",
+    "expectedExitCode": 0,
+    "assertionMode": "semantic",
+    "notes": []
+  },
+  "implementationStatus": "required_v0_1",
+  "tags": [
+    "area:parameter_compare",
+    "category:prp"
+  ]
+}

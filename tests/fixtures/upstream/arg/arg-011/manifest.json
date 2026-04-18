@@ -1,0 +1,29 @@
+{
+  "id": "arg:011",
+  "category": "arg",
+  "source": {
+    "modelPath": ".work/pict/test/arg/arg001.txt",
+    "testsPath": ".work/pict/test/arg/.tests",
+    "lineNumber": 17,
+    "command": "arg001.txt /o:max"
+  },
+  "input": {
+    "modelPath": "model.pict",
+    "optionsRaw": [
+      "/o:max"
+    ],
+    "rowSeedPaths": []
+  },
+  "expected": {
+    "upstreamResult": "SUCCESS",
+    "expectedExitCode": 0,
+    "assertionMode": "semantic",
+    "notes": []
+  },
+  "implementationStatus": "required_v0_1",
+  "tags": [
+    "area:cli",
+    "category:arg",
+    "option:order"
+  ]
+}

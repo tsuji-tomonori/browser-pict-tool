@@ -1,0 +1,29 @@
+{
+  "name": "browser-pict-tool",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/core",
+    "packages/web"
+  ],
+  "scripts": {
+    "lint": "\"$npm_node_execpath\" node_modules/eslint/bin/eslint.js . --cache && \"$npm_node_execpath\" --experimental-strip-types scripts/check-core-contracts.ts",
+    "typecheck": "\"$npm_node_execpath\" node_modules/typescript/bin/tsc -p tsconfig.json --pretty false && \"$npm_node_execpath\" \"$npm_execpath\" --prefix packages/web run check",
+    "format": "\"$npm_node_execpath\" node_modules/prettier/bin/prettier.cjs . --write",
+    "format:check": "\"$npm_node_execpath\" node_modules/prettier/bin/prettier.cjs . --check",
+    "test": "\"$npm_node_execpath\" --experimental-strip-types --test tests/core/*.test.ts",
+    "check": "\"$npm_node_execpath\" \"$npm_execpath\" run lint && \"$npm_node_execpath\" \"$npm_execpath\" run typecheck && \"$npm_node_execpath\" \"$npm_execpath\" run test"
+  },
+  "engines": {
+    "node": ">=22.6.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.25.0",
+    "eslint": "^9.25.0",
+    "eslint-config-prettier": "^10.1.2",
+    "globals": "^16.0.0",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.30.1"
+  }
+}

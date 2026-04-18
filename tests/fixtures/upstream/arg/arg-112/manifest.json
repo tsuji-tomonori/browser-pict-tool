@@ -1,0 +1,29 @@
+{
+  "id": "arg:112",
+  "category": "arg",
+  "source": {
+    "modelPath": ".work/pict/test/arg/arg006.txt",
+    "testsPath": ".work/pict/test/arg/.tests",
+    "lineNumber": 143,
+    "command": "arg006.txt --n:@"
+  },
+  "input": {
+    "modelPath": "model.pict",
+    "optionsRaw": [
+      "--n:@"
+    ],
+    "rowSeedPaths": []
+  },
+  "expected": {
+    "upstreamResult": "BAD_OPTION",
+    "expectedExitCode": 3,
+    "assertionMode": "diagnostic",
+    "notes": []
+  },
+  "implementationStatus": "required_v0_1",
+  "tags": [
+    "area:cli",
+    "category:arg",
+    "option:negative_prefix"
+  ]
+}

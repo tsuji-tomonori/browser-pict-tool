@@ -1,0 +1,37 @@
+version: "3"
+
+tasks:
+  lint:
+    desc: Run ESLint on repository TypeScript sources
+    cmds:
+      - npm run lint
+
+  typecheck:
+    desc: Typecheck repository TypeScript sources
+    cmds:
+      - npm run typecheck
+
+  format:
+    desc: Format repository files with Prettier
+    cmds:
+      - npm run format
+
+  format-check:
+    desc: Check repository formatting with Prettier
+    cmds:
+      - npm run format:check
+
+  test:
+    desc: Run the repository test suite
+    cmds:
+      - npm run test
+
+  check:
+    desc: Run lint, typecheck, and tests
+    cmds:
+      - npm run check
+
+  precommit:
+    desc: Enable git pre-commit hooks
+    cmds:
+      - pre-commit install

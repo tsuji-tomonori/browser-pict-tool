@@ -1,0 +1,32 @@
+{
+  "id": "arg:026",
+  "category": "arg",
+  "source": {
+    "modelPath": ".work/pict/test/arg/arg002.txt",
+    "testsPath": ".work/pict/test/arg/.tests",
+    "lineNumber": 40,
+    "command": "arg002.txt /D:\" \""
+  },
+  "input": {
+    "modelPath": "model.pict",
+    "optionsRaw": [
+      "/D:\"",
+      "\""
+    ],
+    "rowSeedPaths": []
+  },
+  "expected": {
+    "upstreamResult": "SUCCESS",
+    "expectedExitCode": 0,
+    "assertionMode": "semantic",
+    "notes": [
+      "NO_SEEDING"
+    ]
+  },
+  "implementationStatus": "required_v0_1",
+  "tags": [
+    "area:cli",
+    "category:arg",
+    "option:value_delimiter"
+  ]
+}

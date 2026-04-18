@@ -1,0 +1,26 @@
+{
+  "id": "cons:027",
+  "category": "cons",
+  "source": {
+    "modelPath": ".work/pict/test/cons/cons220.txt",
+    "testsPath": ".work/pict/test/cons/.tests",
+    "lineNumber": 37,
+    "command": "cons220.txt"
+  },
+  "input": {
+    "modelPath": "model.pict",
+    "optionsRaw": [],
+    "rowSeedPaths": []
+  },
+  "expected": {
+    "upstreamResult": "SUCCESS",
+    "expectedExitCode": 0,
+    "assertionMode": "semantic",
+    "notes": []
+  },
+  "implementationStatus": "required_v0_1",
+  "tags": [
+    "area:constraints",
+    "category:cons"
+  ]
+}

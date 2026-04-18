@@ -1,0 +1,31 @@
+{
+  "id": "para:012",
+  "category": "para",
+  "source": {
+    "modelPath": ".work/pict/test/para/para012.txt",
+    "testsPath": ".work/pict/test/para/.tests",
+    "lineNumber": 18,
+    "command": "para012.txt -C"
+  },
+  "input": {
+    "modelPath": "model.pict",
+    "optionsRaw": [
+      "-C"
+    ],
+    "rowSeedPaths": []
+  },
+  "expected": {
+    "upstreamResult": "SUCCESS",
+    "expectedExitCode": 0,
+    "assertionMode": "semantic",
+    "notes": [
+      "NO_SEEDING"
+    ]
+  },
+  "implementationStatus": "required_v0_1",
+  "tags": [
+    "area:parameter_definition",
+    "category:para",
+    "option:case_sensitive"
+  ]
+}

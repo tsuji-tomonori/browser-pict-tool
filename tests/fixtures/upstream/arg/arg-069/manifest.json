@@ -1,0 +1,28 @@
+{
+  "id": "arg:069",
+  "category": "arg",
+  "source": {
+    "modelPath": ".work/pict/test/arg/arg004.txt",
+    "testsPath": ".work/pict/test/arg/.tests",
+    "lineNumber": 92,
+    "command": "arg004.txt /a\"|\""
+  },
+  "input": {
+    "modelPath": "model.pict",
+    "optionsRaw": [
+      "/a\"|\""
+    ],
+    "rowSeedPaths": []
+  },
+  "expected": {
+    "upstreamResult": "BAD_OPTION",
+    "expectedExitCode": 3,
+    "assertionMode": "diagnostic",
+    "notes": []
+  },
+  "implementationStatus": "required_v0_1",
+  "tags": [
+    "area:cli",
+    "category:arg"
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "id": "para:013",
+  "category": "para",
+  "source": {
+    "modelPath": ".work/pict/test/para/para013.txt",
+    "testsPath": ".work/pict/test/para/.tests",
+    "lineNumber": 19,
+    "command": "para013.txt /o:1"
+  },
+  "input": {
+    "modelPath": "model.pict",
+    "optionsRaw": [
+      "/o:1"
+    ],
+    "rowSeedPaths": []
+  },
+  "expected": {
+    "upstreamResult": "SUCCESS",
+    "expectedExitCode": 0,
+    "assertionMode": "semantic",
+    "notes": []
+  },
+  "implementationStatus": "required_v0_1",
+  "tags": [
+    "area:parameter_definition",
+    "category:para",
+    "option:order"
+  ]
+}

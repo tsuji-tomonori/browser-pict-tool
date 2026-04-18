@@ -1,0 +1,4 @@
+interface:
+  display_name: "Browser Pict Tool TDD"
+  short_description: "Follow the repo TDD workflow and test commands."
+  default_prompt: "Use the browser-pict-tool TDD workflow to add or update tests before code changes, then run the narrowest relevant checks."

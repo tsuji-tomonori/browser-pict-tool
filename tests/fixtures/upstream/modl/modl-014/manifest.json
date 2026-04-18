@@ -1,0 +1,29 @@
+{
+  "id": "modl:014",
+  "category": "modl",
+  "source": {
+    "modelPath": ".work/pict/test/modl/modl019.txt",
+    "testsPath": ".work/pict/test/modl/.tests",
+    "lineNumber": 20,
+    "command": "modl019.txt -c"
+  },
+  "input": {
+    "modelPath": "model.pict",
+    "optionsRaw": [
+      "-c"
+    ],
+    "rowSeedPaths": []
+  },
+  "expected": {
+    "upstreamResult": "SUCCESS",
+    "expectedExitCode": 0,
+    "assertionMode": "semantic",
+    "notes": []
+  },
+  "implementationStatus": "required_v0_1",
+  "tags": [
+    "area:model_structure",
+    "category:modl",
+    "option:case_sensitive"
+  ]
+}

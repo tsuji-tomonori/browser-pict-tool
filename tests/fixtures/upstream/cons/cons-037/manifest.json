@@ -1,0 +1,29 @@
+{
+  "id": "cons:037",
+  "category": "cons",
+  "source": {
+    "modelPath": ".work/pict/test/cons/cons109.txt",
+    "testsPath": ".work/pict/test/cons/.tests",
+    "lineNumber": 48,
+    "command": "cons109.txt -c"
+  },
+  "input": {
+    "modelPath": "model.pict",
+    "optionsRaw": [
+      "-c"
+    ],
+    "rowSeedPaths": []
+  },
+  "expected": {
+    "upstreamResult": "SUCCESS",
+    "expectedExitCode": 0,
+    "assertionMode": "semantic",
+    "notes": []
+  },
+  "implementationStatus": "required_v0_1",
+  "tags": [
+    "area:constraints",
+    "category:cons",
+    "option:case_sensitive"
+  ]
+}

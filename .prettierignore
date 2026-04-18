@@ -1,0 +1,9 @@
+.work
+packages/web/dist
+packages/web/node_modules
+tests/generated
+tests/fixtures/upstream
+pict
+out.txt
+Linux
+SSO

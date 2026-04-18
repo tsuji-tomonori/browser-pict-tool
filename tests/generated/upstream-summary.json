@@ -1,0 +1,227 @@
+{
+  "generatedAt": "2026-04-18T01:31:17.761Z",
+  "sourceRoot": ".work/pict/test",
+  "totals": {
+    "artifactFiles": 316,
+    "commandCases": 605,
+    "supportPhaseCounts": {
+      "required_v0_1": 313,
+      "deferred_v0_2": 132,
+      "deferred_v0_3": 57,
+      "repo_extension_non_goal": 26,
+      "reference_regression": 77
+    }
+  },
+  "categories": [
+    {
+      "category": "root",
+      "artifactCount": 0,
+      "commandCount": 16,
+      "supportPhaseCounts": {
+        "required_v0_1": 15,
+        "deferred_v0_2": 1,
+        "deferred_v0_3": 0,
+        "repo_extension_non_goal": 0,
+        "reference_regression": 0
+      },
+      "supportPhaseHint": "required_v0_1",
+      "rationale": "RFC v0.1 のコア受け入れ範囲。parser / constraint / diagnostics の最低限の互換性をここで担保する。"
+    },
+    {
+      "category": "+perf",
+      "artifactCount": 15,
+      "commandCount": 12,
+      "supportPhaseCounts": {
+        "required_v0_1": 0,
+        "deferred_v0_2": 0,
+        "deferred_v0_3": 0,
+        "repo_extension_non_goal": 0,
+        "reference_regression": 12
+      },
+      "supportPhaseHint": "reference_regression",
+      "rationale": "大きい実モデルや歴史的回帰の参照コーパス。v0.1 の acceptance gate ではなく後段の回帰観測に使う。"
+    },
+    {
+      "category": "+real",
+      "artifactCount": 6,
+      "commandCount": 6,
+      "supportPhaseCounts": {
+        "required_v0_1": 0,
+        "deferred_v0_2": 0,
+        "deferred_v0_3": 0,
+        "repo_extension_non_goal": 0,
+        "reference_regression": 6
+      },
+      "supportPhaseHint": "reference_regression",
+      "rationale": "大きい実モデルや歴史的回帰の参照コーパス。v0.1 の acceptance gate ではなく後段の回帰観測に使う。"
+    },
+    {
+      "category": "arg",
+      "artifactCount": 10,
+      "commandCount": 187,
+      "supportPhaseCounts": {
+        "required_v0_1": 112,
+        "deferred_v0_2": 39,
+        "deferred_v0_3": 32,
+        "repo_extension_non_goal": 4,
+        "reference_regression": 0
+      },
+      "supportPhaseHint": "required_v0_1",
+      "rationale": "RFC v0.1 のコア受け入れ範囲。parser / constraint / diagnostics の最低限の互換性をここで担保する。"
+    },
+    {
+      "category": "bug",
+      "artifactCount": 19,
+      "commandCount": 26,
+      "supportPhaseCounts": {
+        "required_v0_1": 0,
+        "deferred_v0_2": 0,
+        "deferred_v0_3": 2,
+        "repo_extension_non_goal": 0,
+        "reference_regression": 24
+      },
+      "supportPhaseHint": "reference_regression",
+      "rationale": "大きい実モデルや歴史的回帰の参照コーパス。v0.1 の acceptance gate ではなく後段の回帰観測に使う。"
+    },
+    {
+      "category": "clus",
+      "artifactCount": 32,
+      "commandCount": 91,
+      "supportPhaseCounts": {
+        "required_v0_1": 0,
+        "deferred_v0_2": 91,
+        "deferred_v0_3": 0,
+        "repo_extension_non_goal": 0,
+        "reference_regression": 0
+      },
+      "supportPhaseHint": "deferred_v0_2",
+      "rationale": "公開仕様だが v0.1 では後回しにしている。aliases / parameter reuse / submodels などの段階導入対象。"
+    },
+    {
+      "category": "cons",
+      "artifactCount": 100,
+      "commandCount": 107,
+      "supportPhaseCounts": {
+        "required_v0_1": 107,
+        "deferred_v0_2": 0,
+        "deferred_v0_3": 0,
+        "repo_extension_non_goal": 0,
+        "reference_regression": 0
+      },
+      "supportPhaseHint": "required_v0_1",
+      "rationale": "RFC v0.1 のコア受け入れ範囲。parser / constraint / diagnostics の最低限の互換性をここで担保する。"
+    },
+    {
+      "category": "func",
+      "artifactCount": 18,
+      "commandCount": 21,
+      "supportPhaseCounts": {
+        "required_v0_1": 0,
+        "deferred_v0_2": 0,
+        "deferred_v0_3": 0,
+        "repo_extension_non_goal": 21,
+        "reference_regression": 0
+      },
+      "supportPhaseHint": "repo_extension_non_goal",
+      "rationale": "upstream repo 実装では確認できるが、公開仕様として前提にしない。result parameter / function predicate / hidden CLI など。"
+    },
+    {
+      "category": "modl",
+      "artifactCount": 23,
+      "commandCount": 24,
+      "supportPhaseCounts": {
+        "required_v0_1": 24,
+        "deferred_v0_2": 0,
+        "deferred_v0_3": 0,
+        "repo_extension_non_goal": 0,
+        "reference_regression": 0
+      },
+      "supportPhaseHint": "required_v0_1",
+      "rationale": "RFC v0.1 のコア受け入れ範囲。parser / constraint / diagnostics の最低限の互換性をここで担保する。"
+    },
+    {
+      "category": "para",
+      "artifactCount": 21,
+      "commandCount": 33,
+      "supportPhaseCounts": {
+        "required_v0_1": 32,
+        "deferred_v0_2": 1,
+        "deferred_v0_3": 0,
+        "repo_extension_non_goal": 0,
+        "reference_regression": 0
+      },
+      "supportPhaseHint": "required_v0_1",
+      "rationale": "RFC v0.1 のコア受け入れ範囲。parser / constraint / diagnostics の最低限の互換性をここで担保する。"
+    },
+    {
+      "category": "prp",
+      "artifactCount": 10,
+      "commandCount": 11,
+      "supportPhaseCounts": {
+        "required_v0_1": 11,
+        "deferred_v0_2": 0,
+        "deferred_v0_3": 0,
+        "repo_extension_non_goal": 0,
+        "reference_regression": 0
+      },
+      "supportPhaseHint": "required_v0_1",
+      "rationale": "RFC v0.1 のコア受け入れ範囲。parser / constraint / diagnostics の最低限の互換性をここで担保する。"
+    },
+    {
+      "category": "real",
+      "artifactCount": 30,
+      "commandCount": 36,
+      "supportPhaseCounts": {
+        "required_v0_1": 0,
+        "deferred_v0_2": 0,
+        "deferred_v0_3": 0,
+        "repo_extension_non_goal": 1,
+        "reference_regression": 35
+      },
+      "supportPhaseHint": "reference_regression",
+      "rationale": "大きい実モデルや歴史的回帰の参照コーパス。v0.1 の acceptance gate ではなく後段の回帰観測に使う。"
+    },
+    {
+      "category": "seed",
+      "artifactCount": 17,
+      "commandCount": 20,
+      "supportPhaseCounts": {
+        "required_v0_1": 0,
+        "deferred_v0_2": 0,
+        "deferred_v0_3": 20,
+        "repo_extension_non_goal": 0,
+        "reference_regression": 0
+      },
+      "supportPhaseHint": "deferred_v0_3",
+      "rationale": "公開仕様だが実装コストが高く後段導入に回す。weighting / seeding / randomize を含む。"
+    },
+    {
+      "category": "term",
+      "artifactCount": 12,
+      "commandCount": 12,
+      "supportPhaseCounts": {
+        "required_v0_1": 12,
+        "deferred_v0_2": 0,
+        "deferred_v0_3": 0,
+        "repo_extension_non_goal": 0,
+        "reference_regression": 0
+      },
+      "supportPhaseHint": "required_v0_1",
+      "rationale": "RFC v0.1 のコア受け入れ範囲。parser / constraint / diagnostics の最低限の互換性をここで担保する。"
+    },
+    {
+      "category": "wght",
+      "artifactCount": 3,
+      "commandCount": 3,
+      "supportPhaseCounts": {
+        "required_v0_1": 0,
+        "deferred_v0_2": 0,
+        "deferred_v0_3": 3,
+        "repo_extension_non_goal": 0,
+        "reference_regression": 0
+      },
+      "supportPhaseHint": "deferred_v0_3",
+      "rationale": "公開仕様だが実装コストが高く後段導入に回す。weighting / seeding / randomize を含む。"
+    }
+  ]
+}

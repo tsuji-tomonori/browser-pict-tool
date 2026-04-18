@@ -1,0 +1,2975 @@
+{
+  "generatedAt": "2026-04-18T02:36:27.140Z",
+  "source": {
+    "upstreamIndex": "tests/generated/upstream-index.json",
+    "materializedFixtures": "tests/generated/materialized-fixtures-summary.json"
+  },
+  "summary": {
+    "totalCommandCases": 605,
+    "materializedFixtureCases": 313,
+    "missingFixtureCases": 292
+  },
+  "phaseCoverage": {
+    "required_v0_1": {
+      "buckets": [
+        "core_cli_parser",
+        "core_constraints"
+      ],
+      "totalCases": 313,
+      "materializedCases": 313,
+      "missingFixtureCases": 0,
+      "fullyMaterialized": true
+    },
+    "deferred_v0_2": {
+      "buckets": [
+        "public_deferred_structure"
+      ],
+      "totalCases": 132,
+      "materializedCases": 0,
+      "missingFixtureCases": 132,
+      "fullyMaterialized": false
+    },
+    "deferred_v0_3": {
+      "buckets": [
+        "public_deferred_generation"
+      ],
+      "totalCases": 57,
+      "materializedCases": 0,
+      "missingFixtureCases": 57,
+      "fullyMaterialized": false
+    },
+    "repo_extension_non_goal": {
+      "buckets": [
+        "repo_extension_only"
+      ],
+      "totalCases": 26,
+      "materializedCases": 0,
+      "missingFixtureCases": 26,
+      "fullyMaterialized": false
+    },
+    "reference_regression": {
+      "buckets": [
+        "regression_corpus"
+      ],
+      "totalCases": 77,
+      "materializedCases": 0,
+      "missingFixtureCases": 77,
+      "fullyMaterialized": false
+    }
+  },
+  "uncoveredCases": [
+    {
+      "id": "root:008",
+      "category": "root",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:root",
+        "option:alias_delimiter"
+      ]
+    },
+    {
+      "id": "+perf:001",
+      "category": "+perf",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:performance",
+        "category:+perf"
+      ]
+    },
+    {
+      "id": "+perf:002",
+      "category": "+perf",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:performance",
+        "category:+perf"
+      ]
+    },
+    {
+      "id": "+perf:003",
+      "category": "+perf",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:performance",
+        "category:+perf"
+      ]
+    },
+    {
+      "id": "+perf:004",
+      "category": "+perf",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:performance",
+        "category:+perf"
+      ]
+    },
+    {
+      "id": "+perf:005",
+      "category": "+perf",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:performance",
+        "category:+perf"
+      ]
+    },
+    {
+      "id": "+perf:006",
+      "category": "+perf",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:performance",
+        "category:+perf"
+      ]
+    },
+    {
+      "id": "+perf:007",
+      "category": "+perf",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:performance",
+        "category:+perf",
+        "option:order"
+      ]
+    },
+    {
+      "id": "+perf:008",
+      "category": "+perf",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:performance",
+        "category:+perf",
+        "option:order"
+      ]
+    },
+    {
+      "id": "+perf:009",
+      "category": "+perf",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:performance",
+        "category:+perf",
+        "option:order"
+      ]
+    },
+    {
+      "id": "+perf:010",
+      "category": "+perf",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:performance",
+        "category:+perf",
+        "option:order",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "+perf:011",
+      "category": "+perf",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:performance",
+        "category:+perf",
+        "option:order",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "+perf:012",
+      "category": "+perf",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:performance",
+        "category:+perf",
+        "option:order",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "+real:001",
+      "category": "+real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:+real"
+      ]
+    },
+    {
+      "id": "+real:002",
+      "category": "+real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:+real"
+      ]
+    },
+    {
+      "id": "+real:003",
+      "category": "+real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:+real"
+      ]
+    },
+    {
+      "id": "+real:004",
+      "category": "+real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:+real"
+      ]
+    },
+    {
+      "id": "+real:005",
+      "category": "+real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:+real"
+      ]
+    },
+    {
+      "id": "+real:006",
+      "category": "+real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:+real"
+      ]
+    },
+    {
+      "id": "arg:047",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter"
+      ]
+    },
+    {
+      "id": "arg:048",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter"
+      ]
+    },
+    {
+      "id": "arg:049",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter"
+      ]
+    },
+    {
+      "id": "arg:050",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter"
+      ]
+    },
+    {
+      "id": "arg:051",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:order"
+      ]
+    },
+    {
+      "id": "arg:052",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:order"
+      ]
+    },
+    {
+      "id": "arg:053",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:order"
+      ]
+    },
+    {
+      "id": "arg:054",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:order",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "arg:055",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:order",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "arg:056",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:order",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "arg:057",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:order",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "arg:058",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:order",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "arg:059",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:order",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "arg:060",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter"
+      ]
+    },
+    {
+      "id": "arg:061",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:order"
+      ]
+    },
+    {
+      "id": "arg:062",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter"
+      ]
+    },
+    {
+      "id": "arg:063",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter"
+      ]
+    },
+    {
+      "id": "arg:064",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter"
+      ]
+    },
+    {
+      "id": "arg:065",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter"
+      ]
+    },
+    {
+      "id": "arg:066",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter"
+      ]
+    },
+    {
+      "id": "arg:067",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter"
+      ]
+    },
+    {
+      "id": "arg:068",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter"
+      ]
+    },
+    {
+      "id": "arg:070",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter"
+      ]
+    },
+    {
+      "id": "arg:071",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter"
+      ]
+    },
+    {
+      "id": "arg:073",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter"
+      ]
+    },
+    {
+      "id": "arg:074",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter"
+      ]
+    },
+    {
+      "id": "arg:075",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter"
+      ]
+    },
+    {
+      "id": "arg:076",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter"
+      ]
+    },
+    {
+      "id": "arg:077",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter"
+      ]
+    },
+    {
+      "id": "arg:078",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:order",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "arg:079",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:order",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "arg:080",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:order",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "arg:081",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:order"
+      ]
+    },
+    {
+      "id": "arg:082",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter"
+      ]
+    },
+    {
+      "id": "arg:100",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:negative_prefix",
+        "option:order",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "arg:101",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:negative_prefix",
+        "option:order",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "arg:113",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:negative_prefix",
+        "option:order"
+      ]
+    },
+    {
+      "id": "arg:114",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:order",
+        "option:randomize",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "arg:115",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:order",
+        "option:randomize",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "arg:116",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:order",
+        "option:randomize",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "arg:117",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:order",
+        "option:randomize",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "arg:118",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:order",
+        "option:randomize",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "arg:119",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:order",
+        "option:randomize",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "arg:120",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:randomize"
+      ]
+    },
+    {
+      "id": "arg:121",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:randomize"
+      ]
+    },
+    {
+      "id": "arg:122",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:randomize"
+      ]
+    },
+    {
+      "id": "arg:123",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:randomize"
+      ]
+    },
+    {
+      "id": "arg:124",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:randomize"
+      ]
+    },
+    {
+      "id": "arg:125",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:randomize"
+      ]
+    },
+    {
+      "id": "arg:126",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:randomize"
+      ]
+    },
+    {
+      "id": "arg:127",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:randomize"
+      ]
+    },
+    {
+      "id": "arg:128",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:randomize"
+      ]
+    },
+    {
+      "id": "arg:129",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:randomize"
+      ]
+    },
+    {
+      "id": "arg:130",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:randomize"
+      ]
+    },
+    {
+      "id": "arg:131",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:randomize"
+      ]
+    },
+    {
+      "id": "arg:132",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:randomize"
+      ]
+    },
+    {
+      "id": "arg:133",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:randomize"
+      ]
+    },
+    {
+      "id": "arg:134",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:randomize"
+      ]
+    },
+    {
+      "id": "arg:135",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter"
+      ]
+    },
+    {
+      "id": "arg:136",
+      "category": "arg",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter"
+      ]
+    },
+    {
+      "id": "arg:137",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:order",
+        "option:randomize",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "arg:138",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:randomize"
+      ]
+    },
+    {
+      "id": "arg:139",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:randomize"
+      ]
+    },
+    {
+      "id": "arg:140",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:randomize"
+      ]
+    },
+    {
+      "id": "arg:141",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:randomize"
+      ]
+    },
+    {
+      "id": "arg:146",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:case_sensitive",
+        "option:order",
+        "option:randomize",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "arg:147",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:case_sensitive",
+        "option:order",
+        "option:randomize",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "arg:148",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:case_sensitive",
+        "option:order",
+        "option:randomize",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "arg:149",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:case_sensitive",
+        "option:order",
+        "option:randomize",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "arg:150",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:case_sensitive",
+        "option:order",
+        "option:randomize",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "arg:159",
+      "category": "arg",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:alias_delimiter",
+        "option:order",
+        "option:randomize",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "arg:180",
+      "category": "arg",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:hidden_preview"
+      ]
+    },
+    {
+      "id": "arg:181",
+      "category": "arg",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:hidden_preview",
+        "option:order"
+      ]
+    },
+    {
+      "id": "arg:182",
+      "category": "arg",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:hidden_preview",
+        "option:order"
+      ]
+    },
+    {
+      "id": "arg:183",
+      "category": "arg",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:cli",
+        "category:arg",
+        "option:hidden_preview",
+        "option:order"
+      ]
+    },
+    {
+      "id": "bug:001",
+      "category": "bug",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug",
+        "option:order"
+      ]
+    },
+    {
+      "id": "bug:002",
+      "category": "bug",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug"
+      ]
+    },
+    {
+      "id": "bug:003",
+      "category": "bug",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug"
+      ]
+    },
+    {
+      "id": "bug:004",
+      "category": "bug",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug",
+        "option:order"
+      ]
+    },
+    {
+      "id": "bug:005",
+      "category": "bug",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug"
+      ]
+    },
+    {
+      "id": "bug:006",
+      "category": "bug",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug",
+        "option:case_sensitive"
+      ]
+    },
+    {
+      "id": "bug:007",
+      "category": "bug",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug"
+      ]
+    },
+    {
+      "id": "bug:008",
+      "category": "bug",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug"
+      ]
+    },
+    {
+      "id": "bug:009",
+      "category": "bug",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug"
+      ]
+    },
+    {
+      "id": "bug:010",
+      "category": "bug",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug"
+      ]
+    },
+    {
+      "id": "bug:011",
+      "category": "bug",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug"
+      ]
+    },
+    {
+      "id": "bug:012",
+      "category": "bug",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug"
+      ]
+    },
+    {
+      "id": "bug:013",
+      "category": "bug",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug"
+      ]
+    },
+    {
+      "id": "bug:014",
+      "category": "bug",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug",
+        "option:order"
+      ]
+    },
+    {
+      "id": "bug:015",
+      "category": "bug",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug",
+        "option:order"
+      ]
+    },
+    {
+      "id": "bug:016",
+      "category": "bug",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug",
+        "option:randomize"
+      ]
+    },
+    {
+      "id": "bug:017",
+      "category": "bug",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug",
+        "option:randomize"
+      ]
+    },
+    {
+      "id": "bug:018",
+      "category": "bug",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "bug:019",
+      "category": "bug",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug"
+      ]
+    },
+    {
+      "id": "bug:020",
+      "category": "bug",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug"
+      ]
+    },
+    {
+      "id": "bug:021",
+      "category": "bug",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug",
+        "option:order"
+      ]
+    },
+    {
+      "id": "bug:022",
+      "category": "bug",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug"
+      ]
+    },
+    {
+      "id": "bug:023",
+      "category": "bug",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug"
+      ]
+    },
+    {
+      "id": "bug:024",
+      "category": "bug",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug"
+      ]
+    },
+    {
+      "id": "bug:025",
+      "category": "bug",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug",
+        "option:order"
+      ]
+    },
+    {
+      "id": "bug:026",
+      "category": "bug",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:bug_regression",
+        "category:bug"
+      ]
+    },
+    {
+      "id": "clus:001",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus"
+      ]
+    },
+    {
+      "id": "clus:002",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:003",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:004",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus"
+      ]
+    },
+    {
+      "id": "clus:005",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus"
+      ]
+    },
+    {
+      "id": "clus:006",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus"
+      ]
+    },
+    {
+      "id": "clus:007",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:008",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus"
+      ]
+    },
+    {
+      "id": "clus:009",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:010",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:011",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:012",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:013",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:014",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:015",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:016",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:017",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:018",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:019",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:020",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:021",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:022",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:023",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus"
+      ]
+    },
+    {
+      "id": "clus:024",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:025",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:026",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:027",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:028",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:029",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:030",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:031",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:032",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus"
+      ]
+    },
+    {
+      "id": "clus:033",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:034",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:035",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:036",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:037",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:038",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:039",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "clus:040",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "clus:041",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "clus:042",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "clus:043",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "clus:044",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "clus:045",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus"
+      ]
+    },
+    {
+      "id": "clus:046",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "clus:047",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus"
+      ]
+    },
+    {
+      "id": "clus:048",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus"
+      ]
+    },
+    {
+      "id": "clus:049",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:050",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:051",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:052",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:053",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:054",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:055",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:056",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:057",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "clus:058",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:059",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus"
+      ]
+    },
+    {
+      "id": "clus:060",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus"
+      ]
+    },
+    {
+      "id": "clus:061",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus"
+      ]
+    },
+    {
+      "id": "clus:062",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:063",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:064",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:065",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:066",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:067",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:068",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus"
+      ]
+    },
+    {
+      "id": "clus:069",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:070",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:071",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:072",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:073",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus"
+      ]
+    },
+    {
+      "id": "clus:074",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:075",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:076",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:077",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:078",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:079",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:080",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus"
+      ]
+    },
+    {
+      "id": "clus:081",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:082",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:083",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:084",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:085",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:086",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order"
+      ]
+    },
+    {
+      "id": "clus:087",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "clus:088",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus",
+        "option:order",
+        "option:value_delimiter"
+      ]
+    },
+    {
+      "id": "clus:089",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus"
+      ]
+    },
+    {
+      "id": "clus:090",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus"
+      ]
+    },
+    {
+      "id": "clus:091",
+      "category": "clus",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:submodels",
+        "category:clus"
+      ]
+    },
+    {
+      "id": "func:001",
+      "category": "func",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:function_predicate",
+        "category:func"
+      ]
+    },
+    {
+      "id": "func:002",
+      "category": "func",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:function_predicate",
+        "category:func",
+        "option:order"
+      ]
+    },
+    {
+      "id": "func:003",
+      "category": "func",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:function_predicate",
+        "category:func",
+        "option:order"
+      ]
+    },
+    {
+      "id": "func:004",
+      "category": "func",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:function_predicate",
+        "category:func",
+        "option:order"
+      ]
+    },
+    {
+      "id": "func:005",
+      "category": "func",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:function_predicate",
+        "category:func"
+      ]
+    },
+    {
+      "id": "func:006",
+      "category": "func",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:function_predicate",
+        "category:func"
+      ]
+    },
+    {
+      "id": "func:007",
+      "category": "func",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:function_predicate",
+        "category:func"
+      ]
+    },
+    {
+      "id": "func:008",
+      "category": "func",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:function_predicate",
+        "category:func"
+      ]
+    },
+    {
+      "id": "func:009",
+      "category": "func",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:function_predicate",
+        "category:func"
+      ]
+    },
+    {
+      "id": "func:010",
+      "category": "func",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:function_predicate",
+        "category:func"
+      ]
+    },
+    {
+      "id": "func:011",
+      "category": "func",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:function_predicate",
+        "category:func"
+      ]
+    },
+    {
+      "id": "func:012",
+      "category": "func",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:function_predicate",
+        "category:func"
+      ]
+    },
+    {
+      "id": "func:013",
+      "category": "func",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:function_predicate",
+        "category:func"
+      ]
+    },
+    {
+      "id": "func:014",
+      "category": "func",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:function_predicate",
+        "category:func"
+      ]
+    },
+    {
+      "id": "func:015",
+      "category": "func",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:function_predicate",
+        "category:func"
+      ]
+    },
+    {
+      "id": "func:016",
+      "category": "func",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:function_predicate",
+        "category:func"
+      ]
+    },
+    {
+      "id": "func:017",
+      "category": "func",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:function_predicate",
+        "category:func"
+      ]
+    },
+    {
+      "id": "func:018",
+      "category": "func",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:function_predicate",
+        "category:func"
+      ]
+    },
+    {
+      "id": "func:019",
+      "category": "func",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:function_predicate",
+        "category:func"
+      ]
+    },
+    {
+      "id": "func:020",
+      "category": "func",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:function_predicate",
+        "category:func"
+      ]
+    },
+    {
+      "id": "func:021",
+      "category": "func",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:function_predicate",
+        "category:func"
+      ]
+    },
+    {
+      "id": "para:020",
+      "category": "para",
+      "supportPhase": "deferred_v0_2",
+      "featureTags": [
+        "area:parameter_definition",
+        "category:para",
+        "option:alias_delimiter"
+      ]
+    },
+    {
+      "id": "real:001",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:002",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:003",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:004",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:005",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:006",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:007",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:008",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:009",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:010",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:011",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:012",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:013",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:014",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:015",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:016",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:017",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:018",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:019",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:020",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:021",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:022",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:023",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:024",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:025",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:026",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:027",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:028",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:029",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real",
+        "option:order"
+      ]
+    },
+    {
+      "id": "real:030",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real",
+        "option:order"
+      ]
+    },
+    {
+      "id": "real:031",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real",
+        "option:order"
+      ]
+    },
+    {
+      "id": "real:032",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real",
+        "option:order"
+      ]
+    },
+    {
+      "id": "real:033",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real",
+        "option:order"
+      ]
+    },
+    {
+      "id": "real:034",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real",
+        "option:order"
+      ]
+    },
+    {
+      "id": "real:035",
+      "category": "real",
+      "supportPhase": "reference_regression",
+      "featureTags": [
+        "area:real_models",
+        "category:real"
+      ]
+    },
+    {
+      "id": "real:036",
+      "category": "real",
+      "supportPhase": "repo_extension_non_goal",
+      "featureTags": [
+        "area:real_models",
+        "category:real",
+        "syntax:result_parameter"
+      ]
+    },
+    {
+      "id": "seed:001",
+      "category": "seed",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:seeding",
+        "category:seed",
+        "option:seeding"
+      ]
+    },
+    {
+      "id": "seed:002",
+      "category": "seed",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:seeding",
+        "category:seed",
+        "option:seeding"
+      ]
+    },
+    {
+      "id": "seed:003",
+      "category": "seed",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:seeding",
+        "category:seed",
+        "option:seeding"
+      ]
+    },
+    {
+      "id": "seed:004",
+      "category": "seed",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:seeding",
+        "category:seed",
+        "option:order",
+        "option:seeding"
+      ]
+    },
+    {
+      "id": "seed:005",
+      "category": "seed",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:seeding",
+        "category:seed",
+        "option:randomize",
+        "option:seeding"
+      ]
+    },
+    {
+      "id": "seed:006",
+      "category": "seed",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:seeding",
+        "category:seed",
+        "option:randomize",
+        "option:seeding"
+      ]
+    },
+    {
+      "id": "seed:007",
+      "category": "seed",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:seeding",
+        "category:seed",
+        "option:seeding"
+      ]
+    },
+    {
+      "id": "seed:008",
+      "category": "seed",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:seeding",
+        "category:seed",
+        "option:seeding"
+      ]
+    },
+    {
+      "id": "seed:009",
+      "category": "seed",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:seeding",
+        "category:seed",
+        "option:seeding"
+      ]
+    },
+    {
+      "id": "seed:010",
+      "category": "seed",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:seeding",
+        "category:seed",
+        "option:seeding"
+      ]
+    },
+    {
+      "id": "seed:011",
+      "category": "seed",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:seeding",
+        "category:seed",
+        "option:seeding"
+      ]
+    },
+    {
+      "id": "seed:012",
+      "category": "seed",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:seeding",
+        "category:seed",
+        "option:seeding"
+      ]
+    },
+    {
+      "id": "seed:013",
+      "category": "seed",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:seeding",
+        "category:seed",
+        "option:seeding"
+      ]
+    },
+    {
+      "id": "seed:014",
+      "category": "seed",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:seeding",
+        "category:seed",
+        "option:seeding"
+      ]
+    },
+    {
+      "id": "seed:015",
+      "category": "seed",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:seeding",
+        "category:seed",
+        "option:seeding"
+      ]
+    },
+    {
+      "id": "seed:016",
+      "category": "seed",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:seeding",
+        "category:seed",
+        "option:seeding"
+      ]
+    },
+    {
+      "id": "seed:017",
+      "category": "seed",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:seeding",
+        "category:seed",
+        "option:seeding"
+      ]
+    },
+    {
+      "id": "seed:018",
+      "category": "seed",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:seeding",
+        "category:seed",
+        "option:seeding"
+      ]
+    },
+    {
+      "id": "seed:019",
+      "category": "seed",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:seeding",
+        "category:seed",
+        "option:seeding"
+      ]
+    },
+    {
+      "id": "seed:020",
+      "category": "seed",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:seeding",
+        "category:seed",
+        "option:seeding"
+      ]
+    },
+    {
+      "id": "wght:001",
+      "category": "wght",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:weighting",
+        "category:wght"
+      ]
+    },
+    {
+      "id": "wght:002",
+      "category": "wght",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:weighting",
+        "category:wght"
+      ]
+    },
+    {
+      "id": "wght:003",
+      "category": "wght",
+      "supportPhase": "deferred_v0_3",
+      "featureTags": [
+        "area:weighting",
+        "category:wght"
+      ]
+    }
+  ]
+}

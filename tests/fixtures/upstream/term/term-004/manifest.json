@@ -1,0 +1,26 @@
+{
+  "id": "term:004",
+  "category": "term",
+  "source": {
+    "modelPath": ".work/pict/test/term/term011.txt",
+    "testsPath": ".work/pict/test/term/.tests",
+    "lineNumber": 10,
+    "command": "term011.txt"
+  },
+  "input": {
+    "modelPath": "model.pict",
+    "optionsRaw": [],
+    "rowSeedPaths": []
+  },
+  "expected": {
+    "upstreamResult": "SUCCESS",
+    "expectedExitCode": 0,
+    "assertionMode": "semantic",
+    "notes": []
+  },
+  "implementationStatus": "required_v0_1",
+  "tags": [
+    "area:predicate_terms",
+    "category:term"
+  ]
+}

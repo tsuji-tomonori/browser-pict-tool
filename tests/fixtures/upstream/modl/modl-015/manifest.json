@@ -1,0 +1,26 @@
+{
+  "id": "modl:015",
+  "category": "modl",
+  "source": {
+    "modelPath": ".work/pict/test/modl/modl020.txt",
+    "testsPath": ".work/pict/test/modl/.tests",
+    "lineNumber": 21,
+    "command": "modl020.txt"
+  },
+  "input": {
+    "modelPath": "model.pict",
+    "optionsRaw": [],
+    "rowSeedPaths": []
+  },
+  "expected": {
+    "upstreamResult": "SUCCESS",
+    "expectedExitCode": 0,
+    "assertionMode": "semantic",
+    "notes": []
+  },
+  "implementationStatus": "required_v0_1",
+  "tags": [
+    "area:model_structure",
+    "category:modl"
+  ]
+}

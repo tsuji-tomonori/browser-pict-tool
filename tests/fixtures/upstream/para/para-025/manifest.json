@@ -1,0 +1,29 @@
+{
+  "id": "para:025",
+  "category": "para",
+  "source": {
+    "modelPath": ".work/pict/test/para/para005.txt",
+    "testsPath": ".work/pict/test/para/.tests",
+    "lineNumber": 32,
+    "command": "para005.txt /o:2"
+  },
+  "input": {
+    "modelPath": "model.pict",
+    "optionsRaw": [
+      "/o:2"
+    ],
+    "rowSeedPaths": []
+  },
+  "expected": {
+    "upstreamResult": "BAD_MODEL",
+    "expectedExitCode": 4,
+    "assertionMode": "diagnostic",
+    "notes": []
+  },
+  "implementationStatus": "required_v0_1",
+  "tags": [
+    "area:parameter_definition",
+    "category:para",
+    "option:order"
+  ]
+}

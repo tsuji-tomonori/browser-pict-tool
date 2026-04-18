@@ -1,0 +1,145 @@
+# Derived from:
+# - .work/pict/doc/pict.md
+# - .work/pict/README.md
+# - .work/pict/doc/sample-models/*.txt
+# - .work/pict/test/{arg,para,modl,cons,term,prp,clus,seed,wght,real,func}
+# - .work/pict/cli/{mparser,gcdmodel,ctokenizer,cmdline,cparser}.cpp
+# - tests/generated/upstream-index.json
+# - tests/generated/upstream-summary.json
+# - tests/generated/materialized-fixtures-summary.json
+#
+# Purpose:
+# - compatibility planning model for browser-pict-tool
+# - separate public PICT surface from repo-only implementation details
+# - keep axes normalized enough for pairwise/3-wise planning runs
+#
+# Notes:
+# - parser-error-only regressions from test/bug are still excluded
+# - repo-only features are tracked explicitly so RFC can mark them as
+#   either supported later or intentionally non-goal for v0.1
+# - support phase is driven by command-level upstream inventory
+# - materialized_and_checked currently corresponds to required_v0_1 fixtures
+
+FeatureSurface: public_doc, repo_extension
+RepoExtensionKind: none, inline_param_order, result_parameter, function_predicate, format_output, hidden_generation_mode
+SupportPhase: required_v0_1, deferred_v0_2, deferred_v0_3, repo_extension_non_goal, reference_regression
+UpstreamCoverageBucket: core_cli_parser, core_constraints, public_deferred_structure, public_deferred_generation, repo_extension_only, regression_corpus
+FixtureReadiness: indexed_only, materialized_and_checked
+
+ModelSectionOrder: params_only, params_then_constraints, params_submodels_constraints
+ParamNameStyle: simple, whitespace, empty
+ParameterSeparator: colon, delimiter_only
+TypeInference: string_only, numeric_only, mixed
+ValueLexemeStyle: regular, empty_value
+ParameterReuse: off, on
+InlineParameterOrder: off, on
+ResultParameter: off, on
+
+ValueSeparator: comma_default, custom_delimiter
+AliasFeature: off, on
+AliasSeparator: NA, pipe_default, custom_delimiter
+AliasSemantics: NA, primary_name_only
+NegativeFeature: off, on
+NegativePrefix: NA, tilde_default, custom_prefix
+NegativeSemantics: NA, prefix_stripped_for_semantics, single_invalid_per_row
+Weighting: off, on
+DummyValueTechnique: off, on
+
+ConstraintForm: none, invariant, if_then, if_then_else
+StatementStyle: NA, single_line_semicolon, multiline_semicolon
+PredicateKind: NA, literal_compare, parameter_compare, in_set, like_pattern
+LogicalComplexity: NA, single_term, and_or, not_with_parentheses
+ConstraintTyping: NA, pict_strict, loose_custom
+CaseSensitivity: insensitive_default, sensitive_option
+UnknownParameterHandling: NA, warning_drop_constraint, hard_error
+
+GenerationStrength: default_pairwise, explicit_n, max_keyword
+Submodeling: none, explicit_order, inherited_order, overlapping
+SubmodelTopology: NA, one_level_only
+Randomization: off, on, seeded
+Seeding: none, full_rows, partial_rows
+SeedingMismatchHandling: NA, ignore_unknown_column, ignore_unknown_value, skip_constraint_violating_row
+Statistics: off, on
+
+# Constraints: avoid only structurally meaningless combinations.
+IF [FeatureSurface] = "public_doc"
+THEN [RepoExtensionKind] = "none" AND [InlineParameterOrder] = "off" AND [ResultParameter] = "off"
+ELSE [RepoExtensionKind] <> "none";
+
+IF [SupportPhase] = "required_v0_1"
+THEN [FeatureSurface] = "public_doc" AND [RepoExtensionKind] = "none" AND [UpstreamCoverageBucket] IN {"core_cli_parser", "core_constraints"} AND [FixtureReadiness] = "materialized_and_checked" AND [AliasFeature] = "off" AND [ParameterReuse] = "off" AND [Submodeling] = "none" AND [Weighting] = "off" AND [Randomization] = "off" AND [Seeding] = "none";
+
+IF [SupportPhase] = "deferred_v0_2"
+THEN [FeatureSurface] = "public_doc" AND [UpstreamCoverageBucket] = "public_deferred_structure" AND [FixtureReadiness] = "indexed_only" AND [Weighting] = "off" AND [Randomization] = "off" AND [Seeding] = "none" AND ( [AliasFeature] = "on" OR [ParameterReuse] = "on" OR [Submodeling] <> "none" );
+
+IF [SupportPhase] = "deferred_v0_3"
+THEN [FeatureSurface] = "public_doc" AND [UpstreamCoverageBucket] = "public_deferred_generation" AND [FixtureReadiness] = "indexed_only" AND ( [Weighting] = "on" OR [Randomization] <> "off" OR [Seeding] <> "none" );
+
+IF [SupportPhase] = "repo_extension_non_goal"
+THEN [FeatureSurface] = "repo_extension" AND [UpstreamCoverageBucket] = "repo_extension_only" AND [FixtureReadiness] = "indexed_only";
+
+IF [SupportPhase] = "reference_regression"
+THEN [FeatureSurface] = "public_doc" AND [RepoExtensionKind] = "none" AND [UpstreamCoverageBucket] = "regression_corpus" AND [FixtureReadiness] = "indexed_only";
+
+IF [ModelSectionOrder] = "params_only"
+THEN [Submodeling] = "none" AND [ConstraintForm] = "none";
+
+IF [ModelSectionOrder] = "params_then_constraints"
+THEN [Submodeling] = "none" AND [ConstraintForm] <> "none";
+
+IF [ModelSectionOrder] = "params_submodels_constraints"
+THEN [Submodeling] <> "none";
+
+IF [ConstraintForm] = "none"
+THEN [StatementStyle] = "NA" AND [PredicateKind] = "NA" AND [LogicalComplexity] = "NA" AND [ConstraintTyping] = "NA" AND [UnknownParameterHandling] = "NA"
+ELSE [StatementStyle] <> "NA" AND [PredicateKind] <> "NA" AND [LogicalComplexity] <> "NA" AND [ConstraintTyping] <> "NA" AND [UnknownParameterHandling] <> "NA";
+
+IF [UpstreamCoverageBucket] = "core_constraints"
+THEN [FeatureSurface] = "public_doc" AND [RepoExtensionKind] = "none" AND [ConstraintForm] <> "none";
+
+IF [UpstreamCoverageBucket] = "core_cli_parser"
+THEN [FeatureSurface] = "public_doc" AND [RepoExtensionKind] = "none";
+
+IF [UpstreamCoverageBucket] = "public_deferred_structure"
+THEN [AliasFeature] = "on" OR [ParameterReuse] = "on" OR [Submodeling] <> "none";
+
+IF [UpstreamCoverageBucket] = "public_deferred_generation"
+THEN [Weighting] = "on" OR [Randomization] <> "off" OR [Seeding] <> "none";
+
+IF [UpstreamCoverageBucket] = "repo_extension_only"
+THEN [FeatureSurface] = "repo_extension";
+
+IF [FixtureReadiness] = "materialized_and_checked"
+THEN [SupportPhase] = "required_v0_1";
+
+IF [AliasFeature] = "on"
+THEN [AliasSeparator] <> "NA" AND [AliasSemantics] <> "NA"
+ELSE [AliasSeparator] = "NA" AND [AliasSemantics] = "NA";
+
+IF [NegativeFeature] = "on"
+THEN [NegativePrefix] <> "NA" AND [NegativeSemantics] <> "NA"
+ELSE [NegativePrefix] = "NA" AND [NegativeSemantics] = "NA";
+
+IF [DummyValueTechnique] = "on"
+THEN [ConstraintForm] <> "none";
+
+IF [Submodeling] = "none"
+THEN [SubmodelTopology] = "NA"
+ELSE [SubmodelTopology] <> "NA";
+
+IF [Seeding] = "none"
+THEN [SeedingMismatchHandling] = "NA"
+ELSE [SeedingMismatchHandling] <> "NA";
+
+IF [RepoExtensionKind] = "inline_param_order"
+THEN [InlineParameterOrder] = "on";
+IF [RepoExtensionKind] <> "inline_param_order"
+THEN [InlineParameterOrder] = "off";
+
+IF [RepoExtensionKind] = "result_parameter"
+THEN [ResultParameter] = "on";
+IF [RepoExtensionKind] <> "result_parameter"
+THEN [ResultParameter] = "off";
+
+IF [RepoExtensionKind] = "function_predicate"
+THEN [ConstraintForm] <> "none";

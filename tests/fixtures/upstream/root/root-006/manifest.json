@@ -1,0 +1,27 @@
+{
+  "id": "root:006",
+  "category": "root",
+  "source": {
+    "modelPath": null,
+    "testsPath": ".work/pict/test/.tests",
+    "lineNumber": 6,
+    "command": "-o:1"
+  },
+  "input": {
+    "modelPath": null,
+    "optionsRaw": [],
+    "rowSeedPaths": []
+  },
+  "expected": {
+    "upstreamResult": "BAD_MODEL",
+    "expectedExitCode": 4,
+    "assertionMode": "diagnostic",
+    "notes": []
+  },
+  "implementationStatus": "required_v0_1",
+  "tags": [
+    "area:cli",
+    "category:root",
+    "option:order"
+  ]
+}

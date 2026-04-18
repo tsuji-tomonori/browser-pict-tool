@@ -1,0 +1,29 @@
+{
+  "id": "arg:145",
+  "category": "arg",
+  "source": {
+    "modelPath": ".work/pict/test/arg/arg007.txt",
+    "testsPath": ".work/pict/test/arg/.tests",
+    "lineNumber": 193,
+    "command": "arg007.txt /C"
+  },
+  "input": {
+    "modelPath": "model.pict",
+    "optionsRaw": [
+      "/C"
+    ],
+    "rowSeedPaths": []
+  },
+  "expected": {
+    "upstreamResult": "SUCCESS",
+    "expectedExitCode": 0,
+    "assertionMode": "semantic",
+    "notes": []
+  },
+  "implementationStatus": "required_v0_1",
+  "tags": [
+    "area:cli",
+    "category:arg",
+    "option:case_sensitive"
+  ]
+}

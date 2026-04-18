@@ -1,0 +1,26 @@
+{
+  "id": "prp:011",
+  "category": "prp",
+  "source": {
+    "modelPath": ".work/pict/test/prp/prp021.txt",
+    "testsPath": ".work/pict/test/prp/.tests",
+    "lineNumber": 18,
+    "command": "prp021.txt"
+  },
+  "input": {
+    "modelPath": "model.pict",
+    "optionsRaw": [],
+    "rowSeedPaths": []
+  },
+  "expected": {
+    "upstreamResult": "BAD_CONSTRAINTS",
+    "expectedExitCode": 5,
+    "assertionMode": "diagnostic",
+    "notes": []
+  },
+  "implementationStatus": "required_v0_1",
+  "tags": [
+    "area:parameter_compare",
+    "category:prp"
+  ]
+}

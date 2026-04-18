@@ -1,0 +1,26 @@
+{
+  "id": "cons:091",
+  "category": "cons",
+  "source": {
+    "modelPath": ".work/pict/test/cons/cons076.txt",
+    "testsPath": ".work/pict/test/cons/.tests",
+    "lineNumber": 103,
+    "command": "cons076.txt"
+  },
+  "input": {
+    "modelPath": "model.pict",
+    "optionsRaw": [],
+    "rowSeedPaths": []
+  },
+  "expected": {
+    "upstreamResult": "BAD_CONSTRAINTS",
+    "expectedExitCode": 5,
+    "assertionMode": "diagnostic",
+    "notes": []
+  },
+  "implementationStatus": "required_v0_1",
+  "tags": [
+    "area:constraints",
+    "category:cons"
+  ]
+}

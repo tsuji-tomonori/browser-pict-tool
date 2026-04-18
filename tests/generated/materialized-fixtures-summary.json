@@ -1,0 +1,1587 @@
+{
+  "generatedAt": "2026-04-18T01:44:09.669Z",
+  "phases": [
+    "required_v0_1"
+  ],
+  "cleanedCaseDirs": 313,
+  "fixtureCount": 313,
+  "categoryCounts": {
+    "arg": 112,
+    "cons": 107,
+    "modl": 24,
+    "para": 32,
+    "prp": 11,
+    "root": 15,
+    "term": 12
+  },
+  "supportPhaseCounts": {
+    "required_v0_1": 313
+  },
+  "fixtures": [
+    {
+      "id": "root:001",
+      "path": "tests/fixtures/upstream/root/root-001",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "root:002",
+      "path": "tests/fixtures/upstream/root/root-002",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "root:003",
+      "path": "tests/fixtures/upstream/root/root-003",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "root:004",
+      "path": "tests/fixtures/upstream/root/root-004",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "root:005",
+      "path": "tests/fixtures/upstream/root/root-005",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "root:006",
+      "path": "tests/fixtures/upstream/root/root-006",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "root:007",
+      "path": "tests/fixtures/upstream/root/root-007",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "root:009",
+      "path": "tests/fixtures/upstream/root/root-009",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "root:010",
+      "path": "tests/fixtures/upstream/root/root-010",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "root:011",
+      "path": "tests/fixtures/upstream/root/root-011",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "root:012",
+      "path": "tests/fixtures/upstream/root/root-012",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "root:013",
+      "path": "tests/fixtures/upstream/root/root-013",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "root:014",
+      "path": "tests/fixtures/upstream/root/root-014",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "root:015",
+      "path": "tests/fixtures/upstream/root/root-015",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "root:016",
+      "path": "tests/fixtures/upstream/root/root-016",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:001",
+      "path": "tests/fixtures/upstream/arg/arg-001",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:002",
+      "path": "tests/fixtures/upstream/arg/arg-002",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:003",
+      "path": "tests/fixtures/upstream/arg/arg-003",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:004",
+      "path": "tests/fixtures/upstream/arg/arg-004",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:005",
+      "path": "tests/fixtures/upstream/arg/arg-005",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:006",
+      "path": "tests/fixtures/upstream/arg/arg-006",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:007",
+      "path": "tests/fixtures/upstream/arg/arg-007",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:008",
+      "path": "tests/fixtures/upstream/arg/arg-008",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:009",
+      "path": "tests/fixtures/upstream/arg/arg-009",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:010",
+      "path": "tests/fixtures/upstream/arg/arg-010",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:011",
+      "path": "tests/fixtures/upstream/arg/arg-011",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:012",
+      "path": "tests/fixtures/upstream/arg/arg-012",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:013",
+      "path": "tests/fixtures/upstream/arg/arg-013",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:014",
+      "path": "tests/fixtures/upstream/arg/arg-014",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:015",
+      "path": "tests/fixtures/upstream/arg/arg-015",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:016",
+      "path": "tests/fixtures/upstream/arg/arg-016",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:017",
+      "path": "tests/fixtures/upstream/arg/arg-017",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:018",
+      "path": "tests/fixtures/upstream/arg/arg-018",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:019",
+      "path": "tests/fixtures/upstream/arg/arg-019",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:020",
+      "path": "tests/fixtures/upstream/arg/arg-020",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:021",
+      "path": "tests/fixtures/upstream/arg/arg-021",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:022",
+      "path": "tests/fixtures/upstream/arg/arg-022",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:023",
+      "path": "tests/fixtures/upstream/arg/arg-023",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:024",
+      "path": "tests/fixtures/upstream/arg/arg-024",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:025",
+      "path": "tests/fixtures/upstream/arg/arg-025",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:026",
+      "path": "tests/fixtures/upstream/arg/arg-026",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:027",
+      "path": "tests/fixtures/upstream/arg/arg-027",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:028",
+      "path": "tests/fixtures/upstream/arg/arg-028",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:029",
+      "path": "tests/fixtures/upstream/arg/arg-029",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:030",
+      "path": "tests/fixtures/upstream/arg/arg-030",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:031",
+      "path": "tests/fixtures/upstream/arg/arg-031",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:032",
+      "path": "tests/fixtures/upstream/arg/arg-032",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:033",
+      "path": "tests/fixtures/upstream/arg/arg-033",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:034",
+      "path": "tests/fixtures/upstream/arg/arg-034",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:035",
+      "path": "tests/fixtures/upstream/arg/arg-035",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:036",
+      "path": "tests/fixtures/upstream/arg/arg-036",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:037",
+      "path": "tests/fixtures/upstream/arg/arg-037",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:038",
+      "path": "tests/fixtures/upstream/arg/arg-038",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:039",
+      "path": "tests/fixtures/upstream/arg/arg-039",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:040",
+      "path": "tests/fixtures/upstream/arg/arg-040",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:041",
+      "path": "tests/fixtures/upstream/arg/arg-041",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:042",
+      "path": "tests/fixtures/upstream/arg/arg-042",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:043",
+      "path": "tests/fixtures/upstream/arg/arg-043",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:044",
+      "path": "tests/fixtures/upstream/arg/arg-044",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:045",
+      "path": "tests/fixtures/upstream/arg/arg-045",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:046",
+      "path": "tests/fixtures/upstream/arg/arg-046",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:069",
+      "path": "tests/fixtures/upstream/arg/arg-069",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:072",
+      "path": "tests/fixtures/upstream/arg/arg-072",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:083",
+      "path": "tests/fixtures/upstream/arg/arg-083",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:084",
+      "path": "tests/fixtures/upstream/arg/arg-084",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:085",
+      "path": "tests/fixtures/upstream/arg/arg-085",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:086",
+      "path": "tests/fixtures/upstream/arg/arg-086",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:087",
+      "path": "tests/fixtures/upstream/arg/arg-087",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:088",
+      "path": "tests/fixtures/upstream/arg/arg-088",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:089",
+      "path": "tests/fixtures/upstream/arg/arg-089",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:090",
+      "path": "tests/fixtures/upstream/arg/arg-090",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:091",
+      "path": "tests/fixtures/upstream/arg/arg-091",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:092",
+      "path": "tests/fixtures/upstream/arg/arg-092",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:093",
+      "path": "tests/fixtures/upstream/arg/arg-093",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:094",
+      "path": "tests/fixtures/upstream/arg/arg-094",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:095",
+      "path": "tests/fixtures/upstream/arg/arg-095",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:096",
+      "path": "tests/fixtures/upstream/arg/arg-096",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:097",
+      "path": "tests/fixtures/upstream/arg/arg-097",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:098",
+      "path": "tests/fixtures/upstream/arg/arg-098",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:099",
+      "path": "tests/fixtures/upstream/arg/arg-099",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:102",
+      "path": "tests/fixtures/upstream/arg/arg-102",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:103",
+      "path": "tests/fixtures/upstream/arg/arg-103",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:104",
+      "path": "tests/fixtures/upstream/arg/arg-104",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:105",
+      "path": "tests/fixtures/upstream/arg/arg-105",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:106",
+      "path": "tests/fixtures/upstream/arg/arg-106",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:107",
+      "path": "tests/fixtures/upstream/arg/arg-107",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:108",
+      "path": "tests/fixtures/upstream/arg/arg-108",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:109",
+      "path": "tests/fixtures/upstream/arg/arg-109",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:110",
+      "path": "tests/fixtures/upstream/arg/arg-110",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:111",
+      "path": "tests/fixtures/upstream/arg/arg-111",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:112",
+      "path": "tests/fixtures/upstream/arg/arg-112",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:142",
+      "path": "tests/fixtures/upstream/arg/arg-142",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:143",
+      "path": "tests/fixtures/upstream/arg/arg-143",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:144",
+      "path": "tests/fixtures/upstream/arg/arg-144",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:145",
+      "path": "tests/fixtures/upstream/arg/arg-145",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:151",
+      "path": "tests/fixtures/upstream/arg/arg-151",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:152",
+      "path": "tests/fixtures/upstream/arg/arg-152",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:153",
+      "path": "tests/fixtures/upstream/arg/arg-153",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:154",
+      "path": "tests/fixtures/upstream/arg/arg-154",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:155",
+      "path": "tests/fixtures/upstream/arg/arg-155",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:156",
+      "path": "tests/fixtures/upstream/arg/arg-156",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:157",
+      "path": "tests/fixtures/upstream/arg/arg-157",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:158",
+      "path": "tests/fixtures/upstream/arg/arg-158",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:160",
+      "path": "tests/fixtures/upstream/arg/arg-160",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:161",
+      "path": "tests/fixtures/upstream/arg/arg-161",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:162",
+      "path": "tests/fixtures/upstream/arg/arg-162",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:163",
+      "path": "tests/fixtures/upstream/arg/arg-163",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:164",
+      "path": "tests/fixtures/upstream/arg/arg-164",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:165",
+      "path": "tests/fixtures/upstream/arg/arg-165",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:166",
+      "path": "tests/fixtures/upstream/arg/arg-166",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:167",
+      "path": "tests/fixtures/upstream/arg/arg-167",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:168",
+      "path": "tests/fixtures/upstream/arg/arg-168",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:169",
+      "path": "tests/fixtures/upstream/arg/arg-169",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:170",
+      "path": "tests/fixtures/upstream/arg/arg-170",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:171",
+      "path": "tests/fixtures/upstream/arg/arg-171",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:172",
+      "path": "tests/fixtures/upstream/arg/arg-172",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:173",
+      "path": "tests/fixtures/upstream/arg/arg-173",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:174",
+      "path": "tests/fixtures/upstream/arg/arg-174",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:175",
+      "path": "tests/fixtures/upstream/arg/arg-175",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:176",
+      "path": "tests/fixtures/upstream/arg/arg-176",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:177",
+      "path": "tests/fixtures/upstream/arg/arg-177",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:178",
+      "path": "tests/fixtures/upstream/arg/arg-178",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:179",
+      "path": "tests/fixtures/upstream/arg/arg-179",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:184",
+      "path": "tests/fixtures/upstream/arg/arg-184",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:185",
+      "path": "tests/fixtures/upstream/arg/arg-185",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:186",
+      "path": "tests/fixtures/upstream/arg/arg-186",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "arg:187",
+      "path": "tests/fixtures/upstream/arg/arg-187",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:001",
+      "path": "tests/fixtures/upstream/cons/cons-001",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:002",
+      "path": "tests/fixtures/upstream/cons/cons-002",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:003",
+      "path": "tests/fixtures/upstream/cons/cons-003",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:004",
+      "path": "tests/fixtures/upstream/cons/cons-004",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:005",
+      "path": "tests/fixtures/upstream/cons/cons-005",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:006",
+      "path": "tests/fixtures/upstream/cons/cons-006",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:007",
+      "path": "tests/fixtures/upstream/cons/cons-007",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:008",
+      "path": "tests/fixtures/upstream/cons/cons-008",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:009",
+      "path": "tests/fixtures/upstream/cons/cons-009",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:010",
+      "path": "tests/fixtures/upstream/cons/cons-010",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:011",
+      "path": "tests/fixtures/upstream/cons/cons-011",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:012",
+      "path": "tests/fixtures/upstream/cons/cons-012",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:013",
+      "path": "tests/fixtures/upstream/cons/cons-013",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:014",
+      "path": "tests/fixtures/upstream/cons/cons-014",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:015",
+      "path": "tests/fixtures/upstream/cons/cons-015",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:016",
+      "path": "tests/fixtures/upstream/cons/cons-016",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:017",
+      "path": "tests/fixtures/upstream/cons/cons-017",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:018",
+      "path": "tests/fixtures/upstream/cons/cons-018",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:019",
+      "path": "tests/fixtures/upstream/cons/cons-019",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:020",
+      "path": "tests/fixtures/upstream/cons/cons-020",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:021",
+      "path": "tests/fixtures/upstream/cons/cons-021",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:022",
+      "path": "tests/fixtures/upstream/cons/cons-022",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:023",
+      "path": "tests/fixtures/upstream/cons/cons-023",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:024",
+      "path": "tests/fixtures/upstream/cons/cons-024",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:025",
+      "path": "tests/fixtures/upstream/cons/cons-025",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:026",
+      "path": "tests/fixtures/upstream/cons/cons-026",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:027",
+      "path": "tests/fixtures/upstream/cons/cons-027",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:028",
+      "path": "tests/fixtures/upstream/cons/cons-028",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:029",
+      "path": "tests/fixtures/upstream/cons/cons-029",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:030",
+      "path": "tests/fixtures/upstream/cons/cons-030",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:031",
+      "path": "tests/fixtures/upstream/cons/cons-031",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:032",
+      "path": "tests/fixtures/upstream/cons/cons-032",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:033",
+      "path": "tests/fixtures/upstream/cons/cons-033",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:034",
+      "path": "tests/fixtures/upstream/cons/cons-034",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:035",
+      "path": "tests/fixtures/upstream/cons/cons-035",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:036",
+      "path": "tests/fixtures/upstream/cons/cons-036",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:037",
+      "path": "tests/fixtures/upstream/cons/cons-037",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:038",
+      "path": "tests/fixtures/upstream/cons/cons-038",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:039",
+      "path": "tests/fixtures/upstream/cons/cons-039",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:040",
+      "path": "tests/fixtures/upstream/cons/cons-040",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:041",
+      "path": "tests/fixtures/upstream/cons/cons-041",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:042",
+      "path": "tests/fixtures/upstream/cons/cons-042",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:043",
+      "path": "tests/fixtures/upstream/cons/cons-043",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:044",
+      "path": "tests/fixtures/upstream/cons/cons-044",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:045",
+      "path": "tests/fixtures/upstream/cons/cons-045",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:046",
+      "path": "tests/fixtures/upstream/cons/cons-046",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:047",
+      "path": "tests/fixtures/upstream/cons/cons-047",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:048",
+      "path": "tests/fixtures/upstream/cons/cons-048",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:049",
+      "path": "tests/fixtures/upstream/cons/cons-049",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:050",
+      "path": "tests/fixtures/upstream/cons/cons-050",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:051",
+      "path": "tests/fixtures/upstream/cons/cons-051",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:052",
+      "path": "tests/fixtures/upstream/cons/cons-052",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:053",
+      "path": "tests/fixtures/upstream/cons/cons-053",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:054",
+      "path": "tests/fixtures/upstream/cons/cons-054",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:055",
+      "path": "tests/fixtures/upstream/cons/cons-055",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:056",
+      "path": "tests/fixtures/upstream/cons/cons-056",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:057",
+      "path": "tests/fixtures/upstream/cons/cons-057",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:058",
+      "path": "tests/fixtures/upstream/cons/cons-058",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:059",
+      "path": "tests/fixtures/upstream/cons/cons-059",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:060",
+      "path": "tests/fixtures/upstream/cons/cons-060",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:061",
+      "path": "tests/fixtures/upstream/cons/cons-061",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:062",
+      "path": "tests/fixtures/upstream/cons/cons-062",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:063",
+      "path": "tests/fixtures/upstream/cons/cons-063",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:064",
+      "path": "tests/fixtures/upstream/cons/cons-064",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:065",
+      "path": "tests/fixtures/upstream/cons/cons-065",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:066",
+      "path": "tests/fixtures/upstream/cons/cons-066",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:067",
+      "path": "tests/fixtures/upstream/cons/cons-067",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:068",
+      "path": "tests/fixtures/upstream/cons/cons-068",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:069",
+      "path": "tests/fixtures/upstream/cons/cons-069",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:070",
+      "path": "tests/fixtures/upstream/cons/cons-070",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:071",
+      "path": "tests/fixtures/upstream/cons/cons-071",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:072",
+      "path": "tests/fixtures/upstream/cons/cons-072",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:073",
+      "path": "tests/fixtures/upstream/cons/cons-073",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:074",
+      "path": "tests/fixtures/upstream/cons/cons-074",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:075",
+      "path": "tests/fixtures/upstream/cons/cons-075",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:076",
+      "path": "tests/fixtures/upstream/cons/cons-076",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:077",
+      "path": "tests/fixtures/upstream/cons/cons-077",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:078",
+      "path": "tests/fixtures/upstream/cons/cons-078",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:079",
+      "path": "tests/fixtures/upstream/cons/cons-079",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:080",
+      "path": "tests/fixtures/upstream/cons/cons-080",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:081",
+      "path": "tests/fixtures/upstream/cons/cons-081",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:082",
+      "path": "tests/fixtures/upstream/cons/cons-082",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:083",
+      "path": "tests/fixtures/upstream/cons/cons-083",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:084",
+      "path": "tests/fixtures/upstream/cons/cons-084",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:085",
+      "path": "tests/fixtures/upstream/cons/cons-085",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:086",
+      "path": "tests/fixtures/upstream/cons/cons-086",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:087",
+      "path": "tests/fixtures/upstream/cons/cons-087",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:088",
+      "path": "tests/fixtures/upstream/cons/cons-088",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:089",
+      "path": "tests/fixtures/upstream/cons/cons-089",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:090",
+      "path": "tests/fixtures/upstream/cons/cons-090",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:091",
+      "path": "tests/fixtures/upstream/cons/cons-091",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:092",
+      "path": "tests/fixtures/upstream/cons/cons-092",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:093",
+      "path": "tests/fixtures/upstream/cons/cons-093",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:094",
+      "path": "tests/fixtures/upstream/cons/cons-094",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:095",
+      "path": "tests/fixtures/upstream/cons/cons-095",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:096",
+      "path": "tests/fixtures/upstream/cons/cons-096",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:097",
+      "path": "tests/fixtures/upstream/cons/cons-097",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:098",
+      "path": "tests/fixtures/upstream/cons/cons-098",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:099",
+      "path": "tests/fixtures/upstream/cons/cons-099",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:100",
+      "path": "tests/fixtures/upstream/cons/cons-100",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:101",
+      "path": "tests/fixtures/upstream/cons/cons-101",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:102",
+      "path": "tests/fixtures/upstream/cons/cons-102",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:103",
+      "path": "tests/fixtures/upstream/cons/cons-103",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:104",
+      "path": "tests/fixtures/upstream/cons/cons-104",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:105",
+      "path": "tests/fixtures/upstream/cons/cons-105",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:106",
+      "path": "tests/fixtures/upstream/cons/cons-106",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "cons:107",
+      "path": "tests/fixtures/upstream/cons/cons-107",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "modl:001",
+      "path": "tests/fixtures/upstream/modl/modl-001",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "modl:002",
+      "path": "tests/fixtures/upstream/modl/modl-002",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "modl:003",
+      "path": "tests/fixtures/upstream/modl/modl-003",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "modl:004",
+      "path": "tests/fixtures/upstream/modl/modl-004",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "modl:005",
+      "path": "tests/fixtures/upstream/modl/modl-005",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "modl:006",
+      "path": "tests/fixtures/upstream/modl/modl-006",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "modl:007",
+      "path": "tests/fixtures/upstream/modl/modl-007",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "modl:008",
+      "path": "tests/fixtures/upstream/modl/modl-008",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "modl:009",
+      "path": "tests/fixtures/upstream/modl/modl-009",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "modl:010",
+      "path": "tests/fixtures/upstream/modl/modl-010",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "modl:011",
+      "path": "tests/fixtures/upstream/modl/modl-011",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "modl:012",
+      "path": "tests/fixtures/upstream/modl/modl-012",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "modl:013",
+      "path": "tests/fixtures/upstream/modl/modl-013",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "modl:014",
+      "path": "tests/fixtures/upstream/modl/modl-014",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "modl:015",
+      "path": "tests/fixtures/upstream/modl/modl-015",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "modl:016",
+      "path": "tests/fixtures/upstream/modl/modl-016",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "modl:017",
+      "path": "tests/fixtures/upstream/modl/modl-017",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "modl:018",
+      "path": "tests/fixtures/upstream/modl/modl-018",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "modl:019",
+      "path": "tests/fixtures/upstream/modl/modl-019",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "modl:020",
+      "path": "tests/fixtures/upstream/modl/modl-020",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "modl:021",
+      "path": "tests/fixtures/upstream/modl/modl-021",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "modl:022",
+      "path": "tests/fixtures/upstream/modl/modl-022",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "modl:023",
+      "path": "tests/fixtures/upstream/modl/modl-023",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "modl:024",
+      "path": "tests/fixtures/upstream/modl/modl-024",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:001",
+      "path": "tests/fixtures/upstream/para/para-001",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:002",
+      "path": "tests/fixtures/upstream/para/para-002",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:003",
+      "path": "tests/fixtures/upstream/para/para-003",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:004",
+      "path": "tests/fixtures/upstream/para/para-004",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:005",
+      "path": "tests/fixtures/upstream/para/para-005",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:006",
+      "path": "tests/fixtures/upstream/para/para-006",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:007",
+      "path": "tests/fixtures/upstream/para/para-007",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:008",
+      "path": "tests/fixtures/upstream/para/para-008",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:009",
+      "path": "tests/fixtures/upstream/para/para-009",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:010",
+      "path": "tests/fixtures/upstream/para/para-010",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:011",
+      "path": "tests/fixtures/upstream/para/para-011",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:012",
+      "path": "tests/fixtures/upstream/para/para-012",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:013",
+      "path": "tests/fixtures/upstream/para/para-013",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:014",
+      "path": "tests/fixtures/upstream/para/para-014",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:015",
+      "path": "tests/fixtures/upstream/para/para-015",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:016",
+      "path": "tests/fixtures/upstream/para/para-016",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:017",
+      "path": "tests/fixtures/upstream/para/para-017",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:018",
+      "path": "tests/fixtures/upstream/para/para-018",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:019",
+      "path": "tests/fixtures/upstream/para/para-019",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:021",
+      "path": "tests/fixtures/upstream/para/para-021",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:022",
+      "path": "tests/fixtures/upstream/para/para-022",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:023",
+      "path": "tests/fixtures/upstream/para/para-023",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:024",
+      "path": "tests/fixtures/upstream/para/para-024",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:025",
+      "path": "tests/fixtures/upstream/para/para-025",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:026",
+      "path": "tests/fixtures/upstream/para/para-026",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:027",
+      "path": "tests/fixtures/upstream/para/para-027",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:028",
+      "path": "tests/fixtures/upstream/para/para-028",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:029",
+      "path": "tests/fixtures/upstream/para/para-029",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:030",
+      "path": "tests/fixtures/upstream/para/para-030",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:031",
+      "path": "tests/fixtures/upstream/para/para-031",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:032",
+      "path": "tests/fixtures/upstream/para/para-032",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "para:033",
+      "path": "tests/fixtures/upstream/para/para-033",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "prp:001",
+      "path": "tests/fixtures/upstream/prp/prp-001",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "prp:002",
+      "path": "tests/fixtures/upstream/prp/prp-002",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "prp:003",
+      "path": "tests/fixtures/upstream/prp/prp-003",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "prp:004",
+      "path": "tests/fixtures/upstream/prp/prp-004",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "prp:005",
+      "path": "tests/fixtures/upstream/prp/prp-005",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "prp:006",
+      "path": "tests/fixtures/upstream/prp/prp-006",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "prp:007",
+      "path": "tests/fixtures/upstream/prp/prp-007",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "prp:008",
+      "path": "tests/fixtures/upstream/prp/prp-008",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "prp:009",
+      "path": "tests/fixtures/upstream/prp/prp-009",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "prp:010",
+      "path": "tests/fixtures/upstream/prp/prp-010",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "prp:011",
+      "path": "tests/fixtures/upstream/prp/prp-011",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "term:001",
+      "path": "tests/fixtures/upstream/term/term-001",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "term:002",
+      "path": "tests/fixtures/upstream/term/term-002",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "term:003",
+      "path": "tests/fixtures/upstream/term/term-003",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "term:004",
+      "path": "tests/fixtures/upstream/term/term-004",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "term:005",
+      "path": "tests/fixtures/upstream/term/term-005",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "term:006",
+      "path": "tests/fixtures/upstream/term/term-006",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "term:007",
+      "path": "tests/fixtures/upstream/term/term-007",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "term:008",
+      "path": "tests/fixtures/upstream/term/term-008",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "term:009",
+      "path": "tests/fixtures/upstream/term/term-009",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "term:010",
+      "path": "tests/fixtures/upstream/term/term-010",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "term:011",
+      "path": "tests/fixtures/upstream/term/term-011",
+      "supportPhase": "required_v0_1"
+    },
+    {
+      "id": "term:012",
+      "path": "tests/fixtures/upstream/term/term-012",
+      "supportPhase": "required_v0_1"
+    }
+  ]
+}

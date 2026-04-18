@@ -1,0 +1,12 @@
+{
+  "name": "@browser-pict-tool/core",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./parser": "./parser/index.ts",
+    "./constraints": "./constraints/index.ts",
+    "./model": "./model/index.ts",
+    "./diagnostics": "./diagnostics/index.ts"
+  }
+}
