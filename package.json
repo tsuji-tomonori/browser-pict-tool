@@ -12,6 +12,7 @@
     "format": "\"$npm_node_execpath\" node_modules/prettier/bin/prettier.cjs . --write",
     "format:check": "\"$npm_node_execpath\" node_modules/prettier/bin/prettier.cjs . --check",
     "test": "\"$npm_node_execpath\" --experimental-strip-types --test tests/core/*.test.ts",
+    "test:qa": "\"$npm_node_execpath\" --experimental-strip-types --test tests/core/qa-gate.test.ts",
     "check": "\"$npm_node_execpath\" \"$npm_execpath\" run lint && \"$npm_node_execpath\" \"$npm_execpath\" run typecheck && \"$npm_node_execpath\" \"$npm_execpath\" run test"
   },
   "engines": {
