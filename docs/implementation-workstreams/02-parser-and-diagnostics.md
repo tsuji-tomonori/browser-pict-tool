@@ -4,6 +4,11 @@
 
 PICT モデルテキストを AST に落とし、syntax error と source location を返す。
 
+補足:
+
+- constraint の unknown parameter warning-drop は `03` の責務
+- sub-model の unknown / duplicate parameter handling は現状だと parser 側に暫定実装が入りやすいため、Gate A で責務境界を固定する
+
 ## 2. 主担当範囲
 
 - model section parser
@@ -30,11 +35,13 @@ PICT モデルテキストを AST に落とし、syntax error と source locatio
 - `NOT LIKE`, `NOT IN` を含む operator parser 完成
 - function syntax を追うなら `IsPositive` / `IsNegative` の parser 追加
 - syntax error code と location を安定化する
+- sub-model の unknown / duplicate parameter handling を parser に残すか validator へ寄せるか整理する
 
 ### Gate A までに終えるべきもの
 
 - `parseModelText()` の戻り型確定
-- parser 側で warning にしないこと。warning は semantic へ寄せる
+- constraint の warning-drop は parser で持たず `03` に寄せる
+- sub-model の unknown / duplicate parameter handling の責務境界を `03` との間で凍結する
 - raw constraint text と constraint span の扱い確定
 
 ### Gate B 後でよいもの
@@ -64,3 +71,4 @@ PICT モデルテキストを AST に落とし、syntax error と source locatio
 - token 境界が upstream と大きくずれていないか
 - section 遷移が `.work/pict` に近いか
 - permissive parser が validator の責務を奪っていないか
+- sub-model の permissive cleanup が暫定実装のまま境界不明になっていないか

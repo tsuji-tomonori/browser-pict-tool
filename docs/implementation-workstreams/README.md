@@ -23,6 +23,7 @@
 
 - 1 つの作業トラックに 1 つの主担当を置く
 - 主担当以外は、そのトラックの所有ファイルを原則触らない
+- `06` が持つのは shared QA harness と upstream corpus であり、`tests/core` の feature test は各実装トラックが持つ
 - 共有境界を変える変更は、先に `01` の契約更新を入れてから各トラックで追従する
 - parser / validator / generator の public API を変える変更は、必ず overview の波に従う
 
@@ -34,8 +35,8 @@
 | `02`     | `packages/core/parser`                                           | `tests/core` の parser 系                  |
 | `03`     | `packages/core/constraints`                                      | `tests/core` の validator/evaluator 系     |
 | `04`     | `packages/core/generator`, `packages/core/coverage`              | `tests/core` の generator 系               |
-| `05`     | advanced feature 用の `packages/core/**` 横断変更                | `docs/pict-model-grammar-user-guide.md`    |
-| `06`     | `tests/**`, `scripts/**`, `docs/upstream-pict-test-matrix-ja.md` | CI 設定                                    |
+| `05`     | advanced feature 用の `packages/core/**` 横断変更                | `tests/core` の advanced feature case, `docs/pict-model-grammar-user-guide.md` |
+| `06`     | `tests/fixtures/upstream`, `tests/generated`, `tests/helpers`, QA 用 `scripts/*.ts` | `docs/testing-architecture-ja.md`, `docs/upstream-pict-test-matrix-ja.md`, `docs/pict-compatibility-factors.pict`, CI 設定 |
 | `07`     | `packages/worker/**`, `packages/web/**`                          | UI 用 fixture                              |
 | `08`     | `packages/core/exporters/**`, release 文書, perf 計測            | root scripts, hosting 周り                 |
 
@@ -75,6 +76,7 @@
 - `validateModelDocument()` の戻り型
 - diagnostic code の命名規約
 - normalized model へ渡す前の AST 形
+- sub-model の unknown / duplicate parameter handling を `02` / `03` のどちらに固定するか
 
 ### Wave 2: 並列可能
 
@@ -126,6 +128,11 @@
 - `03` と `05` の constraint semantic 同時改修
 - `04` と `05` の generator 同時改修
 - `06` の gate 条件変更と `01/02/03/04` の API 変更を同一タイミングで merge
+
+境界メモ:
+
+- `05` が触る `tests/core` は advanced feature の case 追加に限る
+- `06` は harness / acceptance gate / CI / upstream fixture 管理を持ち、feature 実装に密着した `tests/core` は持たない
 
 ## 6. 推奨人数
 
