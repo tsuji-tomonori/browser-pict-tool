@@ -1,16 +1,17 @@
 # STATUS
 
 - Phase: Acceptance
-- Active package: core + web
+- Active package: web
 - Decisions:
-  - lazy coverage を default とし、eager は opt-in 指定時のみ使用
-  - verifier 側指標は `excludedInvalidTupleCount` を追加し、既存 `invalidTupleTargetedCount` は互換 alias として維持
+  - 既存 1 画面フローは維持しつつ、フォーム/結果テーブルのアクセシビリティ属性を拡張する
+  - セルコピーは `td` クリックから `button` 操作へ変更する
+  - 列幅変更はドラッグを維持しつつ、`ArrowLeft/ArrowRight` での調整を追加する
 - Commands run:
   - npm install
-  - npm run typecheck
-  - npx -y node@22 --experimental-strip-types --test tests/core/coverage-verifier.test.ts
-  - npx -y node@22 --experimental-strip-types --test tests/core/lazy-coverage-tracker.test.ts
+  - npm --prefix packages/web install
+  - npm --prefix packages/web run check
+  - npm --prefix packages/web run build
 - Blockers:
-  - ローカル Node が v20 のため repo 標準 test コマンドは直接は実行不可（`node --experimental-strip-types` 非対応）。Node 22 を npx で明示して代替実行。
+  - なし
 - Acceptance state:
-  - Go (focused tests + typecheck passed with Node 22 fallback)
+  - Go (web check/build passed)

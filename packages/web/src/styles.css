@@ -11,6 +11,8 @@
   --text-subtle: #5b6a72;
   --accent: #0e6b74;
   --accent-strong: #114b62;
+  --focus-ring: #0e6b74;
+  --field-border: #5b6a72;
   --success: #2a7d56;
   --warning: #9f6a12;
   --danger: #9e4237;
@@ -66,17 +68,20 @@ button {
 
 input,
 textarea {
-  border: 1px solid var(--line);
+  border: 1px solid var(--field-border);
   border-radius: 12px;
   background: var(--surface-strong);
   color: var(--text);
 }
 
-input:focus,
-textarea:focus,
-button:focus-visible {
-  outline: 2px solid rgba(14, 107, 116, 0.25);
-  outline-offset: 2px;
+:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+input:focus-visible,
+textarea:focus-visible {
+  border-color: var(--focus-ring);
 }
 
 .app-shell {
@@ -127,6 +132,12 @@ h1 {
   margin-top: 10px;
   color: var(--text-subtle);
   max-width: 72ch;
+}
+
+.privacy-note {
+  margin-top: 10px;
+  color: var(--text-subtle);
+  font-size: 0.9rem;
 }
 
 .topbar-badges {
@@ -241,7 +252,7 @@ h1 {
 .primary-button,
 .secondary-button,
 .ghost-button {
-  min-height: 42px;
+  min-height: 44px;
   padding: 10px 14px;
   border-radius: 12px;
   font-weight: 700;
@@ -309,6 +320,32 @@ h1 {
     linear-gradient(180deg, rgba(248, 245, 239, 0.64), rgba(255, 255, 255, 0.95)), #ffffff;
 }
 
+.field-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.support-text {
+  margin-bottom: 10px;
+  color: var(--text-subtle);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.editor-action-row {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.shortcut-hint {
+  color: var(--text-subtle);
+  font-size: 0.85rem;
+}
+
 .form-grid {
   display: grid;
   gap: 14px;
@@ -334,8 +371,8 @@ h1 {
 .info-button {
   display: inline-grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  width: 44px;
+  height: 44px;
   border-radius: 999px;
   border: 1px solid rgba(14, 107, 116, 0.18);
   background: rgba(14, 107, 116, 0.08);
@@ -357,11 +394,12 @@ h1 {
 .field input[type="number"],
 .field input[type="text"],
 .filter-field input {
-  min-height: 42px;
+  min-height: 44px;
   padding: 10px 12px;
 }
 
 .field-inline {
+  display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
 }
@@ -380,9 +418,16 @@ h1 {
   line-height: 1.55;
 }
 
-.field-inline input[type="checkbox"] {
-  inline-size: 18px;
-  block-size: 18px;
+.checkbox-option {
+  min-block-size: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkbox-option input[type="checkbox"] {
+  inline-size: 20px;
+  block-size: 20px;
 }
 
 .action-row {
@@ -423,14 +468,15 @@ h1 {
   background: rgba(255, 255, 255, 0.76);
 }
 
-.stat-card span {
+.stat-card dt {
   display: block;
   color: var(--text-subtle);
   font-size: 0.86rem;
   margin-bottom: 8px;
 }
 
-.stat-card strong {
+.stat-card dd {
+  margin: 0;
   font-size: 1.2rem;
   letter-spacing: -0.02em;
   overflow-wrap: anywhere;
@@ -591,6 +637,9 @@ tbody .row-number {
   width: 18px;
   height: calc(100% + 8px);
   cursor: col-resize;
+  border: 0;
+  background: transparent;
+  padding: 0;
 }
 
 .resize-handle::before {
@@ -606,11 +655,16 @@ tbody tr:hover td {
   background: rgba(14, 107, 116, 0.03);
 }
 
-td.copyable {
-  cursor: copy;
+.cell-copy-button {
+  width: 100%;
+  min-height: 44px;
+  text-align: left;
+  border: 1px solid transparent;
+  background: transparent;
+  color: inherit;
 }
 
-td.copyable:active {
+.cell-copy-button:hover {
   background: rgba(14, 107, 116, 0.08);
 }
 
@@ -731,7 +785,8 @@ body.is-resizing * {
 
   .toolbar > *,
   .action-row > *,
-  .results-controls > * {
+  .results-controls > *,
+  .editor-action-row > * {
     width: 100%;
   }
 
@@ -741,5 +796,30 @@ body.is-resizing * {
 
   .filter-field input {
     width: 100%;
+  }
+}
+
+@media (pointer: coarse) {
+  button,
+  input[type="checkbox"],
+  .cell-copy-button {
+    min-inline-size: 48px;
+    min-block-size: 48px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (forced-colors: active) {
+  :focus-visible {
+    outline: 2px solid CanvasText;
   }
 }

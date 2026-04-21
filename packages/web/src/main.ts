@@ -72,16 +72,19 @@ const elements = {
   caseSensitiveInput: requiredElement<HTMLInputElement>("#case-sensitive-input"),
   negativePrefixInput: requiredElement<HTMLInputElement>("#negative-prefix-input"),
   helpButtons: document.querySelectorAll<HTMLButtonElement>("[data-help-button]"),
+  editorGenerateButton: requiredElement<HTMLButtonElement>("#editor-generate-button"),
   generateButton: requiredElement<HTMLButtonElement>("#generate-button"),
   cancelButton: requiredElement<HTMLButtonElement>("#cancel-button"),
   progressRoot: requiredElement<HTMLElement>(".progress"),
   progressBar: requiredElement<HTMLElement>("#progress-bar"),
   progressValue: requiredElement<HTMLElement>("#progress-value"),
   statusStage: requiredElement<HTMLElement>("#status-stage"),
+  generationStatus: requiredElement<HTMLElement>("#generation-status"),
   statusSummary: requiredElement<HTMLElement>("#status-summary"),
   statusDetail: requiredElement<HTMLElement>("#status-detail"),
   statsGrid: requiredElement<HTMLElement>("#stats-grid"),
   diagnosticsList: requiredElement<HTMLElement>("#diagnostics-list"),
+  diagnosticsSummary: requiredElement<HTMLElement>("#diagnostics-summary"),
   filterInput: requiredElement<HTMLInputElement>("#filter-input"),
   exportCsvButton: requiredElement<HTMLButtonElement>("#export-csv-button"),
   exportTsvButton: requiredElement<HTMLButtonElement>("#export-tsv-button"),
@@ -216,6 +219,7 @@ function setStatus(status: AppStatus, stage: string, detail = ""): void {
 
   elements.statusStage.textContent = stage;
   elements.statusDetail.textContent = detail;
+  elements.generationStatus.textContent = `${stage}。${detail}`;
   elements.statusSummary.textContent =
     status === "running"
       ? "実行中"
@@ -266,7 +270,7 @@ function renderStats(): void {
     ["候補行数", stats ? numberFormat(stats.candidateRowCount) : "0"],
     ["パラメータ", stats ? numberFormat(stats.parameterCount) : "0"],
     ["制約", stats ? numberFormat(stats.constraintCount) : "0"],
-    ["strength", stats ? numberFormat(stats.strength) : "-"],
+    ["生成強度", stats ? numberFormat(stats.strength) : "-"],
     ["生成時間", stats ? `${numberFormat(stats.generationTimeMs)} ms` : "-"],
     ["必要組数", stats ? numberFormat(stats.requiredTupleCount) : "-"],
     ["未達組数", stats ? numberFormat(stats.uncoveredTupleCount) : "-"],
@@ -276,8 +280,8 @@ function renderStats(): void {
     .map(
       ([label, value]) => `
         <div class="stat-card">
-          <span>${escapeHtml(label)}</span>
-          <strong>${escapeHtml(value)}</strong>
+          <dt>${escapeHtml(label)}</dt>
+          <dd>${escapeHtml(value)}</dd>
         </div>
       `,
     )
@@ -286,6 +290,8 @@ function renderStats(): void {
 
 function renderDiagnostics(): void {
   if (state.diagnostics.length === 0) {
+    elements.modelInput.removeAttribute("aria-invalid");
+    elements.diagnosticsSummary.textContent = "まだ診断はありません。";
     elements.diagnosticsList.innerHTML = `
       <div class="empty-state compact">
         <p>まだ診断はありません。</p>
@@ -294,21 +300,28 @@ function renderDiagnostics(): void {
     return;
   }
 
+  const errorCount = state.diagnostics.filter((entry) => entry.severity === "error").length;
+  const warningCount = state.diagnostics.filter((entry) => entry.severity === "warning").length;
+  elements.modelInput.setAttribute("aria-invalid", String(errorCount > 0));
+  elements.diagnosticsSummary.textContent = `エラー${numberFormat(errorCount)}件、警告${numberFormat(
+    warningCount,
+  )}件があります。`;
+
   elements.diagnosticsList.innerHTML = state.diagnostics
     .map((diagnostic) => {
       const location = diagnostic.line
         ? `L${diagnostic.line}${diagnostic.column ? `:${diagnostic.column}` : ""}`
-        : "global";
+        : "全体";
 
       return `
         <article class="diagnostic-item ${escapeHtml(diagnostic.severity)}">
           <div class="diagnostic-topline">
             <strong>${escapeHtml(
               diagnostic.severity === "error"
-                ? "Error"
+                ? "エラー"
                 : diagnostic.severity === "warning"
-                  ? "Warning"
-                  : "Info",
+                  ? "警告"
+                  : "情報",
             )}</strong>
             <span class="diagnostic-code">${escapeHtml(diagnostic.code)}</span>
           </div>
@@ -361,6 +374,12 @@ function applyColumnWidths(): void {
   });
 }
 
+function resizeColumn(columnIndex: number, delta: number): void {
+  const current = state.columnWidths[columnIndex] ?? 160;
+  state.columnWidths[columnIndex] = Math.max(96, current + delta);
+  applyColumnWidths();
+}
+
 function updateResultsSummary(visibleCount: number, renderedCount: number): void {
   if (!state.suite) {
     elements.resultsSummary.innerHTML = "";
@@ -379,9 +398,11 @@ function updateResultsSummary(visibleCount: number, renderedCount: number): void
     <span class="pill">並び順 ${
       state.sort.columnIndex === null
         ? "生成順"
-        : `${escapeHtml(state.suite.header[state.sort.columnIndex])} / ${state.sort.direction}`
+        : `${escapeHtml(state.suite.header[state.sort.columnIndex])} / ${
+            state.sort.direction === "asc" ? "昇順" : "降順"
+          }`
     }</span>
-    <span class="pill">クリックでセル値をコピー</span>
+    <span class="pill">セルのコピーボタンで値をコピー</span>
   `;
 }
 
@@ -416,15 +437,28 @@ function renderResults(): void {
     .map((header, index) => {
       const icon =
         state.sort.columnIndex === index ? (state.sort.direction === "asc" ? "↑" : "↓") : "↕";
+      const ariaSort =
+        state.sort.columnIndex === index
+          ? state.sort.direction === "asc"
+            ? "ascending"
+            : "descending"
+          : "none";
 
       return `
-        <th scope="col">
+        <th scope="col" aria-sort="${ariaSort}">
           <div class="column-header">
             <button class="sort-button" type="button" data-sort-index="${index}">
               <span>${escapeHtml(header)}</span>
               <span class="sort-icon">${icon}</span>
             </button>
-            <span class="resize-handle" data-resize-index="${index}" aria-hidden="true"></span>
+            <button
+              class="resize-handle"
+              type="button"
+              role="separator"
+              tabindex="0"
+              aria-label="${escapeHtml(header)}列の幅を変更"
+              data-resize-index="${index}"
+            ></button>
           </div>
         </th>
       `;
@@ -435,9 +469,16 @@ function renderResults(): void {
     .map(
       ({ row, originalIndex }) => `
         <tr>
-          <td class="row-number">${numberFormat(originalIndex + 1)}</td>
+          <th scope="row" class="row-number">${numberFormat(originalIndex + 1)}</th>
           ${row
-            .map((cell) => `<td class="copyable" title="クリックでコピー">${escapeHtml(cell)}</td>`)
+            .map(
+              (cell, cellIndex) =>
+                `<td><button type="button" class="cell-copy-button" data-copy-value="${escapeHtml(
+                  cell,
+                )}" aria-label="${escapeHtml(
+                  `${state.suite?.header[cellIndex] ?? "列"}列、${originalIndex + 1}行目の値 ${cell} をコピー`,
+                )}">${escapeHtml(cell)}</button></td>`,
+            )
             .join("")}
         </tr>
       `,
@@ -465,7 +506,8 @@ function renderResults(): void {
         : ""
     }
     <div class="table-scroll">
-      <table>
+      <table aria-describedby="results-summary">
+        <caption class="sr-only">生成結果。列見出しで並び替えと列幅調整ができます。</caption>
         <colgroup>${colMarkup}</colgroup>
         <thead>
           <tr>
@@ -476,7 +518,7 @@ function renderResults(): void {
         <tbody>
           ${
             bodyMarkup ||
-            `<tr><td class="row-number">-</td><td colspan="${state.suite.header.length}" class="empty-state compact"><p>フィルタ条件に一致する行がありません。</p></td></tr>`
+            `<tr><th scope="row" class="row-number">-</th><td colspan="${state.suite.header.length}" class="empty-state compact"><p>フィルタ条件に一致する行がありません。</p></td></tr>`
           }
         </tbody>
       </table>
@@ -511,6 +553,7 @@ function beginGeneration(): void {
   setStatus("running", "生成を開始", "Worker 上でモデルを解析しています。");
   setProgress(0);
   elements.generateButton.disabled = true;
+  elements.editorGenerateButton.disabled = true;
   elements.cancelButton.disabled = false;
   renderResults();
 
@@ -540,6 +583,7 @@ function finalizeRun(): void {
   state.activeJobId = null;
   state.activeJobMode = null;
   elements.generateButton.disabled = false;
+  elements.editorGenerateButton.disabled = false;
   elements.cancelButton.disabled = true;
   renderResults();
 }
@@ -621,6 +665,7 @@ async function startStreamingDownload(format: ExportFormat): Promise<void> {
     setStatus("running", "保存を開始", "Worker から受け取った chunk をファイルへ書き出しています。");
     setProgress(0);
     elements.generateButton.disabled = true;
+    elements.editorGenerateButton.disabled = true;
     elements.cancelButton.disabled = false;
     renderResults();
 
@@ -899,6 +944,7 @@ function wireEvents(): void {
   });
 
   elements.generateButton.addEventListener("click", beginGeneration);
+  elements.editorGenerateButton.addEventListener("click", beginGeneration);
   elements.cancelButton.addEventListener("click", cancelGeneration);
 
   elements.filterInput.addEventListener("input", () => {
@@ -954,9 +1000,9 @@ function wireEvents(): void {
       return;
     }
 
-    const cell = target.closest<HTMLTableCellElement>("td.copyable");
-    if (cell) {
-      void copyToClipboard(cell.textContent ?? "");
+    const copyButton = target.closest<HTMLButtonElement>("[data-copy-value]");
+    if (copyButton) {
+      void copyToClipboard(copyButton.dataset.copyValue ?? "");
     }
   });
 
@@ -978,6 +1024,26 @@ function wireEvents(): void {
       startWidth: state.columnWidths[columnIndex] ?? 160,
     };
     document.body.classList.add("is-resizing");
+  });
+
+  elements.resultsTableShell.addEventListener("keydown", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement) || !target.matches("[data-resize-index]")) {
+      return;
+    }
+
+    const columnIndex = Number(target.dataset.resizeIndex);
+    if (Number.isNaN(columnIndex)) {
+      return;
+    }
+
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      resizeColumn(columnIndex, 16);
+    } else if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      resizeColumn(columnIndex, -16);
+    }
   });
 
   window.addEventListener("pointermove", (event) => {
@@ -1002,6 +1068,10 @@ function wireEvents(): void {
 
 function initialize(): void {
   elements.modelInput.value = state.modelText;
+  elements.exportCsvButton.setAttribute("aria-describedby", "export-help");
+  elements.exportTsvButton.setAttribute("aria-describedby", "export-help");
+  elements.exportMdButton.setAttribute("aria-describedby", "export-help");
+  elements.exportExcelButton.setAttribute("aria-describedby", "export-help");
   updateModelMetrics();
   setProgress(0);
   setStatus("idle", "未実行", "Worker は起動待機中です。");

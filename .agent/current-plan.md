@@ -1,16 +1,16 @@
 # Current Plan
 
 ## Goal
-- 既定生成経路に lazy coverage を配線し、invalid tuple 指標の定義を verifier 側で明確化したうえで受入判定まで進める。
+- Web UI を DADS / WAIC 観点の改善方針に沿って、キーボード操作・状態通知・可視ラベル・日本語表記を強化する。
 
 ## Scope
-1. `generateTestSuite` / `generateSuiteStreaming` の既定経路を lazy coverage 化
-2. web engine の preview / streaming 保存経路で lazy coverage を明示
-3. verifier 指標を `excludedInvalidTupleCount` として定義し、互換のため `invalidTupleTargetedCount` を同値で返却
-4. 回帰テスト更新と受入判定
+1. `packages/web/index.html` のラベル/説明/状態通知/日本語文言を改善
+2. `packages/web/src/main.ts` の診断要約、`aria-invalid`、セルコピー button 化、列幅調整のキーボード対応を実装
+3. `packages/web/src/styles.css` のフォーカス視認性、ターゲットサイズ、reduced motion / forced colors 対応を追加
+4. web 層の型チェック・ビルドで受入判定
 
 ## Acceptance Criteria
-- 既定経路 (`generateSuiteStreaming(...,{})`) が lazy coverage と同等の結果を返すこと
-- verifier が invalid tuple を「除外件数」として報告すること
-- 既存 verifier 利用側互換 (`invalidTupleTargetedCount`) を維持すること
-- 変更レイヤー（core/web）で型チェックと対象テストが通ること
+- キーボードでセルコピーと列幅調整（左右キー）が可能であること
+- 主要入力項目に可視ラベル/説明があり、診断時に `aria-invalid` が更新されること
+- 英語 UI ラベルの主要箇所を日本語化し、進捗通知の責務分離を反映すること
+- `npm --prefix packages/web run check` と `npm --prefix packages/web run build` が通ること

@@ -13,16 +13,19 @@
     <div class="app-shell">
       <header class="topbar">
         <div>
-          <p class="eyebrow">Local-first combinatorial testing</p>
+          <p class="eyebrow">ローカル実行の組み合わせテスト支援</p>
           <h1>Browser PICT Tool</h1>
           <p class="subtitle">
             モデル入力、生成、診断、エクスポートをブラウザ内で完結させる業務向け UI
           </p>
+          <p class="privacy-note">
+            入力モデルと生成結果はブラウザ内で処理され、サーバーへ送信されません。
+          </p>
         </div>
-        <div class="topbar-badges" aria-label="runtime information">
-          <span class="pill pill-accent">Local only</span>
-          <span class="pill">No upload</span>
-          <span class="pill">No telemetry</span>
+        <div class="topbar-badges" aria-label="実行環境情報">
+          <span class="pill pill-accent">ローカル実行</span>
+          <span class="pill">アップロードなし</span>
+          <span class="pill">テレメトリなし</span>
         </div>
       </header>
 
@@ -48,15 +51,23 @@
             <span id="model-size">0 文字</span>
             <span>ショートカット: <kbd>Ctrl</kbd> + <kbd>Enter</kbd> で生成</span>
           </div>
-          <label class="sr-only" for="model-input">PICT model input</label>
+          <label class="field-label" for="model-input">PICTモデル入力</label>
+          <p id="model-input-help" class="support-text">
+            PICT互換のモデルを入力してください。Ctrl / Cmd + Enter でも生成できます。
+          </p>
           <textarea
             id="model-input"
             class="model-input"
             spellcheck="false"
             autocapitalize="off"
             autocomplete="off"
+            aria-describedby="model-input-help diagnostics-summary"
             placeholder="# PICT model&#10;Browser: Chrome, Firefox, Safari&#10;OS: Windows, macOS, Linux"
           ></textarea>
+          <div class="editor-action-row">
+            <button id="editor-generate-button" class="primary-button" type="button">生成開始</button>
+            <span class="shortcut-hint">Ctrl / Cmd + Enter で生成</span>
+          </div>
           <input id="file-input" type="file" accept=".txt,.pict,.md,.csv,text/plain" hidden />
         </section>
 
@@ -83,7 +94,17 @@
                     i
                   </button>
                 </div>
-                <input id="strength-input" type="number" min="1" max="6" value="2" />
+                <p id="strength-help-text" class="support-text">
+                  通常は2を指定します。3-wise生成では3を指定します。
+                </p>
+                <input
+                  id="strength-input"
+                  type="number"
+                  min="1"
+                  max="6"
+                  value="2"
+                  aria-describedby="strength-help-text strength-help"
+                />
                 <div id="strength-help" class="field-help" hidden>
                   <p>
                     何件ずつの組み合わせを確実にカバーするかを指定します。`2` なら pairwise、`3`
@@ -92,9 +113,8 @@
                 </div>
               </div>
               <div class="field">
-                <div class="field-inline">
-                  <div class="field-label-row">
-                    <label for="case-sensitive-input">大文字小文字を区別する</label>
+                <div class="field-label-row">
+                  <label for="case-sensitive-input">大文字小文字を区別する</label>
                     <button
                       class="info-button"
                       type="button"
@@ -105,9 +125,11 @@
                     >
                       i
                     </button>
-                  </div>
-                  <input id="case-sensitive-input" type="checkbox" />
                 </div>
+                <label class="checkbox-option" for="case-sensitive-input">
+                  <input id="case-sensitive-input" type="checkbox" />
+                  <span>有効にする</span>
+                </label>
                 <div id="case-sensitive-help" class="field-help" hidden>
                   <p>
                     有効にすると `Chrome` と `chrome`
@@ -154,13 +176,17 @@
               </div>
               <span id="status-summary" class="status-chip">待機中</span>
             </div>
+            <p id="generation-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+              待機中
+            </p>
             <div
               class="progress"
               role="progressbar"
+              aria-labelledby="generation-status"
+              aria-describedby="status-detail progress-value"
               aria-valuemin="0"
               aria-valuemax="100"
               aria-valuenow="0"
-              aria-live="polite"
             >
               <div id="progress-bar" class="progress-bar"></div>
             </div>
@@ -177,7 +203,7 @@
                 <p>生成後に主要メトリクスと総当たり比の削減量を確認できます。</p>
               </div>
             </div>
-            <div id="stats-grid" class="stats-grid"></div>
+            <dl id="stats-grid" class="stats-grid"></dl>
           </section>
 
           <section class="panel diagnostics-panel">
@@ -187,6 +213,9 @@
                 <p>構文エラー、警告、カバレッジ未達を行番号付きで表示します。</p>
               </div>
             </div>
+            <p id="diagnostics-summary" class="support-text" role="status" aria-live="polite">
+              まだ診断はありません。
+            </p>
             <div id="diagnostics-list" class="diagnostics-list">
               <div class="empty-state compact">
                 <p>まだ診断はありません。</p>
@@ -203,7 +232,7 @@
             </div>
             <div class="results-controls">
               <label class="filter-field" for="filter-input">
-                <span class="sr-only">filter rows</span>
+                <span class="sr-only">結果行を絞り込む</span>
                 <input id="filter-input" type="search" placeholder="行をフィルタ" />
               </label>
               <button id="export-csv-button" class="secondary-button" type="button" disabled>
@@ -220,7 +249,8 @@
               </button>
             </div>
           </div>
-          <div id="results-summary" class="results-summary"></div>
+          <p id="export-help" class="support-text">生成後に CSV / TSV / Markdown / Excel を出力できます。</p>
+          <div id="results-summary" class="results-summary" role="status" aria-live="polite"></div>
           <div id="results-table-shell" class="table-shell">
             <div class="empty-state">
               <p>生成を実行すると、ここに行番号付きの結果テーブルが表示されます。</p>
