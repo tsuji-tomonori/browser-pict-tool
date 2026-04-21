@@ -1,0 +1,72 @@
+name: Quality Gateway
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+
+concurrency:
+  group: quality-gateway-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: Repository Quality Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Core test suite (without upstream .work fixtures)
+        run: |
+          set -euo pipefail
+          mapfile -t TEST_FILES < <(find tests/core -maxdepth 1 -name '*.test.ts' ! -name 'upstream-pict-fixtures.test.ts' | sort)
+          node --experimental-strip-types --test "${TEST_FILES[@]}"
+
+      - name: Required v0.1 QA gate
+        run: npm run test:qa
+
+      - name: Fixture integrity check
+        run: node --experimental-strip-types scripts/check-fixture-integrity.ts
+
+      - name: Generate feature coverage report
+        run: node --experimental-strip-types scripts/check-feature-coverage.ts
+
+      - name: Assert required_v0_1 fixture coverage
+        run: >-
+          node --experimental-strip-types -e
+          "const fs=require('node:fs');
+          const report=JSON.parse(fs.readFileSync('tests/generated/feature-coverage.json','utf8'));
+          const required=report?.phaseCoverage?.required_v0_1;
+          if(!required){throw new Error('required_v0_1 coverage is missing in feature-coverage.json');}
+          if(required.missingFixtureCases!==0){
+            throw new Error('required_v0_1 has missing fixtures: '+required.missingFixtureCases);
+          }
+          console.log('required_v0_1 coverage is complete');"
+
+      - name: Upload feature coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: feature-coverage
+          path: tests/generated/feature-coverage.json
+          if-no-files-found: warn
