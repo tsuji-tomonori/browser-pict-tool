@@ -148,8 +148,9 @@ export function createStreamingGenerationPlanner(
   options: Omit<StreamingGeneratorOptions, "hooks"> = {},
 ): StreamingGenerationPlanner {
   const solver = createDfsValidityOracle(model);
+  const coverageMode = options.coverage ?? "lazy";
   const tracker =
-    options.coverage === "lazy"
+    coverageMode === "lazy"
       ? createLazyCoverageTracker(model, solver)
       : createValidTupleTracker(model, solver.canComplete);
   const header = model.parameters.map((parameter) => parameter.displayName);

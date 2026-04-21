@@ -335,6 +335,7 @@ export function generateTestSuite(
 
   const sink = new CollectingSink();
   const planner = createStreamingGenerationPlanner(canonicalModel, {
+    coverage: request.coverage,
     randomSeed: request.randomSeed,
     seedRows: matchedSeedRows,
   });
