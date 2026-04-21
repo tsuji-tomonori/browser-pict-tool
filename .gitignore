@@ -75,3 +75,6 @@ TEST-results.xml
 
 ## pict build output
 pict
+
+# Ignore zip files created by the build script
+*.zip
