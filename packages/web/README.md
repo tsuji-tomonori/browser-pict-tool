@@ -61,3 +61,15 @@ npm run check
 - 本命の `packages/core` / `packages/worker` 実装に置き換えやすいよう、通信境界は分けています
 - `index.html` の CSP は Vite 開発サーバーの HMR を許可するため `connect-src 'self' ws: wss:` にしています
 - 本番配信では、ホスティング側の HTTP ヘッダーでより厳しい CSP を設定する前提です
+
+## E2E テスト
+
+Playwright によるスモーク E2E を追加しています。
+
+```bash
+cd /home/t-tsuji/project/browser-pict-tool/packages/web
+npx playwright install chromium
+npm run e2e
+```
+
+CI やネットワーク制限環境ではブラウザバイナリ取得が失敗する場合があります。
