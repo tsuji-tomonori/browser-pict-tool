@@ -4,6 +4,14 @@ This repository defaults to test-driven development.
 
 Before changing behavior, read [skills/browser-pict-tool-tdd/SKILL.md](/home/t-tsuji/project/browser-pict-tool/skills/browser-pict-tool-tdd/SKILL.md:1) and follow that workflow.
 
+For complex multi-step work, PM-style orchestration is also available.
+Read [AGENTS.md](/home/t-tsuji/project/browser-pict-tool/AGENTS.md:1), [PLANS.md](/home/t-tsuji/project/browser-pict-tool/PLANS.md:1), and [IMPLEMENT.md](/home/t-tsuji/project/browser-pict-tool/IMPLEMENT.md:1), then use:
+
+- [skills/pm-factory-kickoff/SKILL.md](/home/t-tsuji/project/browser-pict-tool/skills/pm-factory-kickoff/SKILL.md:1)
+- [skills/pm-parallel-delivery/SKILL.md](/home/t-tsuji/project/browser-pict-tool/skills/pm-parallel-delivery/SKILL.md:1)
+- [skills/acceptance-gate/SKILL.md](/home/t-tsuji/project/browser-pict-tool/skills/acceptance-gate/SKILL.md:1)
+- [skills/release-handoff/SKILL.md](/home/t-tsuji/project/browser-pict-tool/skills/release-handoff/SKILL.md:1)
+
 ## Core Rules
 
 - Start from the smallest affected layer: `core` first, `worker` second, `web` last.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "PM Parallel Delivery"
+  short_description: "Run the plan with bounded delegation and validation."
+  default_prompt: "Use the PM delivery workflow for this repo: refresh the plan, delegate bounded packages, validate, integrate, review, and drive fix loops until acceptance is real."

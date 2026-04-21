@@ -1,0 +1,4 @@
+interface:
+  display_name: "Acceptance Gate"
+  short_description: "Judge AC and DoD with a hard verdict."
+  default_prompt: "Use the acceptance-gate workflow for this repo to compare the actual diff and validation evidence against package AC and repo-wide DoD, then return a hard verdict."

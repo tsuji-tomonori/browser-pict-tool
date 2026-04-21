@@ -1,0 +1,8 @@
+- Clarify the user-visible outcome and why it matters now.
+- Separate goals from non-goals.
+- Capture architecture, compatibility, security, performance, and tooling constraints.
+- Map the smallest relevant repo areas and existing tests.
+- Define package-level acceptance criteria with observable evidence.
+- Define repo-wide Definition of Done and validation commands.
+- Default write work to sequential unless file scope non-overlap is proven.
+- Record assumptions, risks, blockers, and the next step in `.agent/STATUS.md`.

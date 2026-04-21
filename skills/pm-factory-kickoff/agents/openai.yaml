@@ -1,0 +1,4 @@
+interface:
+  display_name: "PM Factory Kickoff"
+  short_description: "Plan complex work into packages, AC, and validation."
+  default_prompt: "Use the PM kickoff workflow for this repo to turn the request into a scoped delivery plan in .agent/current-plan.md and .agent/STATUS.md before implementation."

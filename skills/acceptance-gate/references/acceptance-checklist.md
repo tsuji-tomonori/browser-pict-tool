@@ -1,0 +1,6 @@
+- Re-read `.agent/current-plan.md` and `.agent/STATUS.md`.
+- Check each package acceptance criterion against direct evidence.
+- Re-run repo-wide validation for touched layers.
+- Inspect the diff for scope drift and unexplained config or generated-file changes.
+- Treat missing evidence as failure, not as a pass.
+- Return ACCEPTED only when critical AC and DoD are both proven.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Release Handoff"
+  short_description: "Prepare the final concise user-facing summary."
+  default_prompt: "Use the release-handoff workflow for this repo to prepare a concise final summary with verification notes, manual checks, and residual risk."

@@ -1,0 +1,5 @@
+- Read-only exploration and review can run in parallel when the questions are independent.
+- Write work can run in parallel only with disjoint file scope and no shared config, lockfile, schema, or generated artifact.
+- `packages/core/index.ts`, `packages/core/package.json`, root `package.json`, `Taskfile.yaml`, and generated fixtures are high-collision files.
+- If two packages touch the same public export surface, keep them sequential.
+- The parent session owns final integration and repo-wide validation even when writes were parallelized.

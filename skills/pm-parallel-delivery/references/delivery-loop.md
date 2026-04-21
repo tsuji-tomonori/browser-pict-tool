@@ -1,0 +1,7 @@
+- Refresh `.agent/current-plan.md` and `.agent/STATUS.md`.
+- Reconfirm file scope before any write delegation.
+- Delegate one bounded write package per worker.
+- Run focused validation immediately after each package.
+- Integrate and run repo-wide validation before acceptance.
+- Treat unproven acceptance criteria as failures.
+- Record blockers and the next action in `.agent/STATUS.md`.
