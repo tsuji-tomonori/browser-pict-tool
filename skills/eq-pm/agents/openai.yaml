@@ -1,0 +1,4 @@
+interface:
+  display_name: "EQ PM"
+  short_description: "Turn fuzzy requests into a concrete PM brief."
+  default_prompt: "Use the eq-pm workflow to translate a vague or high-context request into a compact PM brief with assumptions, acceptance criteria, risks, and an implementation handoff."
