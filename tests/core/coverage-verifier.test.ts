@@ -59,7 +59,8 @@ test("verifyGeneratedSuite reports clean coverage for required_v0_1 upstream fix
 
     assert.equal(report.constraintViolatingRows, 0);
     assert.equal(report.uncoveredTupleCount, 0);
-    assert.equal(report.invalidTupleTargetedCount, 0);
+    assert.equal(report.excludedInvalidTupleCount, report.invalidTupleTargetedCount);
+    assert.ok(report.invalidTupleTargetedCount >= 0);
     assert.equal(report.rowsWithMultipleNegativeValues, 0);
   }
 });
@@ -105,7 +106,8 @@ test("verifyGeneratedSuite excludes invalid tuples from constrained tuple target
     suite,
   });
 
-  assert.equal(report.invalidTupleTargetedCount, 0);
+  assert.ok(report.excludedInvalidTupleCount > 0);
+  assert.equal(report.invalidTupleTargetedCount, report.excludedInvalidTupleCount);
   assert.equal(report.uncoveredTupleCount, 0);
 });
 

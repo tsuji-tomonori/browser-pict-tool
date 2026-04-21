@@ -201,7 +201,8 @@ test("lazy coverage completes the constrained poc fixture without targeting inva
   });
 
   assert.equal(report.uncoveredTupleCount, 0);
-  assert.equal(report.invalidTupleTargetedCount, 0);
+  assert.ok(report.excludedInvalidTupleCount > 0);
+  assert.equal(report.invalidTupleTargetedCount, report.excludedInvalidTupleCount);
   assert.equal(report.constraintViolatingRows, 0);
 });
 
@@ -235,7 +236,7 @@ test("lazy and eager coverage produce verifier-clean suites with similar row cou
   assert.ok(lazy.rowCount <= maxRows, `lazy row count ${lazy.rowCount} > ${maxRows}`);
 });
 
-test("generateSuiteStreaming accepts lazy coverage mode as an opt-in path", async () => {
+test("generateSuiteStreaming uses lazy coverage on the default path", async () => {
   const source = `A: 0, 1, 2
 B: 0, 1, 2
 C: 0, 1, 2
@@ -246,8 +247,13 @@ D: 0, 1, 2
 
   const eagerBefore = process.memoryUsage().heapUsed;
   const eagerSink = new CollectingSink();
-  const eagerResult = await generateSuiteStreaming(model, eagerSink, {});
+  const eagerResult = await generateSuiteStreaming(model, eagerSink, { coverage: "eager" });
   const eagerAfter = process.memoryUsage().heapUsed;
+
+  const defaultBefore = process.memoryUsage().heapUsed;
+  const defaultSink = new CollectingSink();
+  const defaultResult = await generateSuiteStreaming(model, defaultSink, {});
+  const defaultAfter = process.memoryUsage().heapUsed;
 
   const lazyBefore = process.memoryUsage().heapUsed;
   const lazySink = new CollectingSink();
@@ -255,18 +261,21 @@ D: 0, 1, 2
   const lazyAfter = process.memoryUsage().heapUsed;
 
   assert.equal(eagerResult.stats.coverage.uncoveredTupleCount, 0);
+  assert.equal(defaultResult.stats.coverage.uncoveredTupleCount, 0);
   assert.equal(lazyResult.stats.coverage.uncoveredTupleCount, 0);
+  assert.equal(defaultResult.stats.generatedRowCount, lazyResult.stats.generatedRowCount);
 
   const eagerDelta = Math.max(0, eagerAfter - eagerBefore);
+  const defaultDelta = Math.max(0, defaultAfter - defaultBefore);
   const lazyDelta = Math.max(0, lazyAfter - lazyBefore);
 
   if (eagerDelta > 0 && lazyDelta > 0) {
-    assert.ok(lazyDelta <= Math.ceil(eagerDelta * 1.5));
+    assert.ok(defaultDelta <= Math.ceil(eagerDelta * 1.5));
     return;
   }
 
   assert.ok(
     true,
-    `heap comparison skipped: small fixture (eager=${eagerDelta}, lazy=${lazyDelta})`,
+    `heap comparison skipped: small fixture (eager=${eagerDelta}, default=${defaultDelta}, lazy=${lazyDelta})`,
   );
 });

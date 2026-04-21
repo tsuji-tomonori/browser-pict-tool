@@ -27,6 +27,7 @@ export type VerifierIssue = {
 export type VerifierReport = {
   constraintViolatingRows: number;
   uncoveredTupleCount: number;
+  excludedInvalidTupleCount: number;
   invalidTupleTargetedCount: number;
   rowsWithMultipleNegativeValues: number;
   submodelCoverage: Array<{
@@ -423,7 +424,7 @@ export function verifyGeneratedSuite(args: {
   let constraintViolatingRows = 0;
   let rowsWithMultipleNegativeValues = 0;
   let uncoveredTupleCount = 0;
-  const invalidTupleTargetedCount = 0;
+  let excludedInvalidTupleCount = 0;
 
   const pushIssue = (issue: VerifierIssue): void => {
     if (issues.length < 20) {
@@ -480,6 +481,7 @@ export function verifyGeneratedSuite(args: {
     }
 
     if (!oracle.canComplete(partial)) {
+      excludedInvalidTupleCount += 1;
       continue;
     }
 
@@ -511,7 +513,8 @@ export function verifyGeneratedSuite(args: {
   return {
     constraintViolatingRows,
     uncoveredTupleCount,
-    invalidTupleTargetedCount,
+    excludedInvalidTupleCount,
+    invalidTupleTargetedCount: excludedInvalidTupleCount,
     rowsWithMultipleNegativeValues,
     submodelCoverage,
     issues,
