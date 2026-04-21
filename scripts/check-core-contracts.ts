@@ -23,12 +23,13 @@ const packageJson = JSON.parse(await readFile(packageJsonPath, "utf8")) as {
 
 const expectedExports = {
   ".": "./index.ts",
-  "./parser": "./parser/index.ts",
   "./constraints": "./constraints/index.ts",
-  "./generator": "./generator/index.ts",
   "./coverage": "./coverage/index.ts",
-  "./model": "./model/index.ts",
   "./diagnostics": "./diagnostics/index.ts",
+  "./generator": "./generator/index.ts",
+  "./model": "./model/index.ts",
+  "./oracle": "./oracle/index.ts",
+  "./parser": "./parser/index.ts",
 };
 
 assert.equal(packageJson.name, "@browser-pict-tool/core");

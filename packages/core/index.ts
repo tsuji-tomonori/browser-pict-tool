@@ -29,6 +29,7 @@ export {
   generateTestSuite,
   normalizeValidatedModel,
 } from "./generator/index.ts";
+export { createDfsValidityOracle } from "./oracle/index.ts";
 export { normalizeParseOptions, parseModelText } from "./parser/index.ts";
 
 export type { ChunkWriter, RowSink, StreamEncoder } from "./exporters/index.ts";
@@ -39,6 +40,7 @@ export type {
   SourceSpan,
 } from "./diagnostics/index.ts";
 export type { ConstraintSolver } from "./generator/index.ts";
+export type { ValidityOracle } from "./oracle/index.ts";
 export type {
   StreamingGenerationResult,
   StreamingGenerationStats,
