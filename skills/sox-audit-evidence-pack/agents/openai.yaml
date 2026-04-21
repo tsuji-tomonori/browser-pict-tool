@@ -1,0 +1,4 @@
+interface:
+  display_name: "SOX Audit Evidence Pack"
+  short_description: "Assemble the audit evidence pack and manifest."
+  default_prompt: "Use $sox-audit-evidence-pack to assemble the final evidence pack, list missing evidence, and generate a deterministic manifest."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "SOX Risk Impact Assessment"
+  short_description: "Assess ICFR impact, controls, and approvals."
+  default_prompt: "Use $sox-risk-impact-assessment to classify the change's SOX scope, control impact, approvals, tests, and documentation requirements."

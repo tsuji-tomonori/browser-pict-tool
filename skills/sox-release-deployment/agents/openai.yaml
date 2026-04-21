@@ -1,0 +1,6 @@
+interface:
+  display_name: "SOX Release Deployment"
+  short_description: "Prepare or gate SOX releases and deployments."
+  default_prompt: "Use $sox-release-deployment to prepare the release plan or, if explicitly authorized, execute the approved deployment workflow without bypassing gates."
+policy:
+  allow_implicit_invocation: false

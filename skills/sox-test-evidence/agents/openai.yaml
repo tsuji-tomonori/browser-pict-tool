@@ -1,0 +1,4 @@
+interface:
+  display_name: "SOX Test Evidence"
+  short_description: "Capture audit-ready test runs, context, and hashes."
+  default_prompt: "Use $sox-test-evidence to record the required tests, execution context, outputs, and artifact hashes for this SOX-tracked change."

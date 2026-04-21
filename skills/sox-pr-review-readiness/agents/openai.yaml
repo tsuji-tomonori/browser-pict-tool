@@ -1,0 +1,4 @@
+interface:
+  display_name: "SOX PR Review Readiness"
+  short_description: "Prepare a reviewable SOX PR body and checklist."
+  default_prompt: "Use $sox-pr-review-readiness to prepare the SOX PR body, reviewer checklist, traceability notes, and missing-evidence callouts."

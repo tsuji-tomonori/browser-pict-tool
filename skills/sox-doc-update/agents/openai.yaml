@@ -1,0 +1,4 @@
+interface:
+  display_name: "SOX Doc Update"
+  short_description: "Update SOX-facing docs or record why none changed."
+  default_prompt: "Use $sox-doc-update to update affected runbooks, architecture docs, control docs, and release notes, or record why no documentation change was needed."

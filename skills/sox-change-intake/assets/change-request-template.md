@@ -1,0 +1,22 @@
+# Change Request
+
+- Change ID:
+- Title:
+- Requestor:
+- Business owner:
+- System owner:
+- Business reason:
+- Systems affected:
+- Paths affected:
+- Change type: `standard | normal | emergency`
+- SOX scope: `in_scope | out_of_scope | uncertain`
+- Financial reporting impact:
+- Access control impact:
+- Logging / audit trail impact:
+- Data / schema impact:
+- CI/CD or deployment impact:
+- Required approvals:
+- Required test evidence:
+- Required documentation updates:
+- Rollback plan required: `yes | no`
+- Notes / dependencies:

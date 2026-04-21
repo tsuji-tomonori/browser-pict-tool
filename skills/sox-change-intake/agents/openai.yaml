@@ -1,0 +1,4 @@
+interface:
+  display_name: "SOX Change Intake"
+  short_description: "Create the SOX change pack before implementation."
+  default_prompt: "Use $sox-change-intake to create the change pack, scope, approvals, and required evidence before any SOX-relevant edits."

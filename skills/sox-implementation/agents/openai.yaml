@@ -1,0 +1,4 @@
+interface:
+  display_name: "SOX Implementation"
+  short_description: "Implement approved SOX changes with minimal scope."
+  default_prompt: "Use $sox-implementation to apply the approved SOX change with the smallest safe diff, required tests, and explicit traceability notes."
