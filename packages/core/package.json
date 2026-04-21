@@ -4,11 +4,12 @@
   "type": "module",
   "exports": {
     ".": "./index.ts",
-    "./parser": "./parser/index.ts",
     "./constraints": "./constraints/index.ts",
-    "./generator": "./generator/index.ts",
     "./coverage": "./coverage/index.ts",
+    "./diagnostics": "./diagnostics/index.ts",
+    "./generator": "./generator/index.ts",
     "./model": "./model/index.ts",
-    "./diagnostics": "./diagnostics/index.ts"
+    "./oracle": "./oracle/index.ts",
+    "./parser": "./parser/index.ts"
   }
 }

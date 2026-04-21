@@ -701,6 +701,7 @@ export function generateSuite(
   reportProgress(48, "テストケースを生成");
 
   const generated = generateTestSuite(validation, {
+    coverage: "lazy",
     strength: options.strength,
   });
   const parseWarnings = parseDiagnostics.filter((diagnostic) => diagnostic.severity !== "error");
@@ -816,6 +817,7 @@ export async function generateSuiteToSink(request: EngineStreamRequest): Promise
 
   try {
     const result = await generateSuiteStreaming(canonicalModel, request.sink, {
+      coverage: "lazy",
       hooks: {
         onProgress(covered, required) {
           const ratio = required <= 0 ? 1 : covered / required;

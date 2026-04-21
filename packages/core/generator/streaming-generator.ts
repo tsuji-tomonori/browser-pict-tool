@@ -1,7 +1,8 @@
 import type { RowSink } from "../exporters/row-sink.ts";
 import type { CanonicalModel, CoverageSummary } from "../model/types.ts";
+import { createLazyCoverageTracker } from "../coverage/lazy-coverage-tracker.ts";
 import { createValidTupleTracker } from "../coverage/valid-tuple-tracker.ts";
-import { createConstraintSolver } from "./constraint-solver.ts";
+import { createDfsValidityOracle } from "../oracle/dfs-oracle.ts";
 
 export type StreamingGeneratorHooks = {
   onProgress?: (covered: number, required: number) => void;
@@ -21,6 +22,7 @@ export type StreamingSeedWarning = {
 };
 
 export type StreamingGeneratorOptions = {
+  coverage?: "eager" | "lazy";
   randomSeed?: number;
   seedRows?: readonly number[][];
   hooks?: StreamingGeneratorHooks;
@@ -145,8 +147,12 @@ export function createStreamingGenerationPlanner(
   model: CanonicalModel,
   options: Omit<StreamingGeneratorOptions, "hooks"> = {},
 ): StreamingGenerationPlanner {
-  const solver = createConstraintSolver(model);
-  const tracker = createValidTupleTracker(model, solver.canComplete);
+  const solver = createDfsValidityOracle(model);
+  const coverageMode = options.coverage ?? "lazy";
+  const tracker =
+    coverageMode === "lazy"
+      ? createLazyCoverageTracker(model, solver)
+      : createValidTupleTracker(model, solver.canComplete);
   const header = model.parameters.map((parameter) => parameter.displayName);
   const seedWarnings: StreamingSeedWarning[] = [];
   const seedRows: number[][] = [];

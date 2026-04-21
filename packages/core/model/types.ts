@@ -174,6 +174,7 @@ export type GenerateRequest = {
   strength?: GenerateStrength;
   seedRows?: string[][];
   randomSeed?: number;
+  coverage?: "eager" | "lazy";
 };
 
 export type CanonicalScalar = string | number;

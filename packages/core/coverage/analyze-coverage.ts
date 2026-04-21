@@ -3,8 +3,8 @@ import {
   createConstraintEvaluationContext,
   type ConstraintAssignment,
 } from "../generator/constraint-evaluator.ts";
-import { createConstraintSolver } from "../generator/constraint-solver.ts";
 import type { CanonicalModel, CanonicalValue, CoverageSummary } from "../model/types.ts";
+import { createDfsValidityOracle } from "../oracle/dfs-oracle.ts";
 import { chooseIndices } from "./choose-indices.ts";
 import { createValidTupleTracker } from "./valid-tuple-tracker.ts";
 
@@ -154,7 +154,7 @@ function coerceRowsToValueIndices(
   model: CanonicalModel,
   rows: ReadonlyArray<ReadonlyArray<string>>,
 ): number[][] {
-  const solver = createConstraintSolver(model);
+  const solver = createDfsValidityOracle(model);
   const coerced: number[][] = [];
 
   for (const row of rows) {
@@ -197,7 +197,7 @@ export function analyzeCoverage(
   model: CanonicalModel,
   rows: ReadonlyArray<ReadonlyArray<string>>,
 ): CoverageSummary {
-  const solver = createConstraintSolver(model);
+  const solver = createDfsValidityOracle(model);
   const tracker = createValidTupleTracker(model, solver.canComplete);
   const selectedRows = coerceRowsToValueIndices(model, rows);
 

@@ -8,7 +8,7 @@ import type {
   ValidationResult,
 } from "../model/types.ts";
 import { SourceFile } from "../parser/source-file.ts";
-import { createConstraintSolver } from "./constraint-solver.ts";
+import { createDfsValidityOracle } from "../oracle/dfs-oracle.ts";
 import { normalizeValidatedModel } from "./normalize-model.ts";
 import { createStreamingGenerationPlanner } from "./streaming-generator.ts";
 
@@ -298,7 +298,7 @@ export function generateTestSuite(
     };
   }
 
-  const solver = createConstraintSolver(canonicalModel);
+  const solver = createDfsValidityOracle(canonicalModel);
 
   if (!solver.canComplete(new Map<number, number>())) {
     return {
@@ -335,6 +335,7 @@ export function generateTestSuite(
 
   const sink = new CollectingSink();
   const planner = createStreamingGenerationPlanner(canonicalModel, {
+    coverage: request.coverage,
     randomSeed: request.randomSeed,
     seedRows: matchedSeedRows,
   });

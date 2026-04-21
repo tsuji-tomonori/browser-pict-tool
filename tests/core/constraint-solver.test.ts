@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
-  createConstraintSolver,
+  createDfsValidityOracle,
   normalizeValidatedModel,
   parseModelText,
   validateModelDocument,
@@ -36,11 +36,11 @@ function findValueIndex(
   return valueIndex;
 }
 
-test("constraint solver completes unconstrained rows", () => {
+test("DFS validity oracle completes unconstrained rows", () => {
   const model = prepareModel(`A: 0, 1, 2
 B: x, y, z
 `);
-  const solver = createConstraintSolver(model);
+  const solver = createDfsValidityOracle(model);
 
   assert.equal(solver.canComplete(new Map()), true);
 
@@ -49,13 +49,13 @@ B: x, y, z
   assert.equal(completed?.length, 2);
 });
 
-test("constraint solver rejects partials that violate constraints", () => {
+test("DFS validity oracle rejects partials that violate constraints", () => {
   const model = prepareModel(`A: x, y
 B: y, z
 
 IF [A] = "x" THEN [B] = "y";
 `);
-  const solver = createConstraintSolver(model);
+  const solver = createDfsValidityOracle(model);
   const aIndex = findParameterIndex(model, "A");
   const bIndex = findParameterIndex(model, "B");
 
@@ -69,14 +69,14 @@ IF [A] = "x" THEN [B] = "y";
   assert.equal(solver.canComplete(unsatisfiable), false);
 });
 
-test("constraint solver returns no feasible values from an already invalid partial", () => {
+test("DFS validity oracle returns no feasible values from an already invalid partial", () => {
   const model = prepareModel(`A: x, y
 B: y, z
 C: p, q
 
 IF [A] = "x" THEN [B] = "y";
 `);
-  const solver = createConstraintSolver(model);
+  const solver = createDfsValidityOracle(model);
   const aIndex = findParameterIndex(model, "A");
   const bIndex = findParameterIndex(model, "B");
   const cIndex = findParameterIndex(model, "C");
@@ -89,11 +89,11 @@ IF [A] = "x" THEN [B] = "y";
   assert.deepEqual(solver.feasibleValues(partial, cIndex), []);
 });
 
-test("constraint solver enforces at most one negative value per row", () => {
+test("DFS validity oracle enforces at most one negative value per row", () => {
   const model = prepareModel(`P0: ~neg0, ok0
 P1: ~neg1, ok1
 `);
-  const solver = createConstraintSolver(model);
+  const solver = createDfsValidityOracle(model);
 
   const partial = new Map<number, number>([
     [0, findValueIndex(model, 0, "~neg0")],
@@ -103,13 +103,13 @@ P1: ~neg1, ok1
   assert.equal(solver.canComplete(partial), false);
 });
 
-test("constraint solver memoizes repeated failed partials", () => {
+test("DFS validity oracle memoizes repeated failed partials", () => {
   const model = prepareModel(`A: x, y
 B: y, z
 
 IF [A] = "x" THEN [B] = "y";
 `);
-  const solver = createConstraintSolver(model);
+  const solver = createDfsValidityOracle(model);
   const aIndex = findParameterIndex(model, "A");
   const bIndex = findParameterIndex(model, "B");
   const partial = new Map<number, number>([
