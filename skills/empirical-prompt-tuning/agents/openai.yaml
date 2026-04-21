@@ -1,0 +1,4 @@
+interface:
+  display_name: "Empirical Prompt Tuning"
+  short_description: "Harden agent instructions with fresh-executor evaluation loops."
+  default_prompt: "Use the empirical-prompt-tuning workflow to evaluate a reusable agent instruction with fresh subagents, score both self-report and caller-side checklists, apply the smallest useful fix, and stop only at convergence, redesign, or resource cutoff."
