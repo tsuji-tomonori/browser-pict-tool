@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { exportCsv, exportMarkdown, exportTsv } from "../../packages/core/index.ts";
+import {
+  exportCsv,
+  exportMarkdown,
+  exportTsv,
+  neutralizeSpreadsheetCellValue,
+} from "../../packages/core/index.ts";
 
 test("exportCsv includes the header row and joins rows with commas", () => {
   const suite = {
@@ -18,13 +23,10 @@ test("exportCsv includes the header row and joins rows with commas", () => {
 test("exportCsv escapes cells containing commas and double quotes", () => {
   const suite = {
     header: ["Name", "Notes"],
-    rows: [['Widget, Inc.', 'He said "hello"']],
+    rows: [["Widget, Inc.", 'He said "hello"']],
   };
 
-  assert.equal(
-    exportCsv(suite),
-    ['Name,Notes', '"Widget, Inc.","He said ""hello"""'].join("\n"),
-  );
+  assert.equal(exportCsv(suite), ["Name,Notes", '"Widget, Inc.","He said ""hello"""'].join("\n"));
 });
 
 test("exportTsv includes the header row and joins rows with tabs", () => {
@@ -75,7 +77,7 @@ test("exportCsv handles cells containing newlines", () => {
     rows: [["line1\nline2", "ok"]],
   };
 
-  assert.equal(exportCsv(suite), ['A,B', '"line1\nline2",ok'].join("\n"));
+  assert.equal(exportCsv(suite), ["A,B", '"line1\nline2",ok'].join("\n"));
 });
 
 test("exportTsv handles empty table with headers only", () => {
@@ -96,10 +98,7 @@ test("exportMarkdown converts newlines to br tags", () => {
     rows: [["line1\nline2"]],
   };
 
-  assert.equal(
-    exportMarkdown(suite),
-    ["| A |", "| --- |", "| line1<br>line2 |"].join("\n"),
-  );
+  assert.equal(exportMarkdown(suite), ["| A |", "| --- |", "| line1<br>line2 |"].join("\n"));
 });
 
 test("exportCsv handles single column", () => {
@@ -109,4 +108,47 @@ test("exportCsv handles single column", () => {
   };
 
   assert.equal(exportCsv(suite), ["Only", "val1", "val2"].join("\n"));
+});
+
+test("neutralizeSpreadsheetCellValue prefixes spreadsheet formula trigger values", () => {
+  assert.equal(neutralizeSpreadsheetCellValue("=SUM(A1:A2)"), "'=SUM(A1:A2)");
+  assert.equal(neutralizeSpreadsheetCellValue("+42"), "'+42");
+  assert.equal(neutralizeSpreadsheetCellValue("-42"), "'-42");
+  assert.equal(neutralizeSpreadsheetCellValue("@cmd"), "'@cmd");
+});
+
+test("neutralizeSpreadsheetCellValue leaves normal values unchanged", () => {
+  assert.equal(neutralizeSpreadsheetCellValue("plain text"), "plain text");
+  assert.equal(
+    neutralizeSpreadsheetCellValue("  =not-a-formula-trigger"),
+    "  =not-a-formula-trigger",
+  );
+  assert.equal(neutralizeSpreadsheetCellValue(""), "");
+});
+
+test("exportCsv neutralizes spreadsheet formula trigger values", () => {
+  const suite = {
+    header: ["A", "B", "C", "D", "E"],
+    rows: [["=1+1", "+1", "-1", "@SUM(A1)", "safe"]],
+  };
+
+  assert.equal(exportCsv(suite), ["A,B,C,D,E", "'=1+1,'+1,'-1,'@SUM(A1),safe"].join("\n"));
+});
+
+test("exportTsv neutralizes spreadsheet formula trigger values", () => {
+  const suite = {
+    header: ["A", "B", "C", "D", "E"],
+    rows: [["=1+1", "+1", "-1", "@SUM(A1)", "safe"]],
+  };
+
+  assert.equal(exportTsv(suite), ["A\tB\tC\tD\tE", "'=1+1\t'+1\t'-1\t'@SUM(A1)\tsafe"].join("\n"));
+});
+
+test("exportCsv preserves existing CSV escaping while neutralizing formula cells", () => {
+  const suite = {
+    header: ["Name", "Notes"],
+    rows: [["=SUM(1,2)", 'He said "hello"']],
+  };
+
+  assert.equal(exportCsv(suite), ["Name,Notes", '"\'=SUM(1,2)","He said ""hello"""'].join("\n"));
 });

@@ -52,3 +52,30 @@
 - Acceptance state:
   - Go (issue decomposition and registration docs completed)
   - Go (isolated web install/build と web check が通過)
+
+## 2026-04-22 Update (SEC-001 Implementation)
+
+- Phase: Implementation
+- Active package: core exporters / web excel / docs
+- Decisions:
+  - neutralization は `'` プレフィックス方式で統一し、トリガーは `=`, `+`, `-`, `@` の4種に限定
+  - CSV は neutralize 後に既存 quoting を適用し、フォーマット回帰を防止
+  - Excel 出力も core の同一 utility を利用してポリシーを一元化
+- Commands run:
+  - rg --files -g 'AGENTS.md'
+  - cat AGENTS.md
+  - rg --files packages/core/exporters packages/web/src/lib tests/core docs
+  - rg -n "csv|tsv|excel|export" packages/core packages/web/src/lib tests/core docs
+  - sed -n inspections for exporter/web/tests/docs files
+  - npx prettier --write packages/core/exporters/spreadsheet-neutralization.ts packages/core/exporters/stream-encoder.ts packages/core/exporters/index.ts packages/core/index.ts packages/web/src/lib/excel-export.ts tests/core/exporters.test.ts docs/security/issues/SEC-001-spreadsheet-formula-injection-hardening.md .agent/current-plan.md .agent/STATUS.md
+  - node --experimental-strip-types --test tests/core/exporters.test.ts (failed: Node v20.19.6 does not support --experimental-strip-types)
+  - npm run test (failed: Node v20.19.6 does not support --experimental-strip-types)
+  - task check (failed: task command not found)
+  - npm --prefix packages/web run check
+  - npm --prefix packages/web run build
+- Blockers:
+  - 実行環境 Node が v20.19.6 のため `--experimental-strip-types` 系テストを実行できない
+  - `task` CLI が環境に存在せず `task check` を実行できない
+- Acceptance state:
+  - No-Go (required validations blocked by environment limitations)
+  - Partial Go (`npm --prefix packages/web run check` and `npm --prefix packages/web run build` passed)

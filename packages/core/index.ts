@@ -19,6 +19,7 @@ export {
   exportCsv,
   exportMarkdown,
   exportTsv,
+  neutralizeSpreadsheetCellValue,
   previewIsTruncated,
   previewRows,
 } from "./exporters/index.ts";
