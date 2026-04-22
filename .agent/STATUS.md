@@ -22,8 +22,33 @@
   - npm run test:e2e (failed: browser not installed)
   - npx playwright install chromium (failed: cdn.playwright.dev 403 Domain forbidden)
   - npm run lint (failed: Node v20, --experimental-strip-types 未対応)
+- Active package: web / repo workflow
+- Decisions:
+  - `packages/web` scripts から `../../node_modules/*` 参照を除去し、npm script 標準 PATH 解決に統一する
+  - PR の品質ゲートに、`deploy-pages.yml` と同等の `npm --prefix packages/web ci` + build 条件を追加する
+- Commands run:
+  - npm --prefix packages/web ci
+  - npm --prefix packages/web run build
+  - npm --prefix packages/web run check
 - Blockers:
   - 実行環境 Node が v20.19.6 のため `--experimental-strip-types` 系コマンドを実行できない
   - Playwright Chromium ダウンロードが 403 (Domain forbidden) で失敗し E2E 実行不能
 - Acceptance state:
   - No-Go (環境制約で検証が完了できず)
+  - Go (web check/build passed)
+
+## 2026-04-21 Update (Security Issue Registration)
+
+- Phase: Planning
+- Active package: docs/security
+- Decisions:
+  - セキュリティ改善を SEC-001〜SEC-006 の6 Issueに分解
+  - M1 を High/Critical に集中させる段階導入を採用
+- Commands run:
+  - mkdir -p docs/security/issues
+  - markdown issue files creation
+- Blockers:
+  - GitHub Issue API/CLI が環境上未設定のため、リポジトリ内レジスタとして登録
+- Acceptance state:
+  - Go (issue decomposition and registration docs completed)
+  - Go (isolated web install/build と web check が通過)

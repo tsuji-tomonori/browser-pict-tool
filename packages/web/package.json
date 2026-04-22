@@ -3,11 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "\"$npm_node_execpath\" ../../node_modules/vite/bin/vite.js",
-    "build": "\"$npm_node_execpath\" ../../node_modules/vite/bin/vite.js build",
-    "preview": "\"$npm_node_execpath\" ../../node_modules/vite/bin/vite.js preview",
-    "check": "\"$npm_node_execpath\" ../../node_modules/typescript/bin/tsc --noEmit",
-    "e2e": "\"$npm_node_execpath\" ../../node_modules/@playwright/test/cli.js test"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "tsc --noEmit",
+    "e2e": "playwright test"
   },
   "devDependencies": {
     "typescript": "^5.8.3",
