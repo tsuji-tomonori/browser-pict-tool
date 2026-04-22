@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 type SupportPhase =
@@ -41,6 +41,13 @@ type MaterializedSummary = {
   }>;
 };
 
+type Badge = {
+  schemaVersion: 1;
+  label: string;
+  message: string;
+  color: string;
+};
+
 const supportPhaseBuckets: Record<SupportPhase, UpstreamCoverageBucket[]> = {
   required_v0_1: ["core_cli_parser", "core_constraints"],
   deferred_v0_2: ["public_deferred_structure"],
@@ -61,6 +68,32 @@ function countBy<T>(items: T[], keyOf: (item: T) => string): Record<string, numb
   );
 }
 
+function makeFractionMessage(materializedCases: number, totalCases: number): string {
+  return `${materializedCases}/${totalCases}`;
+}
+
+function makeCoverageColor(materializedCases: number, totalCases: number): string {
+  if (totalCases === 0) {
+    return "lightgrey";
+  }
+
+  if (materializedCases === totalCases) {
+    return "brightgreen";
+  }
+
+  const ratio = materializedCases / totalCases;
+  if (ratio >= 0.8) {
+    return "green";
+  }
+  if (ratio >= 0.5) {
+    return "yellow";
+  }
+  if (ratio > 0) {
+    return "orange";
+  }
+  return "lightgrey";
+}
+
 function main() {
   const repoRoot = process.cwd();
   const indexPath = join(repoRoot, "tests", "generated", "upstream-index.json");
@@ -71,6 +104,7 @@ function main() {
     "materialized-fixtures-summary.json",
   );
   const reportPath = join(repoRoot, "tests", "generated", "feature-coverage.json");
+  const badgesRoot = join(repoRoot, "tests", "generated", "badges");
 
   if (!existsSync(indexPath) || !existsSync(materializedPath)) {
     throw new Error("missing upstream-index.json or materialized-fixtures-summary.json");
@@ -125,6 +159,58 @@ function main() {
   };
 
   writeFileSync(reportPath, JSON.stringify(report, null, 2) + "\n");
+  mkdirSync(badgesRoot, { recursive: true });
+
+  const featureBadge: Badge = {
+    schemaVersion: 1,
+    label: "feature coverage",
+    message: makeFractionMessage(
+      report.summary.materializedFixtureCases,
+      report.summary.totalCommandCases,
+    ),
+    color: makeCoverageColor(
+      report.summary.materializedFixtureCases,
+      report.summary.totalCommandCases,
+    ),
+  };
+  writeFileSync(
+    join(badgesRoot, "feature-coverage.json"),
+    JSON.stringify(featureBadge, null, 2) + "\n",
+  );
+
+  const requiredCoverage = report.phaseCoverage.required_v0_1;
+  const requiredBadge: Badge = {
+    schemaVersion: 1,
+    label: "required v0.1",
+    message: makeFractionMessage(requiredCoverage.materializedCases, requiredCoverage.totalCases),
+    color: makeCoverageColor(requiredCoverage.materializedCases, requiredCoverage.totalCases),
+  };
+  writeFileSync(
+    join(badgesRoot, "required-v0_1-coverage.json"),
+    JSON.stringify(requiredBadge, null, 2) + "\n",
+  );
+
+  const deferredTotal =
+    report.phaseCoverage.deferred_v0_2.totalCases +
+    report.phaseCoverage.deferred_v0_3.totalCases +
+    report.phaseCoverage.reference_regression.totalCases +
+    report.phaseCoverage.repo_extension_non_goal.totalCases;
+  const deferredMaterialized =
+    report.phaseCoverage.deferred_v0_2.materializedCases +
+    report.phaseCoverage.deferred_v0_3.materializedCases +
+    report.phaseCoverage.reference_regression.materializedCases +
+    report.phaseCoverage.repo_extension_non_goal.materializedCases;
+  const deferredBadge: Badge = {
+    schemaVersion: 1,
+    label: "deferred coverage",
+    message: makeFractionMessage(deferredMaterialized, deferredTotal),
+    color: makeCoverageColor(deferredMaterialized, deferredTotal),
+  };
+  writeFileSync(
+    join(badgesRoot, "deferred-coverage.json"),
+    JSON.stringify(deferredBadge, null, 2) + "\n",
+  );
+
   console.log(JSON.stringify(report, null, 2));
 }
 

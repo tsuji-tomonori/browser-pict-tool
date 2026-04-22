@@ -74,6 +74,9 @@ upstream index と materialized fixture の欠落を集計する。
 生成物:
 
 - `tests/generated/feature-coverage.json`
+- `tests/generated/badges/feature-coverage.json`
+- `tests/generated/badges/required-v0_1-coverage.json`
+- `tests/generated/badges/deferred-coverage.json`
 
 主な確認内容:
 

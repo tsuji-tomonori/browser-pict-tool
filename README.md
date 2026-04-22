@@ -2,6 +2,10 @@
 
 PICT 互換の parser / validator / generator を browser 上で扱うための作業リポジトリ。
 
+![Feature coverage badge](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/t-tsuji/browser-pict-tool/main/tests/generated/badges/feature-coverage.json)
+![Required v0.1 coverage badge](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/t-tsuji/browser-pict-tool/main/tests/generated/badges/required-v0_1-coverage.json)
+![Deferred coverage badge](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/t-tsuji/browser-pict-tool/main/tests/generated/badges/deferred-coverage.json)
+
 ## 開発コマンド
 
 - `npm run lint`: ESLint と `packages/core` の公開契約チェックを実行する
