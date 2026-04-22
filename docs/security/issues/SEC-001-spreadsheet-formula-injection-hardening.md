@@ -31,6 +31,12 @@
 - 既存フォーマット回帰（CSV quote 破壊等）がない。
 - 関連テストが追加される。
 
+## Compatibility Impact
+
+- CSV/TSV/Excel で `=`, `+`, `-`, `@` から始まるセル値は、先頭に `'` を付与して出力する。
+- 既存の CSV quoting（`,` / `"` / 改行を含む場合の二重引用）は維持し、neutralize 後の値に対して適用する。
+- 先頭がトリガー文字ではないセル値の出力は従来どおり。
+
 ## Validation
 
 - `node --experimental-strip-types --test tests/core/*.test.ts`

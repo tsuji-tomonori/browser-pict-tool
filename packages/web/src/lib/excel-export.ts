@@ -1,4 +1,5 @@
 import type { Fill, Workbook as ExcelWorkbook } from "exceljs";
+import { neutralizeSpreadsheetCellValue } from "../../../core/index.ts";
 
 const XLSX_MIME_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 const HEADER_FILL: Fill = {
@@ -25,10 +26,7 @@ type ExcelJSImportWithDefault = ExcelJSImport & {
 let excelJsPromise: Promise<ExcelJSImportWithDefault> | null = null;
 
 function estimateColumnWidth(value: string): number {
-  return Math.max(
-    MIN_COLUMN_WIDTH,
-    Math.min(MAX_COLUMN_WIDTH, Array.from(value).length + 2),
-  );
+  return Math.max(MIN_COLUMN_WIDTH, Math.min(MAX_COLUMN_WIDTH, Array.from(value).length + 2));
 }
 
 function triggerBlobDownload(blob: Blob, fileName: string): void {
@@ -64,7 +62,7 @@ export async function exportToExcel(
   const Workbook = resolveWorkbookConstructor(exceljsModule);
   const workbook = new Workbook();
   const worksheet = workbook.addWorksheet("Results");
-  const headerValues = [...header];
+  const headerValues = [...header].map(neutralizeSpreadsheetCellValue);
   const columnWidths = headerValues.map((value) => estimateColumnWidth(value));
   const diffStartColumnIndex = headerValues[0] === "#" ? 1 : 0;
 
@@ -82,7 +80,7 @@ export async function exportToExcel(
   let previousRow: string[] | null = null;
 
   for (const row of rows) {
-    const currentRow = [...row];
+    const currentRow = [...row].map(neutralizeSpreadsheetCellValue);
     const worksheetRow = worksheet.addRow(currentRow);
 
     for (let columnIndex = 0; columnIndex < headerValues.length; columnIndex += 1) {

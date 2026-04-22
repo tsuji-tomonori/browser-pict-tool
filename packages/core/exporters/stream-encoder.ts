@@ -1,3 +1,5 @@
+import { neutralizeSpreadsheetCellValue } from "./spreadsheet-neutralization.ts";
+
 export interface StreamEncoder {
   encodeHeader(header: readonly string[]): string;
   encodeRow(row: readonly string[]): string;
@@ -5,11 +7,13 @@ export interface StreamEncoder {
 }
 
 function escapeCsvCell(cell: string): string {
-  if (/[",\r\n]/.test(cell)) {
-    return `"${cell.replace(/"/g, '""')}"`;
+  const neutralizedCell = neutralizeSpreadsheetCellValue(cell);
+
+  if (/[",\r\n]/.test(neutralizedCell)) {
+    return `"${neutralizedCell.replace(/"/g, '""')}"`;
   }
 
-  return cell;
+  return neutralizedCell;
 }
 
 function escapeMarkdownCell(cell: string): string {
@@ -33,10 +37,10 @@ export function createCsvStreamEncoder(): StreamEncoder {
 export function createTsvStreamEncoder(): StreamEncoder {
   return {
     encodeHeader(header) {
-      return `${header.join("\t")}\n`;
+      return `${header.map(neutralizeSpreadsheetCellValue).join("\t")}\n`;
     },
     encodeRow(row) {
-      return `${row.join("\t")}\n`;
+      return `${row.map(neutralizeSpreadsheetCellValue).join("\t")}\n`;
     },
     encodeFooter() {
       return "";
