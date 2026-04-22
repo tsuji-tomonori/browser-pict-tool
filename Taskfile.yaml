@@ -31,6 +31,11 @@ tasks:
     cmds:
       - npm --prefix packages/web run dev
 
+  test:e2e:
+    desc: Run web E2E tests
+    cmds:
+      - npm run test:e2e
+
   check:
     desc: Run lint, typecheck, and tests
     cmds:

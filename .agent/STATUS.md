@@ -1,6 +1,27 @@
 # STATUS
 
 - Phase: Acceptance
+- Active package: web/repo
+- Decisions:
+  - 品質ゲートへの組み込みは root `check` スクリプトに `test:e2e` を追加して実現する
+  - E2E 拡充は既存 `smoke.spec.ts` にシナリオ追加して維持コストを抑える
+- Commands run:
+  - rg --files -g 'AGENTS.md'
+  - cat AGENTS.md
+  - cat skills/browser-pict-tool-tdd/SKILL.md
+  - cat Taskfile.yaml
+  - cat package.json
+  - cat packages/web/package.json
+  - cat packages/web/tests/e2e/smoke.spec.ts
+  - cat tests/core/qa-gate.test.ts
+  - cat packages/web/src/main.ts
+  - cat packages/web/index.html
+  - npx prettier --write package.json Taskfile.yaml packages/web/tests/e2e/smoke.spec.ts .agent/current-plan.md .agent/STATUS.md
+  - npm run test:e2e (failed: Playwright browser binary missing)
+  - npm install
+  - npm run test:e2e (failed: browser not installed)
+  - npx playwright install chromium (failed: cdn.playwright.dev 403 Domain forbidden)
+  - npm run lint (failed: Node v20, --experimental-strip-types 未対応)
 - Active package: web / repo workflow
 - Decisions:
   - `packages/web` scripts から `../../node_modules/*` 参照を除去し、npm script 標準 PATH 解決に統一する
@@ -10,8 +31,10 @@
   - npm --prefix packages/web run build
   - npm --prefix packages/web run check
 - Blockers:
-  - なし
+  - 実行環境 Node が v20.19.6 のため `--experimental-strip-types` 系コマンドを実行できない
+  - Playwright Chromium ダウンロードが 403 (Domain forbidden) で失敗し E2E 実行不能
 - Acceptance state:
+  - No-Go (環境制約で検証が完了できず)
   - Go (web check/build passed)
 
 ## 2026-04-21 Update (Security Issue Registration)
