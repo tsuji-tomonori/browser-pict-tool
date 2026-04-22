@@ -13,7 +13,8 @@
     "format:check": "\"$npm_node_execpath\" node_modules/prettier/bin/prettier.cjs . --check",
     "test": "\"$npm_node_execpath\" --experimental-strip-types --test tests/core/*.test.ts",
     "test:qa": "\"$npm_node_execpath\" --experimental-strip-types --test tests/core/qa-gate.test.ts",
-    "check": "\"$npm_node_execpath\" \"$npm_execpath\" run lint && \"$npm_node_execpath\" \"$npm_execpath\" run typecheck && \"$npm_node_execpath\" \"$npm_execpath\" run test"
+    "test:e2e": "\"$npm_node_execpath\" \"$npm_execpath\" --prefix packages/web run e2e",
+    "check": "\"$npm_node_execpath\" \"$npm_execpath\" run lint && \"$npm_node_execpath\" \"$npm_execpath\" run typecheck && \"$npm_node_execpath\" \"$npm_execpath\" run test && \"$npm_node_execpath\" \"$npm_execpath\" run test:e2e"
   },
   "engines": {
     "node": ">=22.6.0"
