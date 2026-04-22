@@ -12,6 +12,28 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  web-build-isolated:
+    name: Web build (isolated install)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: packages/web/package-lock.json
+
+      - name: Install web dependencies only
+        run: npm --prefix packages/web ci
+
+      - name: Build web
+        run: npm --prefix packages/web run build
+
   gate:
     name: Repository Quality Gate
     runs-on: ubuntu-latest
