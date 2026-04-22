@@ -12,4 +12,20 @@
 - Blockers:
   - なし
 - Acceptance state:
+  - Go (web check/build passed)
+
+## 2026-04-21 Update (Security Issue Registration)
+
+- Phase: Planning
+- Active package: docs/security
+- Decisions:
+  - セキュリティ改善を SEC-001〜SEC-006 の6 Issueに分解
+  - M1 を High/Critical に集中させる段階導入を採用
+- Commands run:
+  - mkdir -p docs/security/issues
+  - markdown issue files creation
+- Blockers:
+  - GitHub Issue API/CLI が環境上未設定のため、リポジトリ内レジスタとして登録
+- Acceptance state:
+  - Go (issue decomposition and registration docs completed)
   - Go (isolated web install/build と web check が通過)
