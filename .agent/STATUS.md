@@ -1,17 +1,15 @@
 # STATUS
 
 - Phase: Acceptance
-- Active package: web
+- Active package: web / repo workflow
 - Decisions:
-  - 既存 1 画面フローは維持しつつ、フォーム/結果テーブルのアクセシビリティ属性を拡張する
-  - セルコピーは `td` クリックから `button` 操作へ変更する
-  - 列幅変更はドラッグを維持しつつ、`ArrowLeft/ArrowRight` での調整を追加する
+  - `packages/web` scripts から `../../node_modules/*` 参照を除去し、npm script 標準 PATH 解決に統一する
+  - PR の品質ゲートに、`deploy-pages.yml` と同等の `npm --prefix packages/web ci` + build 条件を追加する
 - Commands run:
-  - npm install
-  - npm --prefix packages/web install
-  - npm --prefix packages/web run check
+  - npm --prefix packages/web ci
   - npm --prefix packages/web run build
+  - npm --prefix packages/web run check
 - Blockers:
   - なし
 - Acceptance state:
-  - Go (web check/build passed)
+  - Go (isolated web install/build と web check が通過)
