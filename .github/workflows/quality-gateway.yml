@@ -57,6 +57,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Verify web lockfile reproducibility
+        run: npm --prefix packages/web ci
+
       - name: Lint
         id: lint
         continue-on-error: true
