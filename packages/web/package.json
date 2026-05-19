@@ -12,7 +12,7 @@
   "devDependencies": {
     "typescript": "^5.8.3",
     "vite": "^7.0.0",
-    "@playwright/test": "^1.53.0"
+    "@playwright/test": "^1.60.0"
   },
   "dependencies": {
     "exceljs": "^4.4.0"
