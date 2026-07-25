@@ -22,21 +22,22 @@ jobs:
           sudo apt-get install -y blender xvfb zip python3-numpy
           blender --version
           python3 -c "import numpy; print(numpy.__version__)"
-      - name: Decode and refine procedural builder
+      - name: Decode procedural tools
         run: |
           python3 - <<'PY'
           import base64, lzma
           from pathlib import Path
-          builder_src = Path('tools/yatsukusa/remote_compact.xz.b85').read_text().strip()
-          builder = Path('tools/yatsukusa/build_yatsukusa_park.py')
-          builder.write_bytes(lzma.decompress(base64.b85decode(builder_src)))
-          refiner_src = Path('tools/yatsukusa/refine_builder.py.xz.b85').read_text().strip()
-          refiner = Path('tools/yatsukusa/refine_builder.py')
-          refiner.write_bytes(lzma.decompress(base64.b85decode(refiner_src)))
+          for encoded, decoded in (
+              ('tools/yatsukusa/remote_compact.xz.b85', 'tools/yatsukusa/build_yatsukusa_park.py'),
+              ('tools/yatsukusa/refine_builder.py.xz.b85', 'tools/yatsukusa/refine_builder.py'),
+              ('tools/yatsukusa/optimize_export.py.xz.b85', 'tools/yatsukusa/optimize_export.py'),
+          ):
+              src = Path(encoded).read_text().strip()
+              Path(decoded).write_bytes(lzma.decompress(base64.b85decode(src)))
           PY
           python3 tools/yatsukusa/refine_builder.py tools/yatsukusa/build_yatsukusa_park.py
-          python3 -m py_compile tools/yatsukusa/build_yatsukusa_park.py
-      - name: Build model and representative renders
+          python3 -m py_compile tools/yatsukusa/build_yatsukusa_park.py tools/yatsukusa/optimize_export.py
+      - name: Build editable model and representative renders
         id: blender
         env:
           YATSUKUSA_OUTPUT_DIR: ${{ github.workspace }}/yatsukusa-output
@@ -44,18 +45,27 @@ jobs:
           set -o pipefail
           mkdir -p "$YATSUKUSA_OUTPUT_DIR"
           xvfb-run -a blender --background --python-exit-code 1 --python tools/yatsukusa/build_yatsukusa_park.py 2>&1 | tee "$YATSUKUSA_OUTPUT_DIR/blender-build.log"
-          find "$YATSUKUSA_OUTPUT_DIR" -maxdepth 2 -type f -printf '%P %k KB\n' | sort
           test -s "$YATSUKUSA_OUTPUT_DIR/YatsukusaPark_VRChat.blend"
+          test "$(find "$YATSUKUSA_OUTPUT_DIR/renders" -name '*.png' -type f | wc -l)" -ge 8
+      - name: Optimize static meshes and export VRChat assets
+        env:
+          YATSUKUSA_OUTPUT_DIR: ${{ github.workspace }}/yatsukusa-output
+        run: |
+          set -o pipefail
+          xvfb-run -a blender --background --python-exit-code 1 --python tools/yatsukusa/optimize_export.py 2>&1 | tee -a "$YATSUKUSA_OUTPUT_DIR/blender-build.log"
+          find "$YATSUKUSA_OUTPUT_DIR" -maxdepth 2 -type f -printf '%P %k KB\n' | sort
+          test -s "$YATSUKUSA_OUTPUT_DIR/YatsukusaPark_VRChat_Optimized.blend"
           test -s "$YATSUKUSA_OUTPUT_DIR/YatsukusaPark_PC.glb"
           test -s "$YATSUKUSA_OUTPUT_DIR/YatsukusaPark_Quest.glb"
           test -s "$YATSUKUSA_OUTPUT_DIR/YatsukusaPark_Unity.fbx"
-          test "$(find "$YATSUKUSA_OUTPUT_DIR/renders" -name '*.png' -type f | wc -l)" -ge 8
+          test -s "$YATSUKUSA_OUTPUT_DIR/optimization_stats.json"
       - name: Package artifact
         if: always()
         run: |
           mkdir -p yatsukusa-output
           cp tools/yatsukusa/build_yatsukusa_park.py yatsukusa-output/
           cp tools/yatsukusa/refine_builder.py yatsukusa-output/
+          cp tools/yatsukusa/optimize_export.py yatsukusa-output/
           (cd yatsukusa-output && zip -r ../YatsukusaPark_VRChat.zip .)
       - uses: actions/upload-artifact@v4
         if: always()
