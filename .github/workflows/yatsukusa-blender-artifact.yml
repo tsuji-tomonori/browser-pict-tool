@@ -22,21 +22,19 @@ jobs:
           sudo apt-get install -y blender xvfb zip python3-numpy
           blender --version
           python3 -c "import numpy; print(numpy.__version__)"
-      - name: Decode and patch procedural builder
+      - name: Decode and refine procedural builder
         run: |
           python3 - <<'PY'
           import base64, lzma
           from pathlib import Path
-          src = Path('tools/yatsukusa/remote_compact.xz.b85').read_text().strip()
-          target = Path('tools/yatsukusa/build_yatsukusa_park.py')
-          target.write_bytes(lzma.decompress(base64.b85decode(src)))
-          lines = target.read_text().splitlines()
-          start = lines.index('def poly(n,P,z,x,c):')
-          end = lines.index('def path(n,P,w):')
-          replacement = "def poly(n,P,z,x,c):\n V=[Vector((a,b,z)) for a,b in P];T=tessellate_polygon([V])\n if T and isinstance(T[0][0],int):F=[tuple(t) for t in T]\n else:\n  D={tuple(v):i for i,v in enumerate(V)};F=[tuple(D[tuple(v)] for v in t) for t in T]\n me=bpy.data.meshes.new(n);me.from_pydata([tuple(v) for v in V],[],F or [tuple(range(len(V)))]);me.update();o=bpy.data.objects.new(n,me);C[x].objects.link(o);return mat(o,c)".splitlines()
-          lines[start:end] = replacement
-          target.write_text('\n'.join(lines) + '\n')
+          builder_src = Path('tools/yatsukusa/remote_compact.xz.b85').read_text().strip()
+          builder = Path('tools/yatsukusa/build_yatsukusa_park.py')
+          builder.write_bytes(lzma.decompress(base64.b85decode(builder_src)))
+          refiner_src = Path('tools/yatsukusa/refine_builder.py.xz.b85').read_text().strip()
+          refiner = Path('tools/yatsukusa/refine_builder.py')
+          refiner.write_bytes(lzma.decompress(base64.b85decode(refiner_src)))
           PY
+          python3 tools/yatsukusa/refine_builder.py tools/yatsukusa/build_yatsukusa_park.py
           python3 -m py_compile tools/yatsukusa/build_yatsukusa_park.py
       - name: Build model and representative renders
         id: blender
@@ -57,6 +55,7 @@ jobs:
         run: |
           mkdir -p yatsukusa-output
           cp tools/yatsukusa/build_yatsukusa_park.py yatsukusa-output/
+          cp tools/yatsukusa/refine_builder.py yatsukusa-output/
           (cd yatsukusa-output && zip -r ../YatsukusaPark_VRChat.zip .)
       - uses: actions/upload-artifact@v4
         if: always()
