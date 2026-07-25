@@ -58,6 +58,7 @@ jobs:
           test -s "$YATSUKUSA_OUTPUT_DIR/YatsukusaPark_PC.glb"
           test -s "$YATSUKUSA_OUTPUT_DIR/YatsukusaPark_Quest.glb"
           test -s "$YATSUKUSA_OUTPUT_DIR/YatsukusaPark_Unity.fbx"
+          test -s "$YATSUKUSA_OUTPUT_DIR/YatsukusaPark_Quest.fbx"
           test -s "$YATSUKUSA_OUTPUT_DIR/optimization_stats.json"
       - name: Package artifact
         if: always()
