@@ -31,17 +31,27 @@ jobs:
           PY
           python3 -m py_compile tools/yatsukusa/build_yatsukusa_park.py
       - name: Build model and representative renders
+        id: blender
         env:
           YATSUKUSA_OUTPUT_DIR: ${{ github.workspace }}/yatsukusa-output
         run: |
+          set -o pipefail
           mkdir -p "$YATSUKUSA_OUTPUT_DIR"
-          xvfb-run -a blender --background --python tools/yatsukusa/build_yatsukusa_park.py
+          xvfb-run -a blender --background --python-exit-code 1 --python tools/yatsukusa/build_yatsukusa_park.py 2>&1 | tee "$YATSUKUSA_OUTPUT_DIR/blender-build.log"
           find "$YATSUKUSA_OUTPUT_DIR" -maxdepth 2 -type f -printf '%P %k KB\n' | sort
+          test -s "$YATSUKUSA_OUTPUT_DIR/YatsukusaPark_VRChat.blend"
+          test -s "$YATSUKUSA_OUTPUT_DIR/YatsukusaPark_PC.glb"
+          test -s "$YATSUKUSA_OUTPUT_DIR/YatsukusaPark_Quest.glb"
+          test -s "$YATSUKUSA_OUTPUT_DIR/YatsukusaPark_Unity.fbx"
+          test "$(find "$YATSUKUSA_OUTPUT_DIR/renders" -name '*.png' -type f | wc -l)" -ge 8
       - name: Package artifact
+        if: always()
         run: |
+          mkdir -p yatsukusa-output
           cp tools/yatsukusa/build_yatsukusa_park.py yatsukusa-output/
           (cd yatsukusa-output && zip -r ../YatsukusaPark_VRChat.zip .)
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: YatsukusaPark-VRChat
           path: |
