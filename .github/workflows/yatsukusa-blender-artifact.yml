@@ -1,0 +1,51 @@
+name: Build Yatsukusa Park Blender artifact
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "tools/yatsukusa/**"
+      - ".github/workflows/yatsukusa-blender-artifact.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Blender
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender xvfb zip
+          blender --version
+      - name: Decode procedural builder
+        run: |
+          python3 - <<'PY'
+          import base64, lzma
+          from pathlib import Path
+          src = Path('tools/yatsukusa/remote_compact.xz.b85').read_text().strip()
+          Path('tools/yatsukusa/build_yatsukusa_park.py').write_bytes(lzma.decompress(base64.b85decode(src)))
+          PY
+          python3 -m py_compile tools/yatsukusa/build_yatsukusa_park.py
+      - name: Build model and representative renders
+        env:
+          YATSUKUSA_OUTPUT_DIR: ${{ github.workspace }}/yatsukusa-output
+        run: |
+          mkdir -p "$YATSUKUSA_OUTPUT_DIR"
+          xvfb-run -a blender --background --python tools/yatsukusa/build_yatsukusa_park.py
+          find "$YATSUKUSA_OUTPUT_DIR" -maxdepth 2 -type f -printf '%P %k KB\n' | sort
+      - name: Package artifact
+        run: |
+          cp tools/yatsukusa/build_yatsukusa_park.py yatsukusa-output/
+          (cd yatsukusa-output && zip -r ../YatsukusaPark_VRChat.zip .)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: YatsukusaPark-VRChat
+          path: |
+            yatsukusa-output/
+            YatsukusaPark_VRChat.zip
+          if-no-files-found: error
+          retention-days: 1
