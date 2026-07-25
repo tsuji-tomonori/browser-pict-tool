@@ -23,7 +23,7 @@ jobs:
       - name: Install Blender and Python dependencies
         run: |
           sudo apt-get update -qq > output/logs/apt-update.log 2>&1
-          sudo apt-get install -y -qq blender > output/logs/apt-install.log 2>&1
+          sudo apt-get install -y -qq blender libegl1 libgl1 > output/logs/apt-install.log 2>&1
           python3 -m pip install --break-system-packages -q 'numpy<2.3' trimesh scipy shapely pillow > output/logs/pip.log 2>&1
           blender --version | head -n 3
       - name: Generate PC and Quest meshes
