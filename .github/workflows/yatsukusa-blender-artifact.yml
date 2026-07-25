@@ -19,8 +19,9 @@ jobs:
       - name: Install Blender
         run: |
           sudo apt-get update
-          sudo apt-get install -y blender xvfb zip
+          sudo apt-get install -y blender xvfb zip python3-numpy
           blender --version
+          python3 -c "import numpy; print(numpy.__version__)"
       - name: Decode and patch procedural builder
         run: |
           python3 - <<'PY'
