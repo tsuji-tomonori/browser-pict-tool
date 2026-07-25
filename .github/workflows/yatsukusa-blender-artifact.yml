@@ -46,7 +46,7 @@ jobs:
           mkdir -p "$YATSUKUSA_OUTPUT_DIR"
           xvfb-run -a blender --background --python-exit-code 1 --python tools/yatsukusa/build_yatsukusa_park.py 2>&1 | tee "$YATSUKUSA_OUTPUT_DIR/blender-build.log"
           test -s "$YATSUKUSA_OUTPUT_DIR/YatsukusaPark_VRChat.blend"
-          test "$(find "$YATSUKUSA_OUTPUT_DIR/renders" -name '*.png' -type f | wc -l)" -ge 8
+          test "$(find "$YATSUKUSA_OUTPUT_DIR/renders" -name '*.png' -type f | wc -l)" -ge 14
       - name: Optimize static meshes and export VRChat assets
         env:
           YATSUKUSA_OUTPUT_DIR: ${{ github.workspace }}/yatsukusa-output
