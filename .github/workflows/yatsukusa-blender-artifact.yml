@@ -21,13 +21,25 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y blender xvfb zip
           blender --version
-      - name: Decode procedural builder
+      - name: Decode and patch procedural builder
         run: |
           python3 - <<'PY'
           import base64, lzma
           from pathlib import Path
           src = Path('tools/yatsukusa/remote_compact.xz.b85').read_text().strip()
-          Path('tools/yatsukusa/build_yatsukusa_park.py').write_bytes(lzma.decompress(base64.b85decode(src)))
+          target = Path('tools/yatsukusa/build_yatsukusa_park.py')
+          target.write_bytes(lzma.decompress(base64.b85decode(src)))
+          lines = target.read_text().splitlines()
+          start = lines.index('def poly(n,P,z,x,c):')
+          end = lines.index('def path(n,P,w):')
+          replacement = '''def poly(n,P,z,x,c):
+ V=[Vector((a,b,z)) for a,b in P];T=tessellate_polygon([V])
+ if T and isinstance(T[0][0],int):F=[tuple(t) for t in T]
+ else:
+  D={tuple(v):i for i,v in enumerate(V)};F=[tuple(D[tuple(v)] for v in t) for t in T]
+ me=bpy.data.meshes.new(n);me.from_pydata([tuple(v) for v in V],[],F or [tuple(range(len(V)))]);me.update();o=bpy.data.objects.new(n,me);C[x].objects.link(o);return mat(o,c)'''.splitlines()
+          lines[start:end] = replacement
+          target.write_text('\n'.join(lines) + '\n')
           PY
           python3 -m py_compile tools/yatsukusa/build_yatsukusa_park.py
       - name: Build model and representative renders
