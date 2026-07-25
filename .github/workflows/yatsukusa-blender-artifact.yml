@@ -32,12 +32,7 @@ jobs:
           lines = target.read_text().splitlines()
           start = lines.index('def poly(n,P,z,x,c):')
           end = lines.index('def path(n,P,w):')
-          replacement = '''def poly(n,P,z,x,c):
- V=[Vector((a,b,z)) for a,b in P];T=tessellate_polygon([V])
- if T and isinstance(T[0][0],int):F=[tuple(t) for t in T]
- else:
-  D={tuple(v):i for i,v in enumerate(V)};F=[tuple(D[tuple(v)] for v in t) for t in T]
- me=bpy.data.meshes.new(n);me.from_pydata([tuple(v) for v in V],[],F or [tuple(range(len(V)))]);me.update();o=bpy.data.objects.new(n,me);C[x].objects.link(o);return mat(o,c)'''.splitlines()
+          replacement = "def poly(n,P,z,x,c):\n V=[Vector((a,b,z)) for a,b in P];T=tessellate_polygon([V])\n if T and isinstance(T[0][0],int):F=[tuple(t) for t in T]\n else:\n  D={tuple(v):i for i,v in enumerate(V)};F=[tuple(D[tuple(v)] for v in t) for t in T]\n me=bpy.data.meshes.new(n);me.from_pydata([tuple(v) for v in V],[],F or [tuple(range(len(V)))]);me.update();o=bpy.data.objects.new(n,me);C[x].objects.link(o);return mat(o,c)".splitlines()
           lines[start:end] = replacement
           target.write_text('\n'.join(lines) + '\n')
           PY
