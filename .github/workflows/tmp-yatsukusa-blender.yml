@@ -1,0 +1,60 @@
+name: Temporary Yatsukusa Blender build
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/tmp-yatsukusa-blender.yml'
+      - '.tmp/yatsukusa/**'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Materialize generator scripts
+        run: |
+          mkdir -p .tmp/yatsukusa output/logs
+          cat .tmp/yatsukusa/build.b64.* | base64 -d | gzip -d > .tmp/yatsukusa/build_yatsukusa_scene.py
+          cat .tmp/yatsukusa/blender.b64.* | base64 -d | gzip -d > .tmp/yatsukusa/make_blender_world.py
+      - name: Install Blender and Python dependencies
+        run: |
+          sudo apt-get update -qq > output/logs/apt-update.log 2>&1
+          sudo apt-get install -y -qq blender libegl1 libgl1 > output/logs/apt-install.log 2>&1
+          python3 -m pip install --break-system-packages -q 'numpy<2.3' trimesh scipy shapely pillow > output/logs/pip.log 2>&1
+          blender --version | head -n 3
+      - name: Generate PC and Quest meshes
+        run: |
+          python3 .tmp/yatsukusa/build_yatsukusa_scene.py --detail both --out output > output/logs/mesh-generation.log 2>&1
+          tail -n 20 output/logs/mesh-generation.log
+      - name: Build and render Blender world
+        run: |
+          set +e
+          blender --background --python .tmp/yatsukusa/make_blender_world.py -- "$GITHUB_WORKSPACE/output" > output/logs/blender.log 2>&1
+          status=$?
+          if [ "$status" -ne 0 ]; then
+            grep -E 'Traceback|Error|Exception|TypeError|ValueError|AttributeError|RuntimeError' output/logs/blender.log | tail -n 80 || true
+            echo '--- Blender log tail ---'
+            tail -n 160 output/logs/blender.log
+            exit "$status"
+          fi
+          tail -n 40 output/logs/blender.log
+      - name: Validate deliverables
+        run: |
+          test -s output/YatsukusaPark_VRChat.blend
+          test -s output/YatsukusaPark_PC.glb
+          test -s output/YatsukusaPark_Quest.glb
+          test -s output/YatsukusaPark_PC.fbx
+          test -s output/YatsukusaPark_Quest.fbx
+          test "$(find output/blender_renders -name '*.png' | wc -l)" -eq 9
+          du -h output/* | sort -h
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: yatsukusa-vrchat-blender-world
+          path: output/
+          if-no-files-found: error
+          compression-level: 6
