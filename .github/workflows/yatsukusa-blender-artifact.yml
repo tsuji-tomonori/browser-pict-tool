@@ -25,7 +25,7 @@ jobs:
           python3 -m pip install --break-system-packages gdown==5.2.0
           blender --version
 
-      - name: Decode realistic procedural tools
+      - name: Decode and patch realistic procedural tools
         run: |
           python3 - <<'PY'
           import base64, lzma
@@ -42,18 +42,30 @@ jobs:
               target.write_bytes(lzma.decompress(base64.b85decode(encoded)))
               print(target, target.stat().st_size)
           PY
+          python3 tools/yatsukusa/realistic/patch_v3.py tools/yatsukusa/realistic/build_yatsukusa_realistic.py
           python3 -m py_compile \
             tools/yatsukusa/realistic/build_yatsukusa_realistic.py \
             tools/yatsukusa/realistic/generate_textures.py \
+            tools/yatsukusa/realistic/source_texture_overlay.py \
+            tools/yatsukusa/realistic/patch_v3.py \
             tools/yatsukusa/realistic/optimize_export_realistic.py
 
-      - name: Generate high-resolution procedural materials
+      - name: Download the public source video once
+        run: |
+          gdown --id 1VhaMbnTtiBjinic5vVa3dS55UV-f7Lsw --output /tmp/IMG_0556.MOV
+          test "$(stat -c%s /tmp/IMG_0556.MOV)" -gt 800000000
+
+      - name: Generate procedural and source-video materials
         env:
           YATSUKUSA_TEXTURE_DIR: ${{ github.workspace }}/yatsukusa-output/textures
         run: |
           mkdir -p "$YATSUKUSA_TEXTURE_DIR"
           python3 tools/yatsukusa/realistic/generate_textures.py
-          test "$(find "$YATSUKUSA_TEXTURE_DIR" -name '*.png' -type f | wc -l)" -ge 18
+          python3 tools/yatsukusa/realistic/source_texture_overlay.py \
+            --video /tmp/IMG_0556.MOV \
+            --texture-dir "$YATSUKUSA_TEXTURE_DIR" \
+            --debug-dir "${{ github.workspace }}/yatsukusa-output/source_texture_crops"
+          test "$(find "$YATSUKUSA_TEXTURE_DIR" -name '*.png' -type f | wc -l)" -ge 27
 
       - name: Build editable scene and 14 validation renders
         env:
@@ -87,7 +99,6 @@ jobs:
       - name: Extract the ten matching source-video frames
         run: |
           mkdir -p yatsukusa-output/reference_frames
-          gdown --id 1VhaMbnTtiBjinic5vVa3dS55UV-f7Lsw --output /tmp/IMG_0556.MOV
           python3 - <<'PY'
           import subprocess
           from pathlib import Path
@@ -118,14 +129,13 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          from PIL import Image, ImageDraw, ImageFont
+          from PIL import Image, ImageDraw, ImageFont, ImageStat
           import json, math
 
           out = Path('yatsukusa-output')
           renders = out / 'renders'
           refs = out / 'reference_frames'
           font_path = '/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc'
-          font = ImageFont.truetype(font_path, 28)
           small = ImageFont.truetype(font_path, 22)
           names = [
               'Ref_0054_Bronze','Ref_0060_WaterGarden','Ref_0180_RedGranite',
@@ -133,14 +143,15 @@ jobs:
               'Ref_0342_StoneFace','Ref_0406_Pavilion','Ref_0434_BenchPath','Ref_0448_MapJunction',
           ]
           pairs = out / 'comparisons'; pairs.mkdir(exist_ok=True)
-          mean_luma = {}
+          metrics = {}
           for name in names:
               ref = Image.open(refs / f'{name}.jpg').convert('RGB').resize((640,360))
               render = Image.open(renders / f'{name}.png').convert('RGB').resize((640,360))
               pair = Image.new('RGB',(1280,410),(18,18,18)); pair.paste(ref,(0,50)); pair.paste(render,(640,50))
               d=ImageDraw.Draw(pair); d.text((12,10),f'{name} — VIDEO REFERENCE',font=small,fill='white'); d.text((652,10),'BLENDER REBUILD',font=small,fill='white')
               pair.save(pairs/f'{name}.jpg',quality=94,subsampling=0)
-              gray=render.convert('L'); mean_luma[name]=sum(gray.getdata())/(640*360)
+              stat=ImageStat.Stat(render.convert('L'))
+              metrics[name]={'mean_luma':round(stat.mean[0],3),'luma_stddev':round(stat.stddev[0],3)}
 
           sheet = Image.new('RGB',(1280,5*410),(18,18,18))
           for i,name in enumerate(names): sheet.paste(Image.open(pairs/f'{name}.jpg'),(0,i*410))
@@ -154,9 +165,15 @@ jobs:
               x=(i%cols)*thumb_w; y=(i//cols)*thumb_h
               contact.paste(img,(x+(thumb_w-img.width)//2,y+40)); draw.text((x+8,y+6),path.stem,font=small,fill='white')
           contact.save(out/'render_contact.jpg',quality=94,subsampling=0)
-          quality={'matched_views':len(names),'all_renders':len(all_renders),'non_empty_views':sum(v>8 for v in mean_luma.values()),'mean_luma':mean_luma}
+          quality={
+              'matched_views':len(names),
+              'all_renders':len(all_renders),
+              'non_empty_views':sum(v['mean_luma']>8 and v['luma_stddev']>4 for v in metrics.values()),
+              'metrics':metrics,
+          }
           (out/'visual_validation.json').write_text(json.dumps(quality,indent=2),encoding='utf-8')
-          if quality['non_empty_views'] != len(names): raise SystemExit('One or more matched renders are empty')
+          if quality['non_empty_views'] != len(names):
+              raise SystemExit(f"One or more matched renders are blank/flat: {quality}")
           PY
 
       - name: Package artifact
@@ -165,6 +182,8 @@ jobs:
           mkdir -p yatsukusa-output/source
           cp tools/yatsukusa/realistic/build_yatsukusa_realistic.py yatsukusa-output/source/ || true
           cp tools/yatsukusa/realistic/generate_textures.py yatsukusa-output/source/ || true
+          cp tools/yatsukusa/realistic/source_texture_overlay.py yatsukusa-output/source/ || true
+          cp tools/yatsukusa/realistic/patch_v3.py yatsukusa-output/source/ || true
           cp tools/yatsukusa/realistic/optimize_export_realistic.py yatsukusa-output/source/ || true
           (cd yatsukusa-output && zip -r ../YatsukusaPark_VRChat_Realistic.zip . >/dev/null)
           find yatsukusa-output -maxdepth 2 -type f -printf '%P %k KB\n' | sort
