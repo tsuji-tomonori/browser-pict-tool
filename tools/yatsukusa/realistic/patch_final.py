@@ -26,7 +26,7 @@ def main(path: str) -> None:
     text = replace_once(
         text,
         "scene.view_settings.exposure = -0.42",
-        "scene.view_settings.exposure = -0.68",
+        "scene.view_settings.exposure = 0.06",
         "final photographic exposure",
     )
 
@@ -40,9 +40,23 @@ simple_house('EastMediterranean',108,48,11,9,6.5,MAT['stucco_beige'],MAT['roof_r
 
     text = replace_once(
         text,
+        "    'bronze': image_material('MAT_DarkBronzeActual', 'bronze_base.png', height_file='bronze_height.png', roughness=.48, bump_strength=.34, mapping_scale=(1.55,1.55,1.55), use_uv=False, metallic=.58),",
+        "    'bronze': solid_material('MAT_DarkBronzeFinal', (.115,.072,.038), roughness=.52, metallic=.52, noise_scale=7.5, noise_strength=.32, bump_strength=.26),",
+        "non-stretched bronze material",
+    )
+
+    text = replace_once(
+        text,
+        "MAT['hedge'] = image_material('MAT_ClippedHedgeActual', 'hedge_base.png', height_file='hedge_height.png', roughness=.94, bump_strength=.43, mapping_scale=(1.55,1.55,1.55), use_uv=False)\nMAT['hedge_light'] = image_material('MAT_ClippedHedgeLightActual', 'hedge_light_base.png', height_file='hedge_height.png', roughness=.94, bump_strength=.38, mapping_scale=(1.45,1.45,1.45), use_uv=False)",
+        "MAT['hedge'] = solid_material('MAT_ClippedHedgeFinal', (.040,.145,.032), roughness=.96, noise_scale=10, noise_strength=.30, bump_strength=.30)\nMAT['hedge_light'] = solid_material('MAT_ClippedHedgeLightFinal', (.062,.190,.040), roughness=.96, noise_scale=11, noise_strength=.28, bump_strength=.27)",
+        "non-stretched hedge materials",
+    )
+
+    text = replace_once(
+        text,
         "MAT['face_recess'] = solid_material('MAT_FaceRecess', (.15,.145,.135), roughness=.87, noise_scale=6, noise_strength=.14, bump_strength=.12)",
         """MAT['face_recess'] = solid_material('MAT_FaceRecess', (.105,.100,.092), roughness=.91, noise_scale=6, noise_strength=.18, bump_strength=.15)
-MAT['canopy_inner'] = solid_material('MAT_CanopyInterior', (.020,.072,.018), roughness=.99, noise_scale=4.5, noise_strength=.24, bump_strength=.12)
+MAT['canopy_inner'] = solid_material('MAT_CanopyInterior', (.034,.108,.026), roughness=.99, noise_scale=5.5, noise_strength=.20, bump_strength=.10)
 MAT['paver_grime'] = solid_material('MAT_PaverEdgeGrime', (.075,.072,.064), roughness=.99, noise_scale=3.2, noise_strength=.32, bump_strength=.18)""",
         "final vegetation and grime materials",
     )
@@ -85,15 +99,15 @@ MAT['paver_grime'] = solid_material('MAT_PaverEdgeGrime', (.075,.072,.064), roug
     # Dense irregular inner volumes create the continuous dark crown visible in
     # the source video. Fine alpha cards are restricted to the outer silhouette.
     centre=Vector((x+lean.x*.62,y+lean.y*.62,height*.76))
-    lobe_count=7+rng.randrange(3)
+    lobe_count=9+rng.randrange(4)
     for li in range(lobe_count):
         a=2*math.pi*li/lobe_count+rng.uniform(-.36,.36)
         radial=crown*rng.uniform(.16,.48)
         p=centre+Vector((math.cos(a)*radial,math.sin(a)*radial,height*rng.uniform(-.10,.11)))
-        sx=crown*rng.uniform(.52,.74)
-        sy=crown*rng.uniform(.48,.70)
-        sz=crown*rng.uniform(.40,.60)
-        lobe=ico_sphere(f'{name}_CanopyInner_{li}',tuple(p),(sx,sy,sz),MAT['canopy_inner'],collection,subdivisions=2)
+        sx=crown*rng.uniform(.40,.60)
+        sy=crown*rng.uniform(.38,.57)
+        sz=crown*rng.uniform(.34,.50)
+        lobe=ico_sphere(f'{name}_CanopyInner_{li}',tuple(p),(sx,sy,sz),MAT['canopy_inner'],collection,subdivisions=3)
         for vertex in lobe.data.vertices:
             co=vertex.co
             co*=1.0+rng.uniform(-.11,.11)+.035*math.sin(co.x*3.1+co.y*2.3+co.z*4.2)
@@ -262,20 +276,39 @@ cube('NW_BlueLanding',(-74.9,43.1,2.18),(1.75,1.05,.16),MAT['blue'],'BUILDINGS',
     text = replace_once(
         text,
         "bg.inputs['Strength'].default_value=.31",
-        "bg.inputs['Strength'].default_value=.22",
+        "bg.inputs['Strength'].default_value=.27",
         "overcast sky strength",
     )
     text = replace_once(
         text,
         "sun.data.energy=1.48",
-        "sun.data.energy=.92",
+        "sun.data.energy=1.14",
         "soft sun strength",
     )
     text = replace_once(
         text,
         "fill.data.energy=145",
-        "fill.data.energy=72",
+        "fill.data.energy=92",
         "soft fill strength",
+    )
+
+    text = replace_once(
+        text,
+        "(70,-26,1.7),(60,-34,1.4)",
+        "(72,-28,1.55),(55,-35,1.35)",
+        "stone-face sightline bushes",
+    )
+    text = replace_once(
+        text,
+        "(82,-57,1.55),(72,-59,1.35)",
+        "(86,-56,1.45),(86,-62,1.30)",
+        "south-path sightline bushes",
+    )
+    text = replace_once(
+        text,
+        "(73,-38),(64,-51),(53,-60)",
+        "(73,-38),(70,-50),(46,-61)",
+        "south-path sightline trees",
     )
 
     cameras = r'''CAMERA_SPECS=[
@@ -284,22 +317,22 @@ cube('NW_BlueLanding',(-74.9,43.1,2.18),(1.75,1.05,.16),MAT['blue'],'BUILDINGS',
     ('Ref_0060_WaterGarden',(69.4,43.2,1.58),(55.0,44.0,1.62),39),
     ('Ref_0180_RedGranite',(72.0,14.0,1.52),(63.0,14.0,1.88),40),
     ('Ref_0188_BlackSphere',(67.0,4.0,1.54),(78.0,4.0,1.96),42),
-    ('Ref_0194_VendingEntrance',(79.0,-2.8,1.52),(86.0,4.6,1.42),37),
+    ('Ref_0194_VendingEntrance',(81.0,-5.5,1.52),(85.2,5.0,1.42),38),
     ('Ref_0274_NWBuildings',(-80.0,31.2,1.58),(-82.0,43.0,1.74),37),
-    ('Ref_0342_StoneFace',(58.0,-23.0,1.52),(69.0,-23.0,2.10),42),
+    ('Ref_0342_StoneFace',(59.0,-32.0,1.52),(69.0,-23.0,2.10),40),
     ('Ref_0406_Pavilion',(72.0,-52.0,1.52),(57.0,-47.0,1.62),38),
-    ('Ref_0434_BenchPath',(50.0,-61.0,1.52),(72.0,-57.0,1.32),39),
-    ('Ref_0448_MapJunction',(54.0,-61.5,1.52),(78.0,-57.0,1.55),40),
+    ('Ref_0434_BenchPath',(70.0,-67.0,1.52),(70.0,-55.0,1.32),39),
+    ('Ref_0448_MapJunction',(78.0,-70.0,1.52),(78.0,-57.0,1.55),40),
     # Holdouts were selected before this final patch and are not used above.
     ('Holdout_0056_EastAvenue',(78.0,51.0,1.58),(58.0,53.0,1.40),36),
     ('Holdout_0176_RedApproach',(76.0,10.0,1.55),(61.0,14.0,1.45),36),
     ('Holdout_0320_ShadedCurve',(73.0,-16.0,1.55),(58.0,-25.0,1.38),36),
     ('Holdout_0388_SouthJunction',(70.0,-51.0,1.55),(54.0,-46.0,1.42),36),
-    ('Holdout_0446_MapApproach',(51.0,-60.0,1.55),(77.0,-57.0,1.48),38),
-    ('Detail_Bronze',(71.0,49.0,2.15),(78.5,49.0,3.62),52),
+    ('Holdout_0446_MapApproach',(74.0,-69.0,1.55),(78.0,-57.0,1.48),38),
+    ('Detail_Bronze',(70.0,49.0,2.15),(78.5,49.0,3.62),52),
     ('Detail_BlackSphere',(70.5,4.0,1.95),(78.0,4.0,1.98),52),
-    ('Detail_StoneFace',(61.0,-23.0,1.95),(69.0,-23.0,2.40),52),
-    ('Detail_Pavers',(64.0,-53.0,.78),(72.0,-57.0,.15),45),
+    ('Detail_StoneFace',(62.0,-30.0,1.95),(69.0,-23.0,2.40),52),
+    ('Detail_Pavers',(62.0,-57.0,1.10),(72.0,-57.0,.15),45),
     ('Show_Baseball',(35.0,-28.0,4.0),(-20.0,22.0,1.1),36),
     ('Show_EastPlayground',(94.0,26.0,2.0),(75.0,34.0,1.8),35),
     ('Show_EastEntrance',(98.0,-2.0,1.72),(89.0,-3.0,1.35),38),
