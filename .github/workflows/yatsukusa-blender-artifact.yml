@@ -98,6 +98,16 @@ jobs:
           test -s "$YATSUKUSA_OUTPUT_DIR/YatsukusaPark_Quest.fbx"
           test -s "$YATSUKUSA_OUTPUT_DIR/optimization_stats.json"
 
+      - name: Re-import and validate all GLB and FBX exports
+        env:
+          YATSUKUSA_OUTPUT_DIR: ${{ github.workspace }}/yatsukusa-output
+        run: |
+          set -o pipefail
+          xvfb-run -a blender --background --factory-startup --python-exit-code 1 \
+            --python tools/yatsukusa/realistic/validate_exports.py \
+            2>&1 | tee -a "$YATSUKUSA_OUTPUT_DIR/blender-build.log"
+          test -s "$YATSUKUSA_OUTPUT_DIR/export_validation.json"
+
       - name: Extract the ten matching source-video frames
         run: |
           mkdir -p yatsukusa-output/reference_frames
@@ -188,6 +198,7 @@ jobs:
           cp tools/yatsukusa/realistic/patch_v3.py yatsukusa-output/source/ || true
           cp tools/yatsukusa/realistic/patch_final.py yatsukusa-output/source/ || true
           cp tools/yatsukusa/realistic/optimize_export_realistic.py yatsukusa-output/source/ || true
+          cp tools/yatsukusa/realistic/validate_exports.py yatsukusa-output/source/ || true
           (cd yatsukusa-output && zip -r ../YatsukusaPark_VRChat_Realistic.zip . >/dev/null)
           find yatsukusa-output -maxdepth 2 -type f -printf '%P %k KB\n' | sort
 
