@@ -32,6 +32,14 @@ def main(path: str) -> None:
 
     text = replace_once(
         text,
+        "simple_house('EastMediterranean',108,48,11,9,6.5,MAT['stucco_beige'],MAT['roof_red'],arched=True)",
+        """MAT['stucco_beige'] = solid_material('MAT_StuccoBeigeEarly', (.52,.40,.27), roughness=.91, noise_scale=7, noise_strength=.11, bump_strength=.12)
+simple_house('EastMediterranean',108,48,11,9,6.5,MAT['stucco_beige'],MAT['roof_red'],arched=True)""",
+        "early surrounding-building material",
+    )
+
+    text = replace_once(
+        text,
         "MAT['face_recess'] = solid_material('MAT_FaceRecess', (.15,.145,.135), roughness=.87, noise_scale=6, noise_strength=.14, bump_strength=.12)",
         """MAT['face_recess'] = solid_material('MAT_FaceRecess', (.105,.100,.092), roughness=.91, noise_scale=6, noise_strength=.18, bump_strength=.15)
 MAT['canopy_inner'] = solid_material('MAT_CanopyInterior', (.020,.072,.018), roughness=.99, noise_scale=4.5, noise_strength=.24, bump_strength=.12)
