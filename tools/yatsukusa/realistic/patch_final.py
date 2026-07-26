@@ -26,7 +26,7 @@ def main(path: str) -> None:
     text = replace_once(
         text,
         "scene.view_settings.exposure = -0.42",
-        "scene.view_settings.exposure = 0.06",
+        "scene.view_settings.exposure = 0.45",
         "final photographic exposure",
     )
 
@@ -193,24 +193,16 @@ def make_bush(name: str, x: float, y: float, radius: float, seed: int, light: bo
 
     bronze = r'''def bronze_drooping_sculpture(x=78.5,y=49.0):
     cube('BronzeDroop_Pedestal',(x,y,1.25),(1.72,1.72,2.5),MAT['paint_black'],'SCULPTURES',bevel=.035)
-    # Broad hollow shell, oriented north-south so it reads correctly from the
-    # west-side walk with the arched house and glass office behind it.
-    shell=ico_sphere('BronzeDroop_Shell',(x+.05,y,4.26),(.78,1.42,.91),MAT['bronze'],'SCULPTURES',subdivisions=3)
-    rng=random.Random(5400)
-    for vertex in shell.data.vertices:
-        co=vertex.co
-        co*=1+rng.uniform(-.035,.035)
-        if co.z < -.25:
-            co.x*=.88
-    for poly in shell.data.polygons:
-        poly.use_smooth=True
-    # Tapered support rises from the pedestal into the central underside.
-    support=cube('BronzeDroop_Support',(x,y,3.23),(.64,.72,1.72),MAT['bronze'],'SCULPTURES',bevel=.16)
-    support.scale.y=1.0
-    # Two down-curving lips are the recognition feature visible at 00:54.
-    variable_tube('BronzeDroop_LeftLip',[(x,y+.76,4.37),(x-.03,y+1.15,4.02),(x-.03,y+1.32,3.61),(x+.02,y+1.22,3.36)],[.35,.31,.24,.16],MAT['bronze'],'SCULPTURES',elliptical=.72,sides=28)
-    variable_tube('BronzeDroop_RightLip',[(x,y-.73,4.35),(x+.02,y-1.10,4.05),(x+.01,y-1.32,3.72),(x-.02,y-1.22,3.50)],[.33,.29,.22,.15],MAT['bronze'],'SCULPTURES',elliptical=.72,sides=28)
-    sphere('BronzeDroop_Underside',(x-.76,y,4.02),(.055,.66,.40),MAT['paint_black'],'SCULPTURES',segments=32,rings=16)
+    # Frame 00028 shows a broad arched top, a rectangular negative opening,
+    # one thick left support and a narrow down-curving tip on the right.
+    cube('BronzeDroop_Top',(x,y,4.35),(.72,2.34,.82),MAT['bronze'],'SCULPTURES',bevel=.34)
+    cube('BronzeDroop_LeftMass',(x,y+.78,3.92),(.70,.70,1.20),MAT['bronze'],'SCULPTURES',bevel=.26)
+    cube('BronzeDroop_InnerShoulder',(x,y-.12,4.00),(.69,.38,.54),MAT['bronze'],'SCULPTURES',bevel=.16)
+    variable_tube('BronzeDroop_Tip',[
+        (x,y-.82,4.25),(x,y-1.08,4.08),(x,y-1.17,3.77),(x,y-1.09,3.48)
+    ],[.31,.28,.21,.13],MAT['bronze'],'SCULPTURES',elliptical=.62,sides=28)
+    # Dark inset reads as a true opening from the route without fragile booleans.
+    cube('BronzeDroop_Opening',(x-.366,y+.10,3.91),(.025,.78,.55),MAT['paint_black'],'SCULPTURES',bevel=.11)
     plaque('BronzeDroop_Plaque',x-.88,y,1.28,rot_z=math.radians(90))
 bronze_drooping_sculpture()'''
     text = replace_regex(
@@ -240,17 +232,11 @@ black_sphere_sculpture()'''
 
     stone = r'''def stone_face_sculpture(x=69.0,y=-23.0):
     cube('StoneFace_Base',(x,y,.44),(3.80,2.42,.88),MAT['dark_concrete'],'SCULPTURES',bevel=.13)
-    head=ico_sphere('StoneFace_Head',(x,y,2.48),(1.55,.92,1.83),MAT['stone_sculpture'],'SCULPTURES',subdivisions=3)
-    rng=random.Random(3420)
-    for vertex in head.data.vertices:
-        co=vertex.co
-        co.x*=1.0-.08*max(0.0,abs(co.z)-.55)
-        co*=1+rng.uniform(-.025,.025)
-    for poly in head.data.polygons:
-        poly.use_smooth=True
-    # One deep vertical void, with no symbolic eyes or mouth.
-    sphere('StoneFace_Recess',(x,y-.915,2.48),(.69,.075,1.22),MAT['face_recess'],'SCULPTURES',segments=48,rings=24)
-    sphere('StoneFace_RecessBack',(x,y-.972,2.48),(.47,.035,.84),MAT['stone_sculpture'],'SCULPTURES',segments=40,rings=20)
+    # Frames 00172–00173 show a thick rounded rectangular boulder, not a disc.
+    cube('StoneFace_Head',(x,y,2.32),(2.62,1.36,2.86),MAT['stone_sculpture'],'SCULPTURES',bevel=.52)
+    # One tall rounded recess dominates the front; there are no eye/mouth marks.
+    cube('StoneFace_Recess',(x,y-.692,2.34),(.92,.035,1.38),MAT['face_recess'],'SCULPTURES',bevel=.28)
+    cube('StoneFace_RecessBack',(x,y-.716,2.34),(.58,.018,.98),MAT['stone_sculpture'],'SCULPTURES',bevel=.20)
     plaque('StoneFace_Plaque',x,y-1.30,.56)
 stone_face_sculpture()'''
     text = replace_regex(
@@ -258,6 +244,13 @@ stone_face_sculpture()'''
         r"^def stone_face_sculpture\(.*?^stone_face_sculpture\(\)",
         stone,
         "final stone face silhouette",
+    )
+
+    text = replace_once(
+        text,
+        "('Hedge_BlackSphere',[(84,7),(79,5),(74,4)],1.45,1.25),",
+        "('Hedge_BlackSphere',[(84,7),(82,6),(80.5,5.5)],1.45,1.25),",
+        "black-sphere foreground clearance",
     )
 
     text = replace_once(
@@ -319,8 +312,8 @@ cube('NW_BlueLanding',(-74.9,43.1,2.18),(1.75,1.05,.16),MAT['blue'],'BUILDINGS',
     ('Ref_0188_BlackSphere',(67.0,4.0,1.54),(78.0,4.0,1.96),42),
     ('Ref_0194_VendingEntrance',(81.0,-5.5,1.52),(85.2,5.0,1.42),38),
     ('Ref_0274_NWBuildings',(-80.0,31.2,1.58),(-82.0,43.0,1.74),37),
-    ('Ref_0342_StoneFace',(59.0,-32.0,1.52),(69.0,-23.0,2.10),40),
-    ('Ref_0406_Pavilion',(72.0,-52.0,1.52),(57.0,-47.0,1.62),38),
+    ('Ref_0342_StoneFace',(69.0,-33.0,1.52),(69.0,-23.0,2.10),40),
+    ('Ref_0406_Pavilion',(69.0,-56.0,1.52),(57.0,-47.0,1.62),38),
     ('Ref_0434_BenchPath',(70.0,-67.0,1.52),(70.0,-55.0,1.32),39),
     ('Ref_0448_MapJunction',(78.0,-70.0,1.52),(78.0,-57.0,1.55),40),
     # Holdouts were selected before this final patch and are not used above.
@@ -331,7 +324,7 @@ cube('NW_BlueLanding',(-74.9,43.1,2.18),(1.75,1.05,.16),MAT['blue'],'BUILDINGS',
     ('Holdout_0446_MapApproach',(74.0,-69.0,1.55),(78.0,-57.0,1.48),38),
     ('Detail_Bronze',(70.0,49.0,2.15),(78.5,49.0,3.62),52),
     ('Detail_BlackSphere',(70.5,4.0,1.95),(78.0,4.0,1.98),52),
-    ('Detail_StoneFace',(62.0,-30.0,1.95),(69.0,-23.0,2.40),52),
+    ('Detail_StoneFace',(69.0,-30.0,1.95),(69.0,-23.0,2.40),52),
     ('Detail_Pavers',(62.0,-57.0,1.10),(72.0,-57.0,.15),45),
     ('Show_Baseball',(35.0,-28.0,4.0),(-20.0,22.0,1.1),36),
     ('Show_EastPlayground',(94.0,26.0,2.0),(75.0,34.0,1.8),35),
