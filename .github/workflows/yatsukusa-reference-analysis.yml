@@ -1,0 +1,124 @@
+name: Analyze Yatsukusa Park reference video
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/yatsukusa-reference-analysis.yml"
+      - "tools/yatsukusa/reference-analysis/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install analysis tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg jq python3-pil python3-numpy
+          python3 -m pip install --break-system-packages gdown==5.2.0
+
+      - name: Download public Google Drive video
+        run: |
+          mkdir -p reference-analysis
+          gdown --id 1VhaMbnTtiBjinic5vVa3dS55UV-f7Lsw \
+            --output reference-analysis/IMG_0556.MOV
+          test "$(stat -c%s reference-analysis/IMG_0556.MOV)" -gt 800000000
+
+      - name: Probe and extract keyframes
+        run: |
+          set -o pipefail
+          cd reference-analysis
+          ffprobe -v error -show_format -show_streams -of json IMG_0556.MOV > video_probe.json
+          mkdir -p frames_2s scene_frames contacts
+          ffmpeg -hide_banner -loglevel warning -i IMG_0556.MOV \
+            -vf "fps=1/2,scale='min(1920,iw)':-2:flags=lanczos" \
+            -q:v 2 frames_2s/frame_%05d.jpg
+          ffmpeg -hide_banner -loglevel warning -i IMG_0556.MOV \
+            -vf "select='gt(scene,0.055)',scale='min(1920,iw)':-2:flags=lanczos" \
+            -vsync vfr -q:v 2 scene_frames/scene_%05d.jpg || true
+
+      - name: Build timestamped contact sheets
+        run: |
+          cat > reference-analysis/make_contacts.py <<'PY'
+          from pathlib import Path
+          from PIL import Image, ImageDraw, ImageFont, ImageStat
+          import csv, json, math
+
+          root = Path('reference-analysis')
+          frames = sorted((root / 'frames_2s').glob('*.jpg'))
+          out = root / 'contacts'
+          out.mkdir(exist_ok=True)
+          font_path = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'
+          font = ImageFont.truetype(font_path, 28)
+          small = ImageFont.truetype(font_path, 21)
+          cols, rows = 4, 3
+          cell_w, cell_h = 640, 390
+          per_sheet = cols * rows
+          index_rows = []
+
+          for i, path in enumerate(frames):
+              image = Image.open(path).convert('RGB')
+              stat = ImageStat.Stat(image.convert('L'))
+              t = i * 2
+              index_rows.append({
+                  'filename': path.name,
+                  'seconds': t,
+                  'timestamp': f'{t//60:02d}:{t%60:02d}',
+                  'mean_luma': round(stat.mean[0], 2),
+                  'luma_stddev': round(stat.stddev[0], 2),
+              })
+
+          for sheet_no in range(math.ceil(len(frames) / per_sheet)):
+              canvas = Image.new('RGB', (cols * cell_w, rows * cell_h), (20, 20, 20))
+              draw = ImageDraw.Draw(canvas)
+              subset = frames[sheet_no * per_sheet:(sheet_no + 1) * per_sheet]
+              for j, path in enumerate(subset):
+                  idx = sheet_no * per_sheet + j
+                  img = Image.open(path).convert('RGB')
+                  img.thumbnail((cell_w, cell_h - 42), Image.Resampling.LANCZOS)
+                  x = (j % cols) * cell_w
+                  y = (j // cols) * cell_h
+                  canvas.paste(img, (x + (cell_w - img.width)//2, y + 40))
+                  t = idx * 2
+                  draw.rectangle((x, y, x + cell_w, y + 40), fill=(0, 0, 0))
+                  draw.text((x + 12, y + 5), f'{t//60:02d}:{t%60:02d}  {path.name}', font=small, fill=(255,255,255))
+              canvas.save(out / f'contact_{sheet_no+1:03d}.jpg', quality=92, subsampling=0)
+
+          with (root / 'frame_index.csv').open('w', newline='', encoding='utf-8') as f:
+              writer = csv.DictWriter(f, fieldnames=index_rows[0].keys() if index_rows else ['filename','seconds','timestamp','mean_luma','luma_stddev'])
+              writer.writeheader(); writer.writerows(index_rows)
+
+          probe = json.loads((root / 'video_probe.json').read_text())
+          manifest = {
+              'source_file': 'IMG_0556.MOV',
+              'sample_interval_seconds': 2,
+              'sampled_frame_count': len(frames),
+              'contact_sheet_count': math.ceil(len(frames) / per_sheet),
+              'scene_frame_count': len(list((root / 'scene_frames').glob('*.jpg'))),
+              'probe': probe,
+          }
+          (root / 'analysis_manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding='utf-8')
+          PY
+          python3 reference-analysis/make_contacts.py
+          find reference-analysis -maxdepth 2 -type f -printf '%P %k KB\n' | sort | tail -100
+
+      - name: Package analysis artifact
+        run: |
+          rm -f reference-analysis/IMG_0556.MOV
+          zip -r YatsukusaReferenceAnalysis.zip reference-analysis >/dev/null
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Yatsukusa-Reference-Analysis
+          path: |
+            reference-analysis/
+            YatsukusaReferenceAnalysis.zip
+          if-no-files-found: error
+          retention-days: 1
