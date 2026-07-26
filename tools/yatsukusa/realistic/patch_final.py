@@ -29,6 +29,18 @@ def main(path: str) -> None:
         "scene.view_settings.exposure = 0.45",
         "final photographic exposure",
     )
+    text = replace_once(
+        text,
+        "scene.view_settings.look = 'AgX - Medium High Contrast'",
+        "scene.view_settings.look = 'AgX - Medium Low Contrast'",
+        "final AgX contrast",
+    )
+    text = replace_once(
+        text,
+        "scene.view_settings.look = 'Medium High Contrast'",
+        "scene.view_settings.look = 'Medium Low Contrast'",
+        "fallback contrast",
+    )
 
     text = replace_once(
         text,
@@ -290,6 +302,12 @@ cube('NW_BlueLanding',(-74.9,43.1,2.18),(1.75,1.05,.16),MAT['blue'],'BUILDINGS',
         "(70,-26,1.7),(60,-34,1.4)",
         "(72,-28,1.55),(55,-35,1.35)",
         "stone-face sightline bushes",
+    )
+    text = replace_once(
+        text,
+        "(53,42,1.5),(75,11,1.7),(86,-6,1.5)",
+        "(53,42,1.5),(82,13,1.45),(86,-6,1.5)",
+        "red-approach holdout clearance",
     )
     text = replace_once(
         text,
