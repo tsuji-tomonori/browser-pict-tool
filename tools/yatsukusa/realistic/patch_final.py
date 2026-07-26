@@ -321,6 +321,12 @@ cube('NW_BlueLanding',(-74.9,43.1,2.18),(1.75,1.05,.16),MAT['blue'],'BUILDINGS',
         "(73,-38),(70,-50),(46,-61)",
         "south-path sightline trees",
     )
+    text = replace_once(
+        text,
+        "(77,-9),(69,-30),(57,-47)",
+        "(77,-9),(65,-31),(57,-47)",
+        "stone-face sightline lamp",
+    )
 
     cameras = r'''CAMERA_SPECS=[
     # Fixed matched views, aligned to the route and broadside landmark axes.
