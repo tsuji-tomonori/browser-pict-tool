@@ -69,7 +69,9 @@ simple_house('EastMediterranean',108,48,11,9,6.5,MAT['stucco_beige'],MAT['roof_r
         "MAT['face_recess'] = solid_material('MAT_FaceRecess', (.15,.145,.135), roughness=.87, noise_scale=6, noise_strength=.14, bump_strength=.12)",
         """MAT['face_recess'] = solid_material('MAT_FaceRecess', (.105,.100,.092), roughness=.91, noise_scale=6, noise_strength=.18, bump_strength=.15)
 MAT['canopy_inner'] = solid_material('MAT_CanopyInterior', (.034,.108,.026), roughness=.99, noise_scale=5.5, noise_strength=.20, bump_strength=.10)
-MAT['paver_grime'] = solid_material('MAT_PaverEdgeGrime', (.075,.072,.064), roughness=.99, noise_scale=3.2, noise_strength=.32, bump_strength=.18)""",
+MAT['paver_grime'] = solid_material('MAT_PaverEdgeGrime', (.075,.072,.064), roughness=.99, noise_scale=3.2, noise_strength=.32, bump_strength=.18)
+MAT['stone_face_dark'] = solid_material('MAT_StoneFaceDark', (.105,.100,.090), roughness=.94, noise_scale=9.0, noise_strength=.42, bump_strength=.48)
+MAT['stone_face_light'] = solid_material('MAT_StoneFaceLight', (.48,.455,.405), roughness=.96, noise_scale=8.0, noise_strength=.30, bump_strength=.38)""",
         "final vegetation and grime materials",
     )
 
@@ -108,38 +110,44 @@ MAT['paver_grime'] = solid_material('MAT_PaverEdgeGrime', (.075,.072,.064), roug
     for poly in trunk.data.polygons:
         poly.use_smooth=True
 
-    # Dense irregular inner volumes create the continuous dark crown visible in
-    # the source video. Fine alpha cards are restricted to the outer silhouette.
+    # The previous large green lobes read as low-poly balls. Keep only a small,
+    # deeply shadowed core and let several hundred video-derived leaf cards make
+    # both the volume and the silhouette.
     centre=Vector((x+lean.x*.62,y+lean.y*.62,height*.76))
-    lobe_count=9+rng.randrange(4)
+    lobe_count=4+rng.randrange(3)
     for li in range(lobe_count):
         a=2*math.pi*li/lobe_count+rng.uniform(-.36,.36)
-        radial=crown*rng.uniform(.16,.48)
+        radial=crown*rng.uniform(.08,.30)
         p=centre+Vector((math.cos(a)*radial,math.sin(a)*radial,height*rng.uniform(-.10,.11)))
-        sx=crown*rng.uniform(.40,.60)
-        sy=crown*rng.uniform(.38,.57)
-        sz=crown*rng.uniform(.34,.50)
+        sx=crown*rng.uniform(.26,.39)
+        sy=crown*rng.uniform(.24,.37)
+        sz=crown*rng.uniform(.22,.34)
         lobe=ico_sphere(f'{name}_CanopyInner_{li}',tuple(p),(sx,sy,sz),MAT['canopy_inner'],collection,subdivisions=3)
         for vertex in lobe.data.vertices:
             co=vertex.co
-            co*=1.0+rng.uniform(-.11,.11)+.035*math.sin(co.x*3.1+co.y*2.3+co.z*4.2)
+            co*=1.0+rng.uniform(-.16,.16)+.045*math.sin(co.x*3.1+co.y*2.3+co.z*4.2)
         for poly in lobe.data.polygons:
             poly.use_smooth=True
 
     lv=[];lf=[];luv=[]
-    cluster_count=max(72,int((82+rng.randrange(22))*leaf_density))
+    cluster_count=max(240,int((286+rng.randrange(70))*leaf_density))
     positions=tips[:]
     while len(positions)<cluster_count:
         a=rng.uniform(0,2*math.pi)
-        rad=crown*math.sqrt(rng.random())*.98
-        positions.append(Vector((centre.x+math.cos(a)*rad,centre.y+math.sin(a)*rad,height*rng.uniform(.57,1.01))))
+        rad=crown*(rng.random()**.58)*rng.uniform(.45,1.02)
+        z=height*rng.uniform(.55,1.02)
+        # Flatten the underside and round the upper crown as in the mature
+        # avenue trees in the walk-through.
+        crown_limit=max(.24,1.0-abs(z-centre.z)/(height*.34))
+        rad*=.62+.38*crown_limit
+        positions.append(Vector((centre.x+math.cos(a)*rad,centre.y+math.sin(a)*rad,z)))
     for p in positions[:cluster_count]:
-        w=crown*rng.uniform(.18,.31);h=w*rng.uniform(.70,1.08)
+        w=crown*rng.uniform(.085,.155);h=w*rng.uniform(.72,1.12)
         rot=rng.uniform(0,math.pi)
-        for cross in range(3):
-            ang=rot+cross*math.pi/3
+        for cross in range(2):
+            ang=rot+cross*math.pi/2
             right=Vector((math.cos(ang),math.sin(ang),0))*w*.5
-            up=Vector((0,0,h*.5))
+            up=Vector((0,0,h*.5))+Vector((math.cos(ang+math.pi/2),math.sin(ang+math.pi/2),0))*rng.uniform(-.10,.10)*h
             base=len(lv)
             lv.extend([tuple(p-right-up),tuple(p+right-up),tuple(p+right+up),tuple(p-right+up)])
             lf.append((base,base+1,base+2,base+3));luv.append([(0,0),(1,0),(1,1),(0,1)])
@@ -180,6 +188,27 @@ def make_hedge(name: str, points: Sequence[Sequence[float]], width: float=1.45, 
     add_bevel(hedge,.12,2)
     for poly in hedge.data.polygons:
         poly.use_smooth=True
+    # A fine leaf shell breaks the smooth green tube without reintroducing a
+    # chain of spheres. Cards are distributed across the clipped top and both
+    # sides, with small deterministic variation.
+    rng=random.Random(3300+sum(ord(c) for c in name))
+    lv=[];lf=[];luv=[]
+    shell_count=max(90,len(pts)*11)
+    for k in range(shell_count):
+        t=rng.uniform(0,len(pts)-1.001);i=min(len(pts)-2,int(t));f=t-i
+        p=pts[i].lerp(pts[i+1],f)
+        tangent=(pts[i+1]-pts[i]).normalized();normal=Vector((-tangent.y,tangent.x,0))
+        side=rng.choice((-1.0,0.0,1.0))
+        if side == 0.0:
+            q=p+Vector((0,0,height*rng.uniform(.86,1.04)))+normal*rng.uniform(-width*.45,width*.45)
+        else:
+            q=p+normal*side*width*rng.uniform(.46,.55)+Vector((0,0,height*rng.uniform(.18,.94)))
+        w=rng.uniform(.075,.145);h=w*rng.uniform(.75,1.18);ang=math.atan2(tangent.y,tangent.x)+rng.uniform(-.9,.9)
+        right=Vector((math.cos(ang),math.sin(ang),0))*w
+        up=Vector((0,0,h))
+        base=len(lv);lv.extend([tuple(q-right-up),tuple(q+right-up),tuple(q+right+up),tuple(q-right+up)])
+        lf.append((base,base+1,base+2,base+3));luv.append([(0,0),(1,0),(1,1),(0,1)])
+    mesh_object(name+'_LeafShell',lv,lf,MAT[['leaf_a','leaf_b','leaf_c'][len(name)%3]],'VEGETATION',uvs=luv)
     return hedge
 
 
@@ -192,6 +221,15 @@ def make_bush(name: str, x: float, y: float, radius: float, seed: int, light: bo
         co*=1+rng.uniform(-.075,.075)+.025*math.sin(co.x*5+co.y*4+co.z*6)
     for poly in obj.data.polygons:
         poly.use_smooth=True
+    lv=[];lf=[];luv=[]
+    for i in range(128):
+        az=rng.uniform(0,2*math.pi);el=rng.uniform(-.32,1.10)
+        q=Vector((x+math.cos(az)*math.cos(el)*radius*.96,y+math.sin(az)*math.cos(el)*radius*.93,radius*.62+math.sin(el)*radius*.72))
+        w=radius*rng.uniform(.055,.11);h=w*rng.uniform(.75,1.18)
+        right=Vector((math.cos(az),math.sin(az),0))*w;up=Vector((0,0,h))
+        base=len(lv);lv.extend([tuple(q-right-up),tuple(q+right-up),tuple(q+right+up),tuple(q-right+up)])
+        lf.append((base,base+1,base+2,base+3));luv.append([(0,0),(1,0),(1,1),(0,1)])
+    mesh_object(name+'_LeafShell',lv,lf,MAT[['leaf_a','leaf_b','leaf_c'][seed%3]],'VEGETATION',uvs=luv)
     return obj
 
 
@@ -205,16 +243,19 @@ def make_bush(name: str, x: float, y: float, radius: float, seed: int, light: bo
 
     bronze = r'''def bronze_drooping_sculpture(x=78.5,y=49.0):
     cube('BronzeDroop_Pedestal',(x,y,1.25),(1.72,1.72,2.5),MAT['paint_black'],'SCULPTURES',bevel=.035)
-    # Frame 00028 shows a broad arched top, a rectangular negative opening,
-    # one thick left support and a narrow down-curving tip on the right.
-    cube('BronzeDroop_Top',(x,y,4.35),(.72,2.34,.82),MAT['bronze'],'SCULPTURES',bevel=.34)
-    cube('BronzeDroop_LeftMass',(x,y+.78,3.92),(.70,.70,1.20),MAT['bronze'],'SCULPTURES',bevel=.26)
-    cube('BronzeDroop_InnerShoulder',(x,y-.12,4.00),(.69,.38,.54),MAT['bronze'],'SCULPTURES',bevel=.16)
-    variable_tube('BronzeDroop_Tip',[
-        (x,y-.82,4.25),(x,y-1.08,4.08),(x,y-1.17,3.77),(x,y-1.09,3.48)
-    ],[.31,.28,.21,.13],MAT['bronze'],'SCULPTURES',elliptical=.62,sides=28)
-    # Dark inset reads as a true opening from the route without fragile booleans.
-    cube('BronzeDroop_Opening',(x-.366,y+.10,3.91),(.025,.78,.55),MAT['paint_black'],'SCULPTURES',bevel=.11)
+    # One broad, variable-width curved plate replaces the former stack of
+    # cubes/tubes. The profile is read broadside from the east avenue.
+    profile=[(-1.30,3.28),(-1.20,4.02),(-.82,4.58),(-.16,4.82),(.56,4.70),(1.10,4.30),(1.33,3.82),(1.26,3.28),(1.04,2.82),(.72,2.56),(.50,2.70),(.62,3.18),(.53,3.70),(.06,3.94),(-.52,3.90),(-.76,3.50),(-.82,2.78),(-1.12,2.55)]
+    verts=[];faces=[];half=.39
+    for xx in (-half,half):
+        verts.extend([(x+xx,y+yy,zz) for yy,zz in profile])
+    n=len(profile);faces.append(tuple(range(n)));faces.append(tuple(range(2*n-1,n-1,-1)))
+    for i in range(n):j=(i+1)%n;faces.append((i,j,n+j,n+i))
+    form=mesh_object('BronzeDroop_Form',verts,faces,MAT['bronze'],'SCULPTURES')
+    add_bevel(form,.16,4)
+    # A recessed inner shadow clarifies the opening while retaining a robust,
+    # manifold export.
+    cube('BronzeDroop_Opening',(x-.405,y-.10,3.55),(.025,.92,.84),MAT['paint_black'],'SCULPTURES',bevel=.22)
     plaque('BronzeDroop_Plaque',x-.88,y,1.28,rot_z=math.radians(90))
 bronze_drooping_sculpture()'''
     text = replace_regex(
@@ -226,13 +267,15 @@ bronze_drooping_sculpture()'''
 
     black = r'''def black_sphere_sculpture(x=78.0,y=4.0):
     cube('BlackSphere_Base',(x,y,.42),(2.15,5.25,.84),MAT['dark_concrete'],'SCULPTURES',bevel=.07)
-    # Broadside axis follows Y; the road-facing camera looks east and therefore
-    # sees the long horizontal animal/bench silhouette instead of its end.
-    cube('BlackSphere_Tail',(x,y+1.72,2.30),(1.24,1.05,2.55),MAT['paint_black'],'SCULPTURES',bevel=.34)
-    cube('BlackSphere_Body',(x,y+.02,1.86),(1.24,3.75,1.10),MAT['paint_black'],'SCULPTURES',bevel=.40)
-    cube('BlackSphere_RightSupport',(x,y-1.45,1.28),(1.14,.78,1.55),MAT['paint_black'],'SCULPTURES',bevel=.26)
-    sphere('BlackSphere_Orb',(x,y-.92,3.03),(.62,.62,.62),MAT['paint_black'],'SCULPTURES',segments=40,rings=20)
-    cube('BlackSphere_Undercut',(x-.64,y-.10,1.54),(.04,1.65,.38),MAT['paver_grime'],'SCULPTURES',bevel=.08)
+    # Continuous broadside profile with a high left return, low horizontal body,
+    # undercut and right foot.
+    profile=[(-2.08,.88),(-2.05,2.80),(-1.72,3.18),(-1.38,2.92),(-1.28,2.22),(.74,2.22),(1.20,2.02),(1.50,1.58),(1.50,.76),(1.12,.64),(.82,.92),(.76,1.28),(-1.06,1.28),(-1.25,.86)]
+    verts=[];faces=[];half=.59
+    for xx in (-half,half):verts.extend([(x+xx,y+yy,z) for yy,z in profile])
+    n=len(profile);faces.append(tuple(range(n)));faces.append(tuple(range(2*n-1,n-1,-1)))
+    for i in range(n):j=(i+1)%n;faces.append((i,j,n+j,n+i))
+    body=mesh_object('BlackSphere_Body',verts,faces,MAT['paint_black'],'SCULPTURES');add_bevel(body,.19,4)
+    sphere('BlackSphere_Orb',(x,y-.72,2.92),(.66,.66,.66),MAT['paint_black'],'SCULPTURES',segments=48,rings=24)
     plaque('BlackSphere_Plaque',x-.98,y-.55,.60,rot_z=math.radians(90))
 black_sphere_sculpture()'''
     text = replace_regex(
@@ -244,11 +287,12 @@ black_sphere_sculpture()'''
 
     stone = r'''def stone_face_sculpture(x=69.0,y=-23.0):
     cube('StoneFace_Base',(x,y,.44),(3.80,2.42,.88),MAT['dark_concrete'],'SCULPTURES',bevel=.13)
-    # Frames 00172–00173 show a thick rounded rectangular boulder, not a disc.
-    cube('StoneFace_Head',(x,y,2.32),(2.62,1.36,2.86),MAT['stone_sculpture'],'SCULPTURES',bevel=.52)
-    # One tall rounded recess dominates the front; there are no eye/mouth marks.
-    cube('StoneFace_Recess',(x,y-.692,2.34),(.92,.035,1.38),MAT['face_recess'],'SCULPTURES',bevel=.28)
-    cube('StoneFace_RecessBack',(x,y-.716,2.34),(.58,.018,.98),MAT['stone_sculpture'],'SCULPTURES',bevel=.20)
+    # The video shows a dark, weathered monolithic stone. Its only face-like
+    # feature is a tall pale vertical hollow; the previous light slab with a
+    # dark rectangle reversed this value relationship.
+    head=cube('StoneFace_Head',(x,y,2.32),(2.76,1.52,2.96),MAT['stone_face_dark'],'SCULPTURES',bevel=.62)
+    cube('StoneFace_Recess',(x,y-.782,2.34),(.96,.035,1.48),MAT['stone_face_light'],'SCULPTURES',bevel=.38)
+    cube('StoneFace_RecessInner',(x,y-.806,2.34),(.52,.018,1.02),MAT['stone_face_dark'],'SCULPTURES',bevel=.24)
     plaque('StoneFace_Plaque',x,y-1.30,.56)
 stone_face_sculpture()'''
     text = replace_regex(
@@ -330,22 +374,22 @@ cube('NW_BlueLanding',(-74.9,43.1,2.18),(1.75,1.05,.16),MAT['blue'],'BUILDINGS',
 
     cameras = r'''CAMERA_SPECS=[
     # Fixed matched views, aligned to the route and broadside landmark axes.
-    ('Ref_0054_Bronze',(67.3,49.0,1.60),(78.5,49.0,3.28),42),
-    ('Ref_0060_WaterGarden',(69.4,43.2,1.58),(55.0,44.0,1.62),39),
-    ('Ref_0180_RedGranite',(72.0,14.0,1.52),(63.0,14.0,1.88),40),
-    ('Ref_0188_BlackSphere',(67.0,4.0,1.54),(78.0,4.0,1.96),42),
-    ('Ref_0194_VendingEntrance',(81.0,-5.5,1.52),(85.2,5.0,1.42),38),
-    ('Ref_0274_NWBuildings',(-80.0,31.2,1.58),(-82.0,43.0,1.74),37),
-    ('Ref_0342_StoneFace',(69.0,-33.0,1.52),(69.0,-23.0,2.10),40),
-    ('Ref_0406_Pavilion',(69.0,-56.0,1.52),(57.0,-47.0,1.62),38),
-    ('Ref_0434_BenchPath',(70.0,-67.0,1.52),(70.0,-55.0,1.32),39),
-    ('Ref_0448_MapJunction',(78.0,-70.0,1.52),(78.0,-57.0,1.55),40),
+    ('Ref_0054_Bronze',(78.0,61.5,1.58),(75.0,22.0,1.32),34),
+    ('Ref_0060_WaterGarden',(72.0,56.0,1.58),(55.0,44.0,1.48),35),
+    ('Ref_0180_RedGranite',(76.0,8.5,1.52),(61.5,15.5,1.55),35),
+    ('Ref_0188_BlackSphere',(70.0,-1.5,1.54),(78.0,4.0,1.82),38),
+    ('Ref_0194_VendingEntrance',(69.0,-2.0,1.52),(87.0,5.0,1.35),32),
+    ('Ref_0274_NWBuildings',(-91.0,28.0,1.58),(-82.0,43.0,1.60),34),
+    ('Ref_0342_StoneFace',(57.0,-35.0,1.52),(72.0,-18.0,1.42),34),
+    ('Ref_0406_Pavilion',(72.0,-57.0,1.52),(56.0,-45.0,1.42),34),
+    ('Ref_0434_BenchPath',(50.0,-63.0,1.52),(73.0,-56.0,1.22),34),
+    ('Ref_0448_MapJunction',(61.0,-70.0,1.52),(79.0,-57.0,1.42),32),
     # Holdouts were selected before this final patch and are not used above.
-    ('Holdout_0056_EastAvenue',(78.0,51.0,1.58),(58.0,53.0,1.40),36),
+    ('Holdout_0056_EastAvenue',(78.0,62.5,1.58),(76.0,21.0,1.36),34),
     ('Holdout_0176_RedApproach',(76.0,10.0,1.55),(61.0,14.0,1.45),36),
     ('Holdout_0320_ShadedCurve',(73.0,-16.0,1.55),(58.0,-25.0,1.38),36),
     ('Holdout_0388_SouthJunction',(70.0,-51.0,1.55),(54.0,-46.0,1.42),36),
-    ('Holdout_0446_MapApproach',(74.0,-69.0,1.55),(78.0,-57.0,1.48),38),
+    ('Holdout_0446_MapApproach',(62.0,-70.0,1.55),(79.0,-57.0,1.40),32),
     ('Detail_Bronze',(70.0,49.0,2.15),(78.5,49.0,3.62),52),
     ('Detail_BlackSphere',(70.5,4.0,1.95),(78.0,4.0,1.98),52),
     ('Detail_StoneFace',(69.0,-30.0,1.95),(69.0,-23.0,2.40),52),
