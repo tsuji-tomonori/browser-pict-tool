@@ -1,0 +1,213 @@
+name: Build Yatsukusa Park Blender artifact
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "tools/yatsukusa/**"
+      - ".github/workflows/yatsukusa-blender-artifact.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Blender and media tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender xvfb zip ffmpeg python3-numpy python3-pil fonts-noto-cjk
+          python3 -m pip install --break-system-packages gdown==5.2.0
+          blender --version
+
+      - name: Decode and patch realistic procedural tools
+        run: |
+          python3 - <<'PY'
+          import base64, lzma
+          from pathlib import Path
+
+          root = Path('tools/yatsukusa/realistic')
+          jobs = [
+              ([root / f'builder_{i:02d}.b85' for i in range(5)], root / 'build_yatsukusa_realistic.py'),
+              ([root / f'textures_{i:02d}.b85' for i in range(2)], root / 'generate_textures.py'),
+              ([root / 'optimize_export.b85'], root / 'optimize_export_realistic.py'),
+          ]
+          for parts, target in jobs:
+              encoded = ''.join(p.read_text().strip() for p in parts)
+              target.write_bytes(lzma.decompress(base64.b85decode(encoded)))
+              print(target, target.stat().st_size)
+          PY
+          python3 tools/yatsukusa/realistic/patch_v3.py tools/yatsukusa/realistic/build_yatsukusa_realistic.py
+          python3 tools/yatsukusa/realistic/patch_final.py tools/yatsukusa/realistic/build_yatsukusa_realistic.py
+          python3 -m py_compile \
+            tools/yatsukusa/realistic/build_yatsukusa_realistic.py \
+            tools/yatsukusa/realistic/generate_textures.py \
+            tools/yatsukusa/realistic/source_texture_overlay.py \
+            tools/yatsukusa/realistic/patch_v3.py \
+            tools/yatsukusa/realistic/patch_final.py \
+            tools/yatsukusa/realistic/optimize_export_realistic.py
+
+      - name: Download the public source video once
+        run: |
+          gdown --id 1VhaMbnTtiBjinic5vVa3dS55UV-f7Lsw --output /tmp/IMG_0556.MOV
+          test "$(stat -c%s /tmp/IMG_0556.MOV)" -gt 800000000
+
+      - name: Generate procedural and source-video materials
+        env:
+          YATSUKUSA_TEXTURE_DIR: ${{ github.workspace }}/yatsukusa-output/textures
+        run: |
+          mkdir -p "$YATSUKUSA_TEXTURE_DIR"
+          python3 tools/yatsukusa/realistic/generate_textures.py
+          python3 tools/yatsukusa/realistic/source_texture_overlay.py \
+            --video /tmp/IMG_0556.MOV \
+            --texture-dir "$YATSUKUSA_TEXTURE_DIR" \
+            --debug-dir "${{ github.workspace }}/yatsukusa-output/source_texture_crops"
+          test "$(find "$YATSUKUSA_TEXTURE_DIR" -name '*.png' -type f | wc -l)" -ge 27
+
+      - name: Build editable scene and 14 validation renders
+        env:
+          YATSUKUSA_OUTPUT_DIR: ${{ github.workspace }}/yatsukusa-output
+          YATSUKUSA_TEXTURE_DIR: ${{ github.workspace }}/yatsukusa-output/textures
+        run: |
+          set -o pipefail
+          mkdir -p "$YATSUKUSA_OUTPUT_DIR"
+          xvfb-run -a blender --background --python-exit-code 1 \
+            --python tools/yatsukusa/realistic/build_yatsukusa_realistic.py \
+            2>&1 | tee "$YATSUKUSA_OUTPUT_DIR/blender-build.log"
+          test -s "$YATSUKUSA_OUTPUT_DIR/YatsukusaPark_VRChat.blend"
+          test -s "$YATSUKUSA_OUTPUT_DIR/scene_manifest.json"
+          test "$(find "$YATSUKUSA_OUTPUT_DIR/renders" -name '*.png' -type f | wc -l)" -ge 14
+
+      - name: Optimize static meshes and export VRChat assets
+        env:
+          YATSUKUSA_OUTPUT_DIR: ${{ github.workspace }}/yatsukusa-output
+        run: |
+          set -o pipefail
+          xvfb-run -a blender --background --python-exit-code 1 \
+            --python tools/yatsukusa/realistic/optimize_export_realistic.py \
+            2>&1 | tee -a "$YATSUKUSA_OUTPUT_DIR/blender-build.log"
+          test -s "$YATSUKUSA_OUTPUT_DIR/YatsukusaPark_VRChat_Optimized.blend"
+          test -s "$YATSUKUSA_OUTPUT_DIR/YatsukusaPark_PC.glb"
+          test -s "$YATSUKUSA_OUTPUT_DIR/YatsukusaPark_Quest.glb"
+          test -s "$YATSUKUSA_OUTPUT_DIR/YatsukusaPark_Unity.fbx"
+          test -s "$YATSUKUSA_OUTPUT_DIR/YatsukusaPark_Quest.fbx"
+          test -s "$YATSUKUSA_OUTPUT_DIR/optimization_stats.json"
+
+      - name: Re-import and validate all GLB and FBX exports
+        env:
+          YATSUKUSA_OUTPUT_DIR: ${{ github.workspace }}/yatsukusa-output
+        run: |
+          set -o pipefail
+          xvfb-run -a blender --background --factory-startup --python-exit-code 1 \
+            --python tools/yatsukusa/realistic/validate_exports.py \
+            2>&1 | tee -a "$YATSUKUSA_OUTPUT_DIR/blender-build.log"
+          test -s "$YATSUKUSA_OUTPUT_DIR/export_validation.json"
+
+      - name: Extract the ten matching source-video frames
+        run: |
+          mkdir -p yatsukusa-output/reference_frames
+          python3 - <<'PY'
+          import subprocess
+          from pathlib import Path
+          mapping = {
+              'Ref_0054_Bronze': 54,
+              'Ref_0060_WaterGarden': 60,
+              'Ref_0180_RedGranite': 180,
+              'Ref_0188_BlackSphere': 188,
+              'Ref_0194_VendingEntrance': 194,
+              'Ref_0274_NWBuildings': 274,
+              'Ref_0342_StoneFace': 342,
+              'Ref_0406_Pavilion': 406,
+              'Ref_0434_BenchPath': 434,
+              'Ref_0448_MapJunction': 448,
+          }
+          out = Path('yatsukusa-output/reference_frames')
+          for name, seconds in mapping.items():
+              subprocess.run([
+                  'ffmpeg','-hide_banner','-loglevel','error','-ss',str(seconds),
+                  '-i','/tmp/IMG_0556.MOV','-frames:v','1',
+                  '-vf','scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2',
+                  '-q:v','2',str(out / f'{name}.jpg')
+              ], check=True)
+          PY
+          rm -f /tmp/IMG_0556.MOV
+
+      - name: Build render and reference comparison sheets
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from PIL import Image, ImageDraw, ImageFont, ImageStat
+          import json, math
+
+          out = Path('yatsukusa-output')
+          renders = out / 'renders'
+          refs = out / 'reference_frames'
+          font_path = '/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc'
+          small = ImageFont.truetype(font_path, 22)
+          names = [
+              'Ref_0054_Bronze','Ref_0060_WaterGarden','Ref_0180_RedGranite',
+              'Ref_0188_BlackSphere','Ref_0194_VendingEntrance','Ref_0274_NWBuildings',
+              'Ref_0342_StoneFace','Ref_0406_Pavilion','Ref_0434_BenchPath','Ref_0448_MapJunction',
+          ]
+          pairs = out / 'comparisons'; pairs.mkdir(exist_ok=True)
+          metrics = {}
+          for name in names:
+              ref = Image.open(refs / f'{name}.jpg').convert('RGB').resize((640,360))
+              render = Image.open(renders / f'{name}.png').convert('RGB').resize((640,360))
+              pair = Image.new('RGB',(1280,410),(18,18,18)); pair.paste(ref,(0,50)); pair.paste(render,(640,50))
+              d=ImageDraw.Draw(pair); d.text((12,10),f'{name} — VIDEO REFERENCE',font=small,fill='white'); d.text((652,10),'BLENDER REBUILD',font=small,fill='white')
+              pair.save(pairs/f'{name}.jpg',quality=94,subsampling=0)
+              stat=ImageStat.Stat(render.convert('L'))
+              metrics[name]={'mean_luma':round(stat.mean[0],3),'luma_stddev':round(stat.stddev[0],3)}
+
+          sheet = Image.new('RGB',(1280,5*410),(18,18,18))
+          for i,name in enumerate(names): sheet.paste(Image.open(pairs/f'{name}.jpg'),(0,i*410))
+          sheet.save(out/'video_vs_blender_contact.jpg',quality=94,subsampling=0)
+
+          all_renders=sorted(renders.glob('*.png'))
+          thumb_w,thumb_h=480,310; cols=3; rows=math.ceil(len(all_renders)/cols)
+          contact=Image.new('RGB',(cols*thumb_w,rows*thumb_h),(20,20,20)); draw=ImageDraw.Draw(contact)
+          for i,path in enumerate(all_renders):
+              img=Image.open(path).convert('RGB'); img.thumbnail((thumb_w,thumb_h-40),Image.Resampling.LANCZOS)
+              x=(i%cols)*thumb_w; y=(i//cols)*thumb_h
+              contact.paste(img,(x+(thumb_w-img.width)//2,y+40)); draw.text((x+8,y+6),path.stem,font=small,fill='white')
+          contact.save(out/'render_contact.jpg',quality=94,subsampling=0)
+          quality={
+              'matched_views':len(names),
+              'all_renders':len(all_renders),
+              'non_empty_views':sum(v['mean_luma']>8 and v['luma_stddev']>4 for v in metrics.values()),
+              'metrics':metrics,
+          }
+          (out/'visual_validation.json').write_text(json.dumps(quality,indent=2),encoding='utf-8')
+          if quality['non_empty_views'] != len(names):
+              raise SystemExit(f"One or more matched renders are blank/flat: {quality}")
+          PY
+
+      - name: Package artifact
+        if: always()
+        run: |
+          mkdir -p yatsukusa-output/source
+          cp tools/yatsukusa/realistic/build_yatsukusa_realistic.py yatsukusa-output/source/ || true
+          cp tools/yatsukusa/realistic/generate_textures.py yatsukusa-output/source/ || true
+          cp tools/yatsukusa/realistic/source_texture_overlay.py yatsukusa-output/source/ || true
+          cp tools/yatsukusa/realistic/patch_v3.py yatsukusa-output/source/ || true
+          cp tools/yatsukusa/realistic/patch_final.py yatsukusa-output/source/ || true
+          cp tools/yatsukusa/realistic/optimize_export_realistic.py yatsukusa-output/source/ || true
+          cp tools/yatsukusa/realistic/validate_exports.py yatsukusa-output/source/ || true
+          (cd yatsukusa-output && zip -r ../YatsukusaPark_VRChat_Realistic.zip . >/dev/null)
+          find yatsukusa-output -maxdepth 2 -type f -printf '%P %k KB\n' | sort
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: YatsukusaPark-VRChat-Realistic
+          path: |
+            yatsukusa-output/
+            YatsukusaPark_VRChat_Realistic.zip
+          if-no-files-found: error
+          retention-days: 1
