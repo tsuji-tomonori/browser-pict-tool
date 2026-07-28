@@ -60,7 +60,7 @@ simple_house('EastMediterranean',108,48,11,9,6.5,MAT['stucco_beige'],MAT['roof_r
     text = replace_once(
         text,
         "MAT['hedge'] = image_material('MAT_ClippedHedgeActual', 'hedge_base.png', height_file='hedge_height.png', roughness=.94, bump_strength=.43, mapping_scale=(1.55,1.55,1.55), use_uv=False)\nMAT['hedge_light'] = image_material('MAT_ClippedHedgeLightActual', 'hedge_light_base.png', height_file='hedge_height.png', roughness=.94, bump_strength=.38, mapping_scale=(1.45,1.45,1.45), use_uv=False)",
-        "MAT['hedge'] = solid_material('MAT_ClippedHedgeFinal', (.040,.145,.032), roughness=.96, noise_scale=10, noise_strength=.30, bump_strength=.30)\nMAT['hedge_light'] = solid_material('MAT_ClippedHedgeLightFinal', (.062,.190,.040), roughness=.96, noise_scale=11, noise_strength=.28, bump_strength=.27)",
+        "MAT['hedge'] = image_material('MAT_ClippedHedgeFinal', 'hedge_base.png', height_file='hedge_height.png', roughness=.96, bump_strength=.46, mapping_scale=(4.2,4.2,4.2), use_uv=False)\nMAT['hedge_light'] = image_material('MAT_ClippedHedgeLightFinal', 'hedge_light_base.png', height_file='hedge_height.png', roughness=.96, bump_strength=.42, mapping_scale=(4.0,4.0,4.0), use_uv=False)",
         "non-stretched hedge materials",
     )
 
@@ -114,14 +114,14 @@ MAT['stone_face_light'] = solid_material('MAT_StoneFaceLight', (.48,.455,.405), 
     # deeply shadowed core and let several hundred video-derived leaf cards make
     # both the volume and the silhouette.
     centre=Vector((x+lean.x*.62,y+lean.y*.62,height*.76))
-    lobe_count=4+rng.randrange(3)
+    lobe_count=8+rng.randrange(4)
     for li in range(lobe_count):
         a=2*math.pi*li/lobe_count+rng.uniform(-.36,.36)
-        radial=crown*rng.uniform(.08,.30)
+        radial=crown*rng.uniform(.10,.39)
         p=centre+Vector((math.cos(a)*radial,math.sin(a)*radial,height*rng.uniform(-.10,.11)))
-        sx=crown*rng.uniform(.26,.39)
-        sy=crown*rng.uniform(.24,.37)
-        sz=crown*rng.uniform(.22,.34)
+        sx=crown*rng.uniform(.28,.45)
+        sy=crown*rng.uniform(.26,.43)
+        sz=crown*rng.uniform(.25,.39)
         lobe=ico_sphere(f'{name}_CanopyInner_{li}',tuple(p),(sx,sy,sz),MAT['canopy_inner'],collection,subdivisions=3)
         for vertex in lobe.data.vertices:
             co=vertex.co
@@ -130,7 +130,7 @@ MAT['stone_face_light'] = solid_material('MAT_StoneFaceLight', (.48,.455,.405), 
             poly.use_smooth=True
 
     lv=[];lf=[];luv=[]
-    cluster_count=max(240,int((286+rng.randrange(70))*leaf_density))
+    cluster_count=max(390,int((430+rng.randrange(90))*leaf_density))
     positions=tips[:]
     while len(positions)<cluster_count:
         a=rng.uniform(0,2*math.pi)
@@ -142,10 +142,10 @@ MAT['stone_face_light'] = solid_material('MAT_StoneFaceLight', (.48,.455,.405), 
         rad*=.62+.38*crown_limit
         positions.append(Vector((centre.x+math.cos(a)*rad,centre.y+math.sin(a)*rad,z)))
     for p in positions[:cluster_count]:
-        w=crown*rng.uniform(.085,.155);h=w*rng.uniform(.72,1.12)
+        w=crown*rng.uniform(.17,.285);h=w*rng.uniform(.72,1.12)
         rot=rng.uniform(0,math.pi)
-        for cross in range(2):
-            ang=rot+cross*math.pi/2
+        for cross in range(3):
+            ang=rot+cross*math.pi/3
             right=Vector((math.cos(ang),math.sin(ang),0))*w*.5
             up=Vector((0,0,h*.5))+Vector((math.cos(ang+math.pi/2),math.sin(ang+math.pi/2),0))*rng.uniform(-.10,.10)*h
             base=len(lv)
@@ -193,7 +193,7 @@ def make_hedge(name: str, points: Sequence[Sequence[float]], width: float=1.45, 
     # sides, with small deterministic variation.
     rng=random.Random(3300+sum(ord(c) for c in name))
     lv=[];lf=[];luv=[]
-    shell_count=max(90,len(pts)*11)
+    shell_count=max(180,len(pts)*24)
     for k in range(shell_count):
         t=rng.uniform(0,len(pts)-1.001);i=min(len(pts)-2,int(t));f=t-i
         p=pts[i].lerp(pts[i+1],f)
@@ -203,7 +203,7 @@ def make_hedge(name: str, points: Sequence[Sequence[float]], width: float=1.45, 
             q=p+Vector((0,0,height*rng.uniform(.86,1.04)))+normal*rng.uniform(-width*.45,width*.45)
         else:
             q=p+normal*side*width*rng.uniform(.46,.55)+Vector((0,0,height*rng.uniform(.18,.94)))
-        w=rng.uniform(.075,.145);h=w*rng.uniform(.75,1.18);ang=math.atan2(tangent.y,tangent.x)+rng.uniform(-.9,.9)
+        w=rng.uniform(.12,.22);h=w*rng.uniform(.75,1.18);ang=math.atan2(tangent.y,tangent.x)+rng.uniform(-.9,.9)
         right=Vector((math.cos(ang),math.sin(ang),0))*w
         up=Vector((0,0,h))
         base=len(lv);lv.extend([tuple(q-right-up),tuple(q+right-up),tuple(q+right+up),tuple(q-right+up)])
@@ -222,10 +222,10 @@ def make_bush(name: str, x: float, y: float, radius: float, seed: int, light: bo
     for poly in obj.data.polygons:
         poly.use_smooth=True
     lv=[];lf=[];luv=[]
-    for i in range(128):
+    for i in range(260):
         az=rng.uniform(0,2*math.pi);el=rng.uniform(-.32,1.10)
         q=Vector((x+math.cos(az)*math.cos(el)*radius*.96,y+math.sin(az)*math.cos(el)*radius*.93,radius*.62+math.sin(el)*radius*.72))
-        w=radius*rng.uniform(.055,.11);h=w*rng.uniform(.75,1.18)
+        w=radius*rng.uniform(.085,.15);h=w*rng.uniform(.75,1.18)
         right=Vector((math.cos(az),math.sin(az),0))*w;up=Vector((0,0,h))
         base=len(lv);lv.extend([tuple(q-right-up),tuple(q+right-up),tuple(q+right+up),tuple(q-right+up)])
         lf.append((base,base+1,base+2,base+3));luv.append([(0,0),(1,0),(1,1),(0,1)])
@@ -287,12 +287,17 @@ black_sphere_sculpture()'''
 
     stone = r'''def stone_face_sculpture(x=69.0,y=-23.0):
     cube('StoneFace_Base',(x,y,.44),(3.80,2.42,.88),MAT['dark_concrete'],'SCULPTURES',bevel=.13)
-    # The video shows a dark, weathered monolithic stone. Its only face-like
-    # feature is a tall pale vertical hollow; the previous light slab with a
-    # dark rectangle reversed this value relationship.
-    head=cube('StoneFace_Head',(x,y,2.32),(2.76,1.52,2.96),MAT['stone_face_dark'],'SCULPTURES',bevel=.62)
-    cube('StoneFace_Recess',(x,y-.782,2.34),(.96,.035,1.48),MAT['stone_face_light'],'SCULPTURES',bevel=.38)
-    cube('StoneFace_RecessInner',(x,y-.806,2.34),(.52,.018,1.02),MAT['stone_face_dark'],'SCULPTURES',bevel=.24)
+    # Frames 171-173 show a dark rounded monolith, closer to an irregular oval
+    # than a rectangular slab. A pale, gently bent vertical depression is the
+    # identifying feature.
+    head=ico_sphere('StoneFace_Head',(x,y,2.38),(1.48,.82,1.70),MAT['stone_face_dark'],'SCULPTURES',subdivisions=4)
+    rng=random.Random(3420)
+    for v in head.data.vertices:
+        v.co*=1.0+rng.uniform(-.055,.055)+.025*math.sin(v.co.x*4.1+v.co.z*3.3)
+    for p in head.data.polygons:p.use_smooth=True
+    sphere('StoneFace_RecessTop',(x-.10,y-.835,2.83),(.45,.038,.72),MAT['stone_face_light'],'SCULPTURES',segments=40,rings=20)
+    sphere('StoneFace_RecessBottom',(x+.11,y-.842,1.94),(.43,.038,.66),MAT['stone_face_light'],'SCULPTURES',segments=40,rings=20)
+    sphere('StoneFace_RecessShade',(x+.02,y-.878,2.36),(.19,.018,.75),MAT['stone_face_dark'],'SCULPTURES',segments=36,rings=18)
     plaque('StoneFace_Plaque',x,y-1.30,.56)
 stone_face_sculpture()'''
     text = replace_regex(
@@ -307,6 +312,12 @@ stone_face_sculpture()'''
         "('Hedge_BlackSphere',[(84,7),(79,5),(74,4)],1.45,1.25),",
         "('Hedge_BlackSphere',[(84,7),(82,6),(80.5,5.5)],1.45,1.25),",
         "black-sphere foreground clearance",
+    )
+    text = replace_once(
+        text,
+        "('Hedge_South',[(42,-61),(24,-65),(3,-67),(-20,-66)],1.4,1.15),",
+        "('Hedge_South',[(42,-61),(24,-65),(3,-67),(-20,-66)],1.4,1.15),\n    ('Hedge_FinalApproach',[(48,-55),(59,-55),(70,-55),(75,-56)],1.42,1.18),",
+        "final bench-path hedge",
     )
 
     text = replace_once(
@@ -374,22 +385,22 @@ cube('NW_BlueLanding',(-74.9,43.1,2.18),(1.75,1.05,.16),MAT['blue'],'BUILDINGS',
 
     cameras = r'''CAMERA_SPECS=[
     # Fixed matched views, aligned to the route and broadside landmark axes.
-    ('Ref_0054_Bronze',(78.0,61.5,1.58),(75.0,22.0,1.32),34),
-    ('Ref_0060_WaterGarden',(72.0,56.0,1.58),(55.0,44.0,1.48),35),
-    ('Ref_0180_RedGranite',(76.0,8.5,1.52),(61.5,15.5,1.55),35),
+    ('Ref_0054_Bronze',(68.0,43.0,1.60),(78.5,49.0,3.38),35),
+    ('Ref_0060_WaterGarden',(68.5,39.5,1.58),(55.0,44.0,1.50),34),
+    ('Ref_0180_RedGranite',(70.0,7.0,1.52),(63.0,14.0,1.70),36),
     ('Ref_0188_BlackSphere',(70.0,-1.5,1.54),(78.0,4.0,1.82),38),
-    ('Ref_0194_VendingEntrance',(69.0,-2.0,1.52),(87.0,5.0,1.35),32),
-    ('Ref_0274_NWBuildings',(-91.0,28.0,1.58),(-82.0,43.0,1.60),34),
+    ('Ref_0194_VendingEntrance',(80.0,-3.5,1.52),(88.0,5.0,1.35),31),
+    ('Ref_0274_NWBuildings',(-97.0,31.0,1.58),(-82.0,43.0,1.55),31),
     ('Ref_0342_StoneFace',(57.0,-35.0,1.52),(72.0,-18.0,1.42),34),
     ('Ref_0406_Pavilion',(72.0,-57.0,1.52),(56.0,-45.0,1.42),34),
-    ('Ref_0434_BenchPath',(50.0,-63.0,1.52),(73.0,-56.0,1.22),34),
-    ('Ref_0448_MapJunction',(61.0,-70.0,1.52),(79.0,-57.0,1.42),32),
+    ('Ref_0434_BenchPath',(48.0,-65.0,1.52),(71.0,-57.0,1.22),32),
+    ('Ref_0448_MapJunction',(60.0,-67.0,1.52),(79.0,-57.0,1.42),31),
     # Holdouts were selected before this final patch and are not used above.
     ('Holdout_0056_EastAvenue',(78.0,62.5,1.58),(76.0,21.0,1.36),34),
     ('Holdout_0176_RedApproach',(76.0,10.0,1.55),(61.0,14.0,1.45),36),
     ('Holdout_0320_ShadedCurve',(73.0,-16.0,1.55),(58.0,-25.0,1.38),36),
     ('Holdout_0388_SouthJunction',(70.0,-51.0,1.55),(54.0,-46.0,1.42),36),
-    ('Holdout_0446_MapApproach',(62.0,-70.0,1.55),(79.0,-57.0,1.40),32),
+    ('Holdout_0446_MapApproach',(58.0,-67.0,1.55),(79.0,-57.0,1.40),31),
     ('Detail_Bronze',(70.0,49.0,2.15),(78.5,49.0,3.62),52),
     ('Detail_BlackSphere',(70.5,4.0,1.95),(78.0,4.0,1.98),52),
     ('Detail_StoneFace',(69.0,-30.0,1.95),(69.0,-23.0,2.40),52),
