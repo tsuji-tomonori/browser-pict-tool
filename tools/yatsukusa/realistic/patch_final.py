@@ -60,7 +60,7 @@ simple_house('EastMediterranean',108,48,11,9,6.5,MAT['stucco_beige'],MAT['roof_r
     text = replace_once(
         text,
         "MAT['hedge'] = image_material('MAT_ClippedHedgeActual', 'hedge_base.png', height_file='hedge_height.png', roughness=.94, bump_strength=.43, mapping_scale=(1.55,1.55,1.55), use_uv=False)\nMAT['hedge_light'] = image_material('MAT_ClippedHedgeLightActual', 'hedge_light_base.png', height_file='hedge_height.png', roughness=.94, bump_strength=.38, mapping_scale=(1.45,1.45,1.45), use_uv=False)",
-        "MAT['hedge'] = image_material('MAT_ClippedHedgeFinal', 'hedge_base.png', height_file='hedge_height.png', roughness=.96, bump_strength=.46, mapping_scale=(4.2,4.2,4.2), use_uv=False)\nMAT['hedge_light'] = image_material('MAT_ClippedHedgeLightFinal', 'hedge_light_base.png', height_file='hedge_height.png', roughness=.96, bump_strength=.42, mapping_scale=(4.0,4.0,4.0), use_uv=False)",
+        "MAT['hedge'] = solid_material('MAT_ClippedHedgeFinal', (.032,.118,.026), roughness=.98, noise_scale=34, noise_strength=.48, bump_strength=.58)\nMAT['hedge_light'] = solid_material('MAT_ClippedHedgeLightFinal', (.050,.155,.031), roughness=.98, noise_scale=32, noise_strength=.44, bump_strength=.52)",
         "non-stretched hedge materials",
     )
 
@@ -71,7 +71,9 @@ simple_house('EastMediterranean',108,48,11,9,6.5,MAT['stucco_beige'],MAT['roof_r
 MAT['canopy_inner'] = solid_material('MAT_CanopyInterior', (.034,.108,.026), roughness=.99, noise_scale=5.5, noise_strength=.20, bump_strength=.10)
 MAT['paver_grime'] = solid_material('MAT_PaverEdgeGrime', (.075,.072,.064), roughness=.99, noise_scale=3.2, noise_strength=.32, bump_strength=.18)
 MAT['stone_face_dark'] = solid_material('MAT_StoneFaceDark', (.105,.100,.090), roughness=.94, noise_scale=9.0, noise_strength=.42, bump_strength=.48)
-MAT['stone_face_light'] = solid_material('MAT_StoneFaceLight', (.48,.455,.405), roughness=.96, noise_scale=8.0, noise_strength=.30, bump_strength=.38)""",
+MAT['stone_face_light'] = solid_material('MAT_StoneFaceLight', (.48,.455,.405), roughness=.96, noise_scale=8.0, noise_strength=.30, bump_strength=.38)
+MAT['bush_core'] = solid_material('MAT_BushCore', (.036,.132,.028), roughness=.98, noise_scale=27, noise_strength=.46, bump_strength=.55)
+MAT['bush_core_light'] = solid_material('MAT_BushCoreLight', (.052,.168,.034), roughness=.98, noise_scale=25, noise_strength=.42, bump_strength=.50)""",
         "final vegetation and grime materials",
     )
 
@@ -130,7 +132,7 @@ MAT['stone_face_light'] = solid_material('MAT_StoneFaceLight', (.48,.455,.405), 
             poly.use_smooth=True
 
     lv=[];lf=[];luv=[]
-    cluster_count=max(390,int((430+rng.randrange(90))*leaf_density))
+    cluster_count=max(430,int((500+rng.randrange(90))*leaf_density))
     positions=tips[:]
     while len(positions)<cluster_count:
         a=rng.uniform(0,2*math.pi)
@@ -142,7 +144,7 @@ MAT['stone_face_light'] = solid_material('MAT_StoneFaceLight', (.48,.455,.405), 
         rad*=.62+.38*crown_limit
         positions.append(Vector((centre.x+math.cos(a)*rad,centre.y+math.sin(a)*rad,z)))
     for p in positions[:cluster_count]:
-        w=crown*rng.uniform(.17,.285);h=w*rng.uniform(.72,1.12)
+        w=crown*rng.uniform(.12,.205);h=w*rng.uniform(.72,1.12)
         rot=rng.uniform(0,math.pi)
         for cross in range(3):
             ang=rot+cross*math.pi/3
@@ -188,33 +190,12 @@ def make_hedge(name: str, points: Sequence[Sequence[float]], width: float=1.45, 
     add_bevel(hedge,.12,2)
     for poly in hedge.data.polygons:
         poly.use_smooth=True
-    # A fine leaf shell breaks the smooth green tube without reintroducing a
-    # chain of spheres. Cards are distributed across the clipped top and both
-    # sides, with small deterministic variation.
-    rng=random.Random(3300+sum(ord(c) for c in name))
-    lv=[];lf=[];luv=[]
-    shell_count=max(180,len(pts)*24)
-    for k in range(shell_count):
-        t=rng.uniform(0,len(pts)-1.001);i=min(len(pts)-2,int(t));f=t-i
-        p=pts[i].lerp(pts[i+1],f)
-        tangent=(pts[i+1]-pts[i]).normalized();normal=Vector((-tangent.y,tangent.x,0))
-        side=rng.choice((-1.0,0.0,1.0))
-        if side == 0.0:
-            q=p+Vector((0,0,height*rng.uniform(.86,1.04)))+normal*rng.uniform(-width*.45,width*.45)
-        else:
-            q=p+normal*side*width*rng.uniform(.46,.55)+Vector((0,0,height*rng.uniform(.18,.94)))
-        w=rng.uniform(.12,.22);h=w*rng.uniform(.75,1.18);ang=math.atan2(tangent.y,tangent.x)+rng.uniform(-.9,.9)
-        right=Vector((math.cos(ang),math.sin(ang),0))*w
-        up=Vector((0,0,h))
-        base=len(lv);lv.extend([tuple(q-right-up),tuple(q+right-up),tuple(q+right+up),tuple(q-right+up)])
-        lf.append((base,base+1,base+2,base+3));luv.append([(0,0),(1,0),(1,1),(0,1)])
-    mesh_object(name+'_LeafShell',lv,lf,MAT[['leaf_a','leaf_b','leaf_c'][len(name)%3]],'VEGETATION',uvs=luv)
     return hedge
 
 
 def make_bush(name: str, x: float, y: float, radius: float, seed: int, light: bool=False):
     rng=random.Random(seed)
-    material=MAT['hedge_light' if light else 'hedge']
+    material=MAT['bush_core_light' if light else 'bush_core']
     obj=ico_sphere(name,(x,y,radius*.62),(radius*rng.uniform(.92,1.12),radius*rng.uniform(.86,1.08),radius*rng.uniform(.68,.86)),material,'VEGETATION',subdivisions=3)
     for vertex in obj.data.vertices:
         co=vertex.co
@@ -222,10 +203,10 @@ def make_bush(name: str, x: float, y: float, radius: float, seed: int, light: bo
     for poly in obj.data.polygons:
         poly.use_smooth=True
     lv=[];lf=[];luv=[]
-    for i in range(260):
+    for i in range(190):
         az=rng.uniform(0,2*math.pi);el=rng.uniform(-.32,1.10)
         q=Vector((x+math.cos(az)*math.cos(el)*radius*.96,y+math.sin(az)*math.cos(el)*radius*.93,radius*.62+math.sin(el)*radius*.72))
-        w=radius*rng.uniform(.085,.15);h=w*rng.uniform(.75,1.18)
+        w=radius*rng.uniform(.055,.10);h=w*rng.uniform(.75,1.18)
         right=Vector((math.cos(az),math.sin(az),0))*w;up=Vector((0,0,h))
         base=len(lv);lv.extend([tuple(q-right-up),tuple(q+right-up),tuple(q+right+up),tuple(q-right+up)])
         lf.append((base,base+1,base+2,base+3));luv.append([(0,0),(1,0),(1,1),(0,1)])
@@ -243,19 +224,15 @@ def make_bush(name: str, x: float, y: float, radius: float, seed: int, light: bo
 
     bronze = r'''def bronze_drooping_sculpture(x=78.5,y=49.0):
     cube('BronzeDroop_Pedestal',(x,y,1.25),(1.72,1.72,2.5),MAT['paint_black'],'SCULPTURES',bevel=.035)
-    # One broad, variable-width curved plate replaces the former stack of
-    # cubes/tubes. The profile is read broadside from the east avenue.
-    profile=[(-1.30,3.28),(-1.20,4.02),(-.82,4.58),(-.16,4.82),(.56,4.70),(1.10,4.30),(1.33,3.82),(1.26,3.28),(1.04,2.82),(.72,2.56),(.50,2.70),(.62,3.18),(.53,3.70),(.06,3.94),(-.52,3.90),(-.76,3.50),(-.82,2.78),(-1.12,2.55)]
-    verts=[];faces=[];half=.39
-    for xx in (-half,half):
-        verts.extend([(x+xx,y+yy,zz) for yy,zz in profile])
-    n=len(profile);faces.append(tuple(range(n)));faces.append(tuple(range(2*n-1,n-1,-1)))
-    for i in range(n):j=(i+1)%n;faces.append((i,j,n+j,n+i))
-    form=mesh_object('BronzeDroop_Form',verts,faces,MAT['bronze'],'SCULPTURES')
-    add_bevel(form,.16,4)
-    # A recessed inner shadow clarifies the opening while retaining a robust,
-    # manifold export.
-    cube('BronzeDroop_Opening',(x-.405,y-.10,3.55),(.025,.92,.84),MAT['paint_black'],'SCULPTURES',bevel=.22)
+    # The source close-up is an elephant-head-like bronze: one rounded crown,
+    # two asymmetric drooping sides and a narrow central support. Build it from
+    # overlapping smooth volumes rather than a flat ring or stacked boxes.
+    body=ico_sphere('BronzeDroop_Crown',(x,y,4.25),(.70,1.18,.72),MAT['bronze'],'SCULPTURES',subdivisions=4)
+    for p in body.data.polygons:p.use_smooth=True
+    variable_tube('BronzeDroop_Left',[(x,y+.78,4.27),(x,y+1.05,3.92),(x,y+1.02,3.52),(x,y+.84,3.22)],[.43,.38,.27,.15],MAT['bronze'],'SCULPTURES',elliptical=.72,sides=32)
+    variable_tube('BronzeDroop_Right',[(x,y-.78,4.25),(x,y-1.05,3.98),(x,y-1.12,3.68),(x,y-.96,3.48)],[.40,.34,.23,.13],MAT['bronze'],'SCULPTURES',elliptical=.70,sides=32)
+    variable_tube('BronzeDroop_Support',[(x,y,2.50),(x,y,3.05),(x,y,3.60)],[.32,.24,.16],MAT['bronze'],'SCULPTURES',elliptical=.78,sides=28)
+    sphere('BronzeDroop_Undershadow',(x-.64,y,3.78),(.07,.44,.23),MAT['paint_black'],'SCULPTURES',segments=32,rings=16)
     plaque('BronzeDroop_Plaque',x-.88,y,1.28,rot_z=math.radians(90))
 bronze_drooping_sculpture()'''
     text = replace_regex(
@@ -290,14 +267,14 @@ black_sphere_sculpture()'''
     # Frames 171-173 show a dark rounded monolith, closer to an irregular oval
     # than a rectangular slab. A pale, gently bent vertical depression is the
     # identifying feature.
-    head=ico_sphere('StoneFace_Head',(x,y,2.38),(1.48,.82,1.70),MAT['stone_face_dark'],'SCULPTURES',subdivisions=4)
+    head=ico_sphere('StoneFace_Head',(x,y,2.24),(1.28,.73,1.48),MAT['stone_face_dark'],'SCULPTURES',subdivisions=4)
     rng=random.Random(3420)
     for v in head.data.vertices:
         v.co*=1.0+rng.uniform(-.055,.055)+.025*math.sin(v.co.x*4.1+v.co.z*3.3)
     for p in head.data.polygons:p.use_smooth=True
-    sphere('StoneFace_RecessTop',(x-.10,y-.835,2.83),(.45,.038,.72),MAT['stone_face_light'],'SCULPTURES',segments=40,rings=20)
-    sphere('StoneFace_RecessBottom',(x+.11,y-.842,1.94),(.43,.038,.66),MAT['stone_face_light'],'SCULPTURES',segments=40,rings=20)
-    sphere('StoneFace_RecessShade',(x+.02,y-.878,2.36),(.19,.018,.75),MAT['stone_face_dark'],'SCULPTURES',segments=36,rings=18)
+    sphere('StoneFace_RecessTop',(x-.09,y-.748,2.62),(.39,.034,.62),MAT['stone_face_light'],'SCULPTURES',segments=40,rings=20)
+    sphere('StoneFace_RecessBottom',(x+.09,y-.754,1.84),(.37,.034,.57),MAT['stone_face_light'],'SCULPTURES',segments=40,rings=20)
+    sphere('StoneFace_RecessShade',(x+.02,y-.786,2.21),(.16,.016,.65),MAT['stone_face_dark'],'SCULPTURES',segments=36,rings=18)
     plaque('StoneFace_Plaque',x,y-1.30,.56)
 stone_face_sculpture()'''
     text = replace_regex(
